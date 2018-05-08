@@ -8,15 +8,15 @@ if [[ -z ${VERSION} ]] ; then
 fi
 
 if [[ ${ENVIRONMENT} == "pr" ]] ; then
-    echo "deploy ${VERSION} to pr namespace, using hocs-casework_pr drone secret"
-    export KUBE_TOKEN=${hocs-casework_pr}
+    echo "deploy ${VERSION} to pr namespace, using HOCS-CASEWORK_PR drone secret"
+    export KUBE_TOKEN=${HOCS-CASEWORK_PR}
 else
     if [[ ${ENVIRONMENT} == "test" ]] ; then
-        echo "deploy ${VERSION} to test namespace, using hocs-casework_qa drone secret"
-        export KUBE_TOKEN=${hocs-casework_qa}
+        echo "deploy ${VERSION} to test namespace, using HOCS-CASEWORK_QA drone secret"
+        export KUBE_TOKEN=${HOCS-CASEWORK_QA}
     else
-        echo "deploy ${VERSION} to dev namespace, using hocs-casework_dev drone secret"
-        export KUBE_TOKEN=${hocs-casework_dev}
+        echo "deploy ${VERSION} to dev namespace, using HOCS-CASEWORK_DEV drone secret"
+        export KUBE_TOKEN=${HOCS-CASEWORK_DEV}
     fi
 fi
 
