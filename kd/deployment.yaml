@@ -151,7 +151,7 @@ spec:
               containerPort: 8080
           livenessProbe:
             httpGet:
-              path: /healthz
+              path: /actuator/health
               port: http
               httpHeaders:
                 - name: X-probe
@@ -161,7 +161,7 @@ spec:
             timeoutSeconds: 10
           readinessProbe:
             httpGet:
-              path: /healthz
+              path: /actuator/health
               port: http
               httpHeaders:
                 - name: X-probe
