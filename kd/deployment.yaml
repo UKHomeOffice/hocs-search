@@ -139,6 +139,34 @@ spec:
               value: '8080'
             - name: ENDPOINTS_INFO_ENABLED
               value: 'false'
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: hocs-rds-access
+                  key: endpoint
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: hocs-rds-access
+                  key: port
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: hocs-rds-access
+                  key: database_name
+            - name: DB_SCHEMA_NAME
+              value:
+                'hocs_data_service_001'
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: hocs-rds-access
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: hocs-rds-access
+                  key: password
           resources:
             limits:
               cpu: 1600m
