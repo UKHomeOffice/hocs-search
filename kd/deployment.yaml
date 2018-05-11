@@ -160,12 +160,12 @@ spec:
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: hocs-rds-access
+                  name: cs-dev-rds
                   key: username
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: hocs-rds-access
+                  name: cs-dev-rds
                   key: password
           resources:
             limits:
