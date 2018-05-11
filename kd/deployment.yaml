@@ -142,21 +142,21 @@ spec:
             - name: DB_HOST
               valueFrom:
                 secretKeyRef:
-                  name: hocs-rds-access
+                  name: cs-dev-rds
                   key: endpoint
             - name: DB_PORT
               valueFrom:
                 secretKeyRef:
-                  name: hocs-rds-access
+                  name: cs-dev-rds
                   key: port
             - name: DB_NAME
               valueFrom:
                 secretKeyRef:
-                  name: hocs-rds-access
-                  key: database_name
+                  name: cs-dev-rds
+                  key: db_name
             - name: DB_SCHEMA_NAME
               value:
-                'hocs_data_service_001'
+                'cs_casework_001'
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
