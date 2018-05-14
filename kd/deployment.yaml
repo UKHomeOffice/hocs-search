@@ -105,6 +105,8 @@ spec:
               value: 'FALSE'
             - name: HTTPS_REDIRECT
               value: 'FALSE'
+            - name: BASIC_AUTH
+              value: /etc/nginx/authsecrets/htpasswd
             - name: SERVER_CERT
               value: /certs/tls.pem
             - name: SERVER_KEY
@@ -118,6 +120,8 @@ spec:
             - name: secrets
               mountPath: /etc/nginx/secrets
               readOnly: true
+            - name: auth-secrets
+              mountPath: /etc/nginx/authsecrets
           ports:
             - name: https
               containerPort: 10443
@@ -240,3 +244,6 @@ spec:
         - name: secrets
           emptyDir:
             medium: "Memory"
+        - name: auth-secrets
+          secret:
+            secretName: ui-casework-creds
