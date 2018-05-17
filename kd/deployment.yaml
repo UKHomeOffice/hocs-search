@@ -150,17 +150,17 @@ spec:
             - name: DB_HOST
               valueFrom:
                 secretKeyRef:
-                  name: cs-dev-rds
+                  name: {{.KUBE_NAMESPACE}}-rds
                   key: endpoint
             - name: DB_PORT
               valueFrom:
                 secretKeyRef:
-                  name: cs-dev-rds
+                  name: {{.KUBE_NAMESPACE}}-rds
                   key: port
             - name: DB_NAME
               valueFrom:
                 secretKeyRef:
-                  name: cs-dev-rds
+                  name: {{.KUBE_NAMESPACE}}-rds
                   key: db_name
             - name: DB_SCHEMA_NAME
               value:
@@ -168,12 +168,12 @@ spec:
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: cs-dev-rds
+                  name: {{.KUBE_NAMESPACE}}-rds
                   key: username
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: cs-dev-rds
+                  name: {{.KUBE_NAMESPACE}}-rds
                   key: password
             - name: NOTIFY_APIKEY
               valueFrom:
