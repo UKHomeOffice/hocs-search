@@ -19,6 +19,7 @@ spec:
     metadata:
       labels:
         name: hocs-casework
+        role: hocs-backend
         version: {{.VERSION}}
     spec:
       imagePullSecrets:
@@ -167,6 +168,31 @@ spec:
                 secretKeyRef:
                   name: cs-dev-rds
                   key: password
+            - name: NOTIFY_APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: cs-notify
+                  key: api_key
+            - name: NOTIFY_PROXY_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: cs-notify
+                  key: proxy_host
+            - name: NOTIFY_PROXY_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: cs-notify
+                  key: proxy_port
+            - name: NOTIFY_RSHTEMPLATEID
+              valueFrom:
+                secretKeyRef:
+                  name: cs-notify
+                  key: rsh_template_id
+            - name: NOTIFY_FRONTEND_URL
+              valueFrom:
+                secretKeyRef:
+                  name: cs-notify
+                  key: frontend_url
           resources:
             limits:
               cpu: 1600m
