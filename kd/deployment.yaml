@@ -190,6 +190,8 @@ spec:
                 secretKeyRef:
                   name: cs-notify
                   key: proxy_port
+            - name: SSL_CIPHERS
+              value: 'ALL'
             - name: NOTIFY_RSHTEMPLATEID
               valueFrom:
                 secretKeyRef:
