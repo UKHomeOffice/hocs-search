@@ -174,34 +174,34 @@ spec:
                 secretKeyRef:
                   name: {{.KUBE_NAMESPACE}}-rds
                   key: password
-            - name: NOTIFY_APIKEY
+            - name: ENV_NOTIFY_APIKEY
               valueFrom:
                 secretKeyRef:
                   name: cs-notify
                   key: api_key
-            - name: NOTIFY_PROXY_HOST
+            - name: ENV_NOTIFY_PROXY_HOST
               valueFrom:
                 secretKeyRef:
                   name: cs-notify
                   key: proxy_host
-            - name: NOTIFY_PROXY_PORT
+            - name: ENV_NOTIFY_PROXY_PORT
               valueFrom:
                 secretKeyRef:
                   name: cs-notify
                   key: proxy_port
-            - name: NOTIFY_RSHTEMPLATEID
+            - name: ENV_NOTIFY_RSHTEMPLATEID
               valueFrom:
                 secretKeyRef:
                   name: cs-notify
                   key: rsh_template_id
-            - name: NOTIFY_FRONTEND_URL
+            - name: ENV_NOTIFY_FRONTEND_URL
               valueFrom:
                 secretKeyRef:
                   name: cs-notify
                   key: frontend_url
           resources:
             limits:
-              cpu: 1600m
+              cpu: 800m
               memory: 612Mi
             requests:
               cpu: 100m
