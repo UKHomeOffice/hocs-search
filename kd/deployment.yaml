@@ -163,7 +163,7 @@ spec:
                   key: db_name
             - name: DB_SCHEMA_NAME
               value:
-                'cs_casework_001'
+                'cs_casework_002'
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
