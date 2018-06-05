@@ -19,7 +19,7 @@ spec:
     metadata:
       labels:
         name: hocs-casework
-        role: hocs-backend-{{.KUBE_NAMESPACE}}
+        role: hocs-backend
         version: {{.VERSION}}
     spec:
       imagePullSecrets:
