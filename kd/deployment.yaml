@@ -6,7 +6,7 @@ metadata:
   labels:
     version: {{.VERSION}}
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       name: hocs-casework
@@ -163,7 +163,7 @@ spec:
                   key: db_name
             - name: DB_SCHEMA_NAME
               value:
-                'cs_casework_002'
+                'cs_casework_003'
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
