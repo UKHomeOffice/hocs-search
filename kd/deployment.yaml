@@ -109,8 +109,6 @@ spec:
               value: /etc/nginx/authsecrets/htpasswd
             - name: SERVER_CERT
               value: /certs/tls.pem
-            - name: BASIC_AUTH
-              value: /etc/nginx/authsecrets/.htpasswd_1
             - name: SERVER_KEY
               value: /certs/tls-key.pem
             - name: ADD_NGINX_SERVER_CFG
