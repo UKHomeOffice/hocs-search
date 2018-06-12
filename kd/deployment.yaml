@@ -201,7 +201,7 @@ spec:
                   key: frontend_url
           resources:
             limits:
-              cpu: 500m
+              cpu: 400m
               memory: 1024Mi
             requests:
               cpu: 100m
@@ -216,7 +216,7 @@ spec:
               httpHeaders:
                 - name: X-probe
                   value: kubelet
-            initialDelaySeconds: 10
+            initialDelaySeconds: 60
             periodSeconds: 20
             timeoutSeconds: 10
           readinessProbe:
@@ -226,7 +226,7 @@ spec:
               httpHeaders:
                 - name: X-probe
                   value: kubelet
-            initialDelaySeconds: 10
+            initialDelaySeconds: 60
             periodSeconds: 20
             timeoutSeconds: 10
           volumeMounts:
