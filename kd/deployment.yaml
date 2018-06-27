@@ -217,16 +217,10 @@ spec:
                 secretKeyRef:
                   name: cs-dev-case-sqs
                   key: secret_access_key
-            - name: CASE_QUEUE
-              valueFrom:
-                secretKeyRef:
-                  name: cs-dev-case-sqs
-                  key: sqs_queue_url
-            - name: CASE_DLQ
-              valueFrom:
-                secretKeyRef:
-                  name: cs-dev-case-sqs
-                  key: sqs_queue_dlq
+            - name: CASE_QUEUE_NAME
+              value: cs-dev-case-sqs
+            - name: CASE_DLQ_NAME
+              value: cs-dev-case-sqs-dlq
           resources:
             limits:
               cpu: 400m
