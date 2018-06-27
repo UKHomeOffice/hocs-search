@@ -208,10 +208,10 @@ spec:
                   name: cs-notify
                   key: frontend_url
             - name: AWS_SQS_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                name: cs-dev-case-sqs
-                key: access_key_id
+              valueFrom:
+                secretKeyRef:
+                  name: cs-dev-case-sqs
+                  key: access_key_id
             - name: AWS_SQS_SECRET_KEY
               valueFrom:
                 secretKeyRef:
