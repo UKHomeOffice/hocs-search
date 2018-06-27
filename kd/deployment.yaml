@@ -135,6 +135,9 @@ spec:
               drop:
                 - SETUID
                 - SETGID
+          envFrom:
+          - configMapRef:
+             name: hocs-queue-config
           env:
             - name: JAVA_OPTS
               value: '-Xms150m -Xmx768m -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks'
@@ -144,6 +147,8 @@ spec:
               value: '8080'
             - name: ENDPOINTS_INFO_ENABLED
               value: 'false'
+            - name: SPRING_PROFILES_ACTIVE
+              value: 'sqs'
             - name: DB_HOST
               valueFrom:
                 secretKeyRef:
@@ -197,6 +202,25 @@ spec:
                 secretKeyRef:
                   name: cs-notify
                   key: frontend_url
+            - name: ENV_NOTIFY_FRONTEND_URL
+              valueFrom:
+                secretKeyRef:
+                  name: cs-notify
+                  key: frontend_url
+            - name: AWS_SQS_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: cs-dev-case-sqs
+                key: access_key_id
+            - name: AWS_SQS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cs-dev-case-sqs
+                  key: secret_access_key
+            - name: CASE_QUEUE_NAME
+              value: cs-dev-case-sqs
+            - name: CASE_DLQ_NAME
+              value: cs-dev-case-sqs-dlq
           resources:
             limits:
               cpu: 400m
