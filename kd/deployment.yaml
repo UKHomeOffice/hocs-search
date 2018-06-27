@@ -136,8 +136,8 @@ spec:
                 - SETUID
                 - SETGID
           envFrom:
-          - configMapRef:
-             name: hocs-queue-config
+            - configMapRef:
+              name: hocs-queue-config
           env:
             - name: JAVA_OPTS
               value: '-Xms150m -Xmx768m -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks -Dhttps.proxyHost=hocs-outbound-proxy.{{.KUBE_NAMESPACE}}.svc.cluster.local -Dhttps.proxyPort=31290'
@@ -147,8 +147,8 @@ spec:
               value: '8080'
             - name: ENDPOINTS_INFO_ENABLED
               value: 'false'
-            - name: SPRING_PROFILES_ACTIVE
-              value: 'sqs'
+            #- name: SPRING_PROFILES_ACTIVE
+            #  value: 'sqs'
             - name: DB_HOST
               valueFrom:
                 secretKeyRef:
