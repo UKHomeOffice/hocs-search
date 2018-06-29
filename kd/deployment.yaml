@@ -207,18 +207,18 @@ spec:
                 secretKeyRef:
                   name: cs-notify
                   key: frontend_url
-            - name: AWS_SQS_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: cs-dev-case-sqs
-                  key: access_key_id
-            - name: AWS_SQS_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: cs-dev-case-sqs
-                  key: secret_access_key
-            - name: CASE_QUEUE_NAME
-              value: cs-dev-case-sqs
+            #- name: AWS_SQS_ACCESS_KEY
+            #  valueFrom:
+            #    secretKeyRef:
+            #      name: cs-dev-case-sqs
+            #      key: access_key_id
+            #- name: AWS_SQS_SECRET_KEY
+            #  valueFrom:
+            #    secretKeyRef:
+            #      name: cs-dev-case-sqs
+            #      key: secret_access_key
+            #- name: CASE_QUEUE_NAME
+            #  value: cs-dev-case-sqs
             - name: CASE_DLQ_NAME
               value: cs-dev-case-sqs-dlq
           resources:
