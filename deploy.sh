@@ -28,6 +28,6 @@ fi
 cd kd
 
 kd --insecure-skip-tls-verify \
-   --timeout 10 \
+   --timeout 10m \
     -f deployment.yaml \
     -f service.yaml
