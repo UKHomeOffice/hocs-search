@@ -10,6 +10,7 @@ fi
 if [[ ${ENVIRONMENT} == "prod" ]] ; then
     echo "deploy ${VERSION} to prod namespace, using HOCS_CASEWORK_PROD drone secret"
     export KUBE_TOKEN=${HOCS_CASEWORK_PROD}
+    export REPLICAS="2"
 else
     if [[ ${ENVIRONMENT} == "qa" ]] ; then
         echo "deploy ${VERSION} to test namespace, using HOCS_CASEWORK_QA drone secret"
@@ -18,6 +19,7 @@ else
         echo "deploy ${VERSION} to dev namespace, using HOCS_CASEWORK_DEV drone secret"
         export KUBE_TOKEN=${HOCS_CASEWORK_DEV}
     fi
+    export REPLICAS="1"
 fi
 
 if [[ -z ${KUBE_TOKEN} ]] ; then
