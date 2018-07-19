@@ -223,7 +223,7 @@ spec:
               value: cs-dev-case-sqs-dlq
           resources:
             limits:
-              cpu: 400m
+              cpu: 350m
               memory: 1024Mi
             requests:
               cpu: 100m
