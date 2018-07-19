@@ -79,7 +79,7 @@ spec:
               readOnly: true
 
         - name: proxy
-          image: quay.io/ukhomeofficedigital/nginx-proxy:v3
+          image: quay.io/ukhomeofficedigital/nginx-proxy:v3.2.11
           imagePullPolicy: Always
           securityContext:
             runAsNonRoot: true
