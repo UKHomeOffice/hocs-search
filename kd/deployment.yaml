@@ -135,9 +135,9 @@ spec:
               drop:
                 - SETUID
                 - SETGID
-          #envFrom:
-          #  - configMapRef:
-          #    name: hocs-queue-config
+          envFrom:
+            - configMapRef:
+              name: hocs-queue-config
           env:
             - name: JAVA_OPTS
               value: '-Xms150m -Xmx768m -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks -Dhttps.proxyHost=hocs-outbound-proxy.{{.KUBE_NAMESPACE}}.svc.cluster.local -Dhttps.proxyPort=31290 -Dhttps.nonProxyHosts=*.{{.KUBE_NAMESPACE}}.svc.cluster.local'
@@ -147,8 +147,8 @@ spec:
               value: '8080'
             - name: ENDPOINTS_INFO_ENABLED
               value: 'false'
-            #- name: SPRING_PROFILES_ACTIVE
-            #  value: 'sqs'
+            - name: SPRING_PROFILES_ACTIVE
+              value: 'sqs'
             - name: DB_HOST
               valueFrom:
                 secretKeyRef:
@@ -177,48 +177,18 @@ spec:
                 secretKeyRef:
                   name: {{.KUBE_NAMESPACE}}-rds
                   key: password
-            - name: ENV_NOTIFY_APIKEY
+            - name: AWS_SQS_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
-                  name: cs-notify
-                  key: api_key
-            - name: ENV_NOTIFY_PROXY_HOST
+                  name: cs-dev-case-sqs
+                  key: access_key_id
+            - name: AWS_SQS_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: cs-notify
-                  key: proxy_host
-            - name: ENV_NOTIFY_PROXY_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: cs-notify
-                  key: proxy_port
-            - name: ENV_NOTIFY_RSHTEMPLATEID
-              valueFrom:
-                secretKeyRef:
-                  name: cs-notify
-                  key: rsh_template_id
-            - name: ENV_NOTIFY_FRONTEND_URL
-              valueFrom:
-                secretKeyRef:
-                  name: cs-notify
-                  key: frontend_url
-            - name: ENV_NOTIFY_FRONTEND_URL
-              valueFrom:
-                secretKeyRef:
-                  name: cs-notify
-                  key: frontend_url
-            #- name: AWS_SQS_ACCESS_KEY
-            #  valueFrom:
-            #    secretKeyRef:
-            #      name: cs-dev-case-sqs
-            #      key: access_key_id
-            #- name: AWS_SQS_SECRET_KEY
-            #  valueFrom:
-            #    secretKeyRef:
-            #      name: cs-dev-case-sqs
-            #      key: secret_access_key
-            #- name: CASE_QUEUE_NAME
-            #  value: cs-dev-case-sqs
+                  name: cs-dev-case-sqs
+                  key: secret_access_key
+            - name: CASE_QUEUE_NAME
+              value: cs-dev-case-sqs
             - name: CASE_DLQ_NAME
               value: cs-dev-case-sqs-dlq
           resources:
