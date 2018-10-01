@@ -193,7 +193,7 @@ spec:
                   key: secret_access_key
           resources:
             limits:
-              cpu: 500m
+              cpu: 700m
               memory: 1024Mi
             requests:
               cpu: 150m
