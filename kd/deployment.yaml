@@ -193,10 +193,10 @@ spec:
                   key: secret_access_key
           resources:
             limits:
-              cpu: 350m
+              cpu: 500m
               memory: 1024Mi
             requests:
-              cpu: 100m
+              cpu: 150m
               memory: 484Mi
           ports:
             - name: http
