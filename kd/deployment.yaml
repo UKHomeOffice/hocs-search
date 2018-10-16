@@ -218,7 +218,7 @@ spec:
               httpHeaders:
                 - name: X-probe
                   value: kubelet
-            initialDelaySeconds: 240
+            initialDelaySeconds: 200
             periodSeconds: 20
             timeoutSeconds: 10
           volumeMounts:
