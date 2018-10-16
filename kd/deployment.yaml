@@ -140,7 +140,7 @@ spec:
                 name: hocs-queue-config
           env:
             - name: JAVA_OPTS
-              value: '-Xms150m -Xmx768m -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks -Dhttps.proxyHost=hocs-outbound-proxy.{{.KUBE_NAMESPACE}}.svc.cluster.local -Dhttps.proxyPort=31290 -Dhttp.nonProxyHosts=*.{{.KUBE_NAMESPACE}}.svc.cluster.local'
+              value: '-Xms384m -Xmx1536m -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks -Dhttps.proxyHost=hocs-outbound-proxy.{{.KUBE_NAMESPACE}}.svc.cluster.local -Dhttps.proxyPort=31290 -Dhttp.nonProxyHosts=*.{{.KUBE_NAMESPACE}}.svc.cluster.local'
             - name: JDK_TRUST_FILE
               value: '/etc/keystore/truststore.jks'
             - name: SERVER_PORT
@@ -193,10 +193,10 @@ spec:
                   key: secret_access_key
           resources:
             limits:
-              cpu: 700m
+              cpu: 850m
               memory: 2048Mi
             requests:
-              cpu: 150m
+              cpu: 100m
               memory: 484Mi
           ports:
             - name: http
@@ -218,7 +218,7 @@ spec:
               httpHeaders:
                 - name: X-probe
                   value: kubelet
-            initialDelaySeconds: 300
+            initialDelaySeconds: 240
             periodSeconds: 20
             timeoutSeconds: 10
           volumeMounts:
