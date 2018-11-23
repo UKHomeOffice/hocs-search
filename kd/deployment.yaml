@@ -179,7 +179,7 @@ spec:
                   key: password
             - name: CASE_QUEUE_NAME
               value: {{.KUBE_NAMESPACE}}-case-sqs
-            - name: CASE_DLQ_NAME
+            - name: CASE_QUEUE_DLQ_NAME
               value: {{.KUBE_NAMESPACE}}-case-sqs-dlq
             - name: AWS_SQS_ACCESS_KEY
               valueFrom:
