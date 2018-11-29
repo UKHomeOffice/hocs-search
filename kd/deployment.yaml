@@ -191,6 +191,14 @@ spec:
                 secretKeyRef:
                   name: {{.KUBE_NAMESPACE}}-case-sqs
                   key: secret_access_key
+            - name: AUDITING_DEPLOYMENT_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: AUDITING_DEPLOYMENT_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           resources:
             limits:
               cpu: 850m
