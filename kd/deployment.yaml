@@ -188,15 +188,25 @@ spec:
               value: {{.KUBE_NAMESPACE}}-case-sqs
             - name: CASE_QUEUE_DLQ_NAME
               value: {{.KUBE_NAMESPACE}}-case-sqs-dlq
-            - name: AWS_SQS_ACCESS_KEY
+            - name: CASE_AWS_SQS_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{.KUBE_NAMESPACE}}-case-sqs
                   key: access_key_id
-            - name: AWS_SQS_SECRET_KEY
+            - name: CASE_AWS_SQS_SECRET_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{.KUBE_NAMESPACE}}-case-sqs
+                  key: secret_access_key
+            - name: AUDIT_AWS_SQS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{.KUBE_NAMESPACE}}-reporting-sqs
+                  key: access_key_id
+            - name: AUDIT_AWS_SQS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{.KUBE_NAMESPACE}}-reporting-sqs
                   key: secret_access_key
             - name: AUDITING_DEPLOYMENT_NAME
               valueFrom:
