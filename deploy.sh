@@ -8,21 +8,21 @@ if [[ -z ${VERSION} ]] ; then
 fi
 
 if [[ ${ENVIRONMENT} == "prod" ]] ; then
-    echo "deploy ${VERSION} to PROD namespace, using HOCS_CASEWORK_PROD drone secret"
-    export KUBE_TOKEN=${HOCS_CASEWORK_PROD}
+    echo "deploy ${VERSION} to PROD namespace, using HOCS_SEARCH_PROD drone secret"
+    export KUBE_TOKEN=${HOCS_SEARCH_PROD}
     export REPLICAS="2"
 else
     if [[ ${ENVIRONMENT} == "qa" ]] ; then
-        echo "deploy ${VERSION} to QA namespace, using HOCS_CASEWORK_QA drone secret"
-        export KUBE_TOKEN=${HOCS_CASEWORK_QA}
+        echo "deploy ${VERSION} to QA namespace, using HOCS_SEARCH_QA drone secret"
+        export KUBE_TOKEN=${HOCS_SEARCH_QA}
         export REPLICAS="2"
     elif [[ ${ENVIRONMENT} == "demo" ]] ; then
-        echo "deploy ${VERSION} to DEMO namespace, using HOCS_CASEWORK_DEMO drone secret"
-        export KUBE_TOKEN=${HOCS_CASEWORK_DEMO}
+        echo "deploy ${VERSION} to DEMO namespace, using HOCS_SEARCH_DEMO drone secret"
+        export KUBE_TOKEN=${HOCS_SEARCH_DEMO}
         export REPLICAS="1"
     elif [[ ${ENVIRONMENT} == "dev" ]] ; then
-        echo "deploy ${VERSION} to DEV namespace, using HOCS_CASEWORK_DEV drone secret"
-        export KUBE_TOKEN=${HOCS_CASEWORK_DEV}
+        echo "deploy ${VERSION} to DEV namespace, using HOCS_SEARCH_DEV drone secret"
+        export KUBE_TOKEN=${HOCS_SEARCH_DEV}
         export REPLICAS="1"        
     else
         echo "Unable to find environment: ${ENVIRONMENT}"
