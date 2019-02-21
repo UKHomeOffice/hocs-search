@@ -4,14 +4,14 @@ kind: Deployment
 metadata:
   annotations:
     downscaler/uptime: Mon-Fri 09:00-17:30 Europe/London
-  name: hocs-casework
+  name: hocs-search
   labels:
     version: {{.VERSION}}
 spec:
   replicas: {{.REPLICAS}}
   selector:
     matchLabels:
-      name: hocs-casework
+      name: hocs-search
   strategy:
     rollingUpdate:
       maxUnavailable: 0
@@ -20,7 +20,7 @@ spec:
   template:
     metadata:
       labels:
-        name: hocs-casework
+        name: hocs-search
         role: hocs-backend
         version: {{.VERSION}}
     spec:
@@ -38,7 +38,7 @@ spec:
           args:
             - --certs=/certs
             - --command=/usr/bin/create-keystore.sh /certs/tls.pem /certs/tls-key.pem /etc/ssl/certs/acp-root.crt
-            - --domain=hocs-casework.${KUBE_NAMESPACE}.svc.cluster.local
+            - --domain=hocs-search.${KUBE_NAMESPACE}.svc.cluster.local
             - --domain=localhost
             - --onetime=true
           env:
@@ -65,7 +65,7 @@ spec:
                 - SETGID
           args:
             - --certs=/certs
-            - --domain=hocs-casework.${KUBE_NAMESPACE}.svc.cluster.local
+            - --domain=hocs-search.${KUBE_NAMESPACE}.svc.cluster.local
             - --expiry=8760h
             - --command=/usr/local/scripts/trigger_nginx_reload.sh
           env:
@@ -128,8 +128,8 @@ spec:
           ports:
             - name: https
               containerPort: 10443
-        - name: hocs-casework
-          image: quay.io/ukhomeofficedigital/hocs-casework:{{.VERSION}}
+        - name: hocs-search
+          image: quay.io/ukhomeofficedigital/hocs-search:{{.VERSION}}
           imagePullPolicy: Always
           securityContext:
             runAsNonRoot: true
@@ -151,55 +151,11 @@ spec:
               value: 'false'
             - name: SPRING_PROFILES_ACTIVE
               value: 'sqs'
-            - name: HOCS_INFO_SERVICE
-              value: 'https://hocs-info-service.{{.KUBE_NAMESPACE}}.svc.cluster.local'
             - name: HOCS_BASICAUTH
               valueFrom:
                 secretKeyRef:
                   name: ui-casework-creds
                   key: plaintext
-            - name: DB_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: {{.KUBE_NAMESPACE}}-rds
-                  key: endpoint
-            - name: DB_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: {{.KUBE_NAMESPACE}}-rds
-                  key: port
-            - name: DB_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{.KUBE_NAMESPACE}}-rds
-                  key: db_name
-            - name: DB_SCHEMA_NAME
-              value:
-                'cs_casework_post_wr_004'
-            - name: DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{.KUBE_NAMESPACE}}-rds
-                  key: username
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{.KUBE_NAMESPACE}}-rds
-                  key: password
-            - name: CASE_QUEUE_NAME
-              value: {{.KUBE_NAMESPACE}}-case-sqs
-            - name: CASE_QUEUE_DLQ_NAME
-              value: {{.KUBE_NAMESPACE}}-case-sqs-dlq
-            - name: CASE_AWS_SQS_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{.KUBE_NAMESPACE}}-case-sqs
-                  key: access_key_id
-            - name: CASE_AWS_SQS_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{.KUBE_NAMESPACE}}-case-sqs
-                  key: secret_access_key
             - name: AUDIT_QUEUE_NAME
               value: {{.KUBE_NAMESPACE}}-reporting-sqs
             - name: AUDIT_QUEUE_DLQ_NAME
@@ -221,12 +177,7 @@ spec:
             - name: AUDITING_DEPLOYMENT_NAMESPACE
               valueFrom:
                 fieldRef:
-                  fieldPath: metadata.namespace
-            - name: NOTIFY_APIKEY
-              valueFrom:
-                secretKeyRef:
-                  name: cs-notify
-                  key: api_key                  
+                  fieldPath: metadata.namespace 
           resources:
             limits:
               cpu: 850m
