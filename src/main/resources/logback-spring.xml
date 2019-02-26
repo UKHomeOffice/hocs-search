@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <springProperty scope="context" name="appName" source="info.app.name"/>
+
+    <springProfile name="development">
+        <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+            <layout class="ch.qos.logback.classic.PatternLayout">
+                <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
+            </layout>
+        </appender>
+    </springProfile>
+
+    <springProfile name="!development">
+        <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <includeCallerInfo>true</includeCallerInfo>
+                <fieldNames>
+                    <!-- Do not output the standard message field.  It will be output by the pattern provider below -->
+                    <message>[ignore]</message>
+                </fieldNames>
+                <provider class="net.logstash.logback.composite.loggingevent.LoggingEventPatternJsonProvider">
+                    <pattern>
+                        {
+                        "message": "%replace(%msg){'([A-Za-z]\\s*[A-Za-z]\\s*[0-9]\\s*[0-9]\\s*[0-9]\\s*)[0-9]\\s*[0-9]\\s*[0-9]\\s*[A-Da-d]','$1****'}"
+                        }
+                    </pattern>
+                </provider>
+            </encoder>
+        </appender>
+    </springProfile>
+
+    <logger name="uk.gov" additivity="false" level="INFO">
+        <appender-ref ref="consoleAppender"/>
+    </logger>
+
+    <logger name="org.eclipse.jetty" additivity="false" level="WARN">
+        <appender-ref ref="consoleAppender"/>
+    </logger>
+
+    <logger name="org.flywaydb" additivity="false" level="WARN">
+        <appender-ref ref="consoleAppender"/>
+    </logger>
+
+    <logger name="org.springframework" additivity="false" level="INFO">
+        <appender-ref ref="consoleAppender"/>
+    </logger>
+
+    <logger name="org.apache.camel" additivity="false" level="ERROR">
+        <appender-ref ref="consoleAppender"/>
+    </logger>
+
+    <logger name="org.hibernate" additivity="false" level="WARN">
+        <appender-ref ref="consoleAppender"/>
+    </logger>
+
+    <logger name="com.zaxxer" additivity="false" level="WARN">
+        <appender-ref ref="consoleAppender"/>
+    </logger>
+
+    <logger name="c.amazonaws.services" additivity="false" level="WARN">
+        <appender-ref ref="consoleAppender"/>
+    </logger>
+
+    <root level="WARN">
+        <appender-ref ref="consoleAppender" />
+    </root>
+
+</configuration>
