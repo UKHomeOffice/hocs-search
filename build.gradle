@@ -1,0 +1,68 @@
+buildscript {
+	ext {
+		springBootVersion = '2.1.1.RELEASE'
+		camelVersion = '2.23.0'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'jacoco'
+
+task copyLombok(type: Copy) {
+	outputs.upToDateWhen { false }
+	into "${buildDir}/libs"
+	include "lombok*.jar"
+	from configurations.compileOnly
+}
+
+tasks.withType(JavaCompile) {
+
+    options.fork = true  // Fork your compilation into a child process
+    options.forkOptions.setMemoryMaximumSize("256m")
+}
+
+test {
+    maxHeapSize = "256m"
+}
+
+build.dependsOn(copyLombok)
+
+group = 'uk.gov.digital.ho.hocs'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+	jcenter()
+}
+
+dependencies {
+
+    implementation('org.springframework.boot:spring-boot-starter-web') {
+        exclude(module: 'spring-boot-starter-tomcat')
+    }
+    implementation('org.springframework.boot:spring-boot-starter-undertow')
+    implementation('org.springframework.boot:spring-boot-starter-actuator')
+    implementation('org.springframework.boot:spring-boot-starter-json')
+    implementation('org.springframework.boot:spring-boot-starter-cache')
+    implementation("org.apache.camel:camel-spring-boot-starter:${camelVersion}")
+    implementation('com.github.ben-manes.caffeine:caffeine')
+    implementation('com.amazonaws:aws-java-sdk:1.11.470')
+
+    implementation('net.logstash.logback:logstash-logback-encoder:5.2')
+
+    compileOnly('org.projectlombok:lombok')
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation("org.apache.camel:camel-test-spring:${camelVersion}")
+    testImplementation('org.assertj:assertj-core')
+}

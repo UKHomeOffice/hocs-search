@@ -1,2 +1,3 @@
-# hocs-search
-Hocs search microservice
+# hocs-casework
+hocs caseworking service
+
