@@ -25,6 +25,9 @@ public class CaseDataServiceTest {
     @Mock
     private CaseRepository caseRepository;
 
+    @Mock
+    private CaseData caseData;
+
     private CaseDataService caseDataService;
     private UUID caseUUID = UUID.randomUUID();
     private CreateCaseRequest validCreateCaseRequest = new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", LocalDate.now().plusDays(1), LocalDate.now().plusDays(2));
@@ -40,14 +43,17 @@ public class CaseDataServiceTest {
     @Test
     public void ShouldCallCollaboratorsCreateCase() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(new CaseData(caseUUID)));
+        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(caseData));
 
         caseDataService.createCase(caseUUID, validCreateCaseRequest);
 
         verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(any(CaseData.class));
+        verify(caseRepository, times(1)).save(caseData);
+
+        verify(caseData, times(1)).create(validCreateCaseRequest);
 
         verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(caseData);
     }
 
     @Test
@@ -66,14 +72,17 @@ public class CaseDataServiceTest {
     @Test
     public void ShouldCallCollaboratorsUpdateCase() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(new CaseData(caseUUID)));
+        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(caseData));
 
         caseDataService.updateCase(caseUUID, validUpdateCaseRequest);
 
         verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(any(CaseData.class));
+        verify(caseRepository, times(1)).save(caseData);
+
+        verify(caseData, times(1)).update(validUpdateCaseRequest);
 
         verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(caseData);
     }
 
     @Test
@@ -92,14 +101,17 @@ public class CaseDataServiceTest {
     @Test
     public void ShouldCallCollaboratorsDeleteCase() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(new CaseData(caseUUID)));
+        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(caseData));
 
         caseDataService.deleteCase(caseUUID);
 
         verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(any(CaseData.class));
+        verify(caseRepository, times(1)).save(caseData);
+
+        verify(caseData, times(1)).delete();
 
         verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(caseData);
     }
 
     @Test
@@ -118,14 +130,17 @@ public class CaseDataServiceTest {
     @Test
     public void ShouldCallCollaboratorsCreateCorrespondent() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(new CaseData(caseUUID)));
+        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(caseData));
 
         caseDataService.createCorrespondent(caseUUID, validCreateCorrespondentRequest);
 
         verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(any(CaseData.class));
+        verify(caseRepository, times(1)).save(caseData);
+
+        verify(caseData, times(1)).addCorrespondent(validCreateCorrespondentRequest);
 
         verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(caseData);
     }
 
     @Test
@@ -144,14 +159,17 @@ public class CaseDataServiceTest {
     @Test
     public void ShouldCallCollaboratorsDeleteCorrespondent() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(new CaseData(caseUUID)));
+        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(caseData));
 
         caseDataService.deleteCorrespondent(caseUUID, validCreateCorrespondentRequest.getUuid());
 
         verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(any(CaseData.class));
+        verify(caseRepository, times(1)).save(caseData);
+
+        verify(caseData, times(1)).removeCorrespondent(validCreateCorrespondentRequest.getUuid());
 
         verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(caseData);
     }
 
     @Test
@@ -170,14 +188,17 @@ public class CaseDataServiceTest {
     @Test
     public void ShouldCallCollaboratorsCreateTopic() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(new CaseData(caseUUID)));
+        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(caseData));
 
         caseDataService.createTopic(caseUUID, validTopic.getUuid());
 
         verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(any(CaseData.class));
+        verify(caseRepository, times(1)).save(caseData);
+
+        verify(caseData, times(1)).addTopic(any(Topic.class));
 
         verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(caseData);
     }
 
     @Test
@@ -196,14 +217,17 @@ public class CaseDataServiceTest {
     @Test
     public void ShouldCallCollaboratorsDeleteTopic() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(new CaseData(caseUUID)));
+        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(caseData));
 
         caseDataService.deleteTopic(caseUUID, validTopic.getUuid());
 
         verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(any(CaseData.class));
+        verify(caseRepository, times(1)).save(caseData);
+
+        verify(caseData, times(1)).removeTopic(validTopic.getUuid());
 
         verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(caseData);
     }
 
     @Test
