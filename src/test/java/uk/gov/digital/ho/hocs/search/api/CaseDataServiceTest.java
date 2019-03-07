@@ -9,8 +9,8 @@ import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
 import uk.gov.digital.ho.hocs.search.domain.repository.CaseRepository;
-import uk.gov.digital.ho.hocs.search.domain.repository.model.CaseData;
-import uk.gov.digital.ho.hocs.search.domain.repository.model.Topic;
+import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.search.domain.model.Topic;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
