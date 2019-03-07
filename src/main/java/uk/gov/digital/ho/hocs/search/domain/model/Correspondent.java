@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.search.domain.repository.model;
+package uk.gov.digital.ho.hocs.search.domain.model;
 
 import lombok.Getter;
 import org.springframework.data.annotation.Id;

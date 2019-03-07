@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.search.domain.repository.model;
+package uk.gov.digital.ho.hocs.search.domain.model;
 
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
