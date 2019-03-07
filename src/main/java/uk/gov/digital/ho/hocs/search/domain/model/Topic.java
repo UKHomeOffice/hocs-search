@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.search.domain.repository.model;
+package uk.gov.digital.ho.hocs.search.domain.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

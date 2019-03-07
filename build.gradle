@@ -52,10 +52,10 @@ dependencies {
     }
     implementation('org.springframework.boot:spring-boot-starter-undertow')
     implementation('org.springframework.boot:spring-boot-starter-actuator')
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
     implementation('org.springframework.boot:spring-boot-starter-json')
     implementation('org.springframework.boot:spring-boot-starter-cache')
     implementation("org.apache.camel:camel-spring-boot-starter:${camelVersion}")
-    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
     implementation('com.amazonaws:aws-java-sdk:1.11.470')
 
     implementation('net.logstash.logback:logstash-logback-encoder:5.2')
