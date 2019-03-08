@@ -17,6 +17,19 @@ public interface ApplicationExceptions {
         }
     }
 
+    class EntityNotFoundException extends RuntimeException {
+        private final LogEvent event;
+
+        public EntityNotFoundException(String msg, LogEvent event, Object... args) {
+            super(String.format(msg, args));
+            this.event = event;
+        }
+
+        public LogEvent getEvent() {
+            return event;
+        }
+    }
+
     class ResourceNotFoundException extends ResourceException {
 
         public ResourceNotFoundException(String msg, LogEvent event, Object... args) {
