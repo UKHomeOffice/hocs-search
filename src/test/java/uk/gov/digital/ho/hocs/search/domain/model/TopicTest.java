@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.search.domain.model;
 
 import org.junit.Test;
+import uk.gov.digital.ho.hocs.search.client.infoclient.InfoTopic;
 
 import java.util.UUID;
 
@@ -13,10 +14,10 @@ public class TopicTest {
         UUID uuid = UUID.randomUUID();
         String value = "VALUE";
 
-        Topic topic = new Topic(uuid, value);
+        Topic topic = Topic.from(new InfoTopic(value, uuid));
 
         assertThat(topic.getUuid()).isEqualTo(uuid);
-        assertThat(topic.getValue()).isEqualTo(value);
+        assertThat(topic.getText()).isEqualTo(value);
     }
 
 }
