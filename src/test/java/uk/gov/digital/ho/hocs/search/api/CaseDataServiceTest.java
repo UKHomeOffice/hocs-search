@@ -8,6 +8,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
+import uk.gov.digital.ho.hocs.search.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.search.client.infoclient.InfoTopic;
 import uk.gov.digital.ho.hocs.search.domain.repository.CaseRepository;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.Topic;
@@ -28,16 +30,20 @@ public class CaseDataServiceTest {
     @Mock
     private CaseData caseData;
 
+    @Mock
+    private InfoClient infoClient;
+
     private CaseDataService caseDataService;
     private UUID caseUUID = UUID.randomUUID();
     private CreateCaseRequest validCreateCaseRequest = new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", LocalDate.now().plusDays(1), LocalDate.now().plusDays(2));
     private UpdateCaseRequest validUpdateCaseRequest = new UpdateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", UUID.randomUUID(), UUID.randomUUID(), LocalDate.now().plusDays(1), LocalDate.now().plusDays(2));
     private CreateCorrespondentRequest validCreateCorrespondentRequest = new CreateCorrespondentRequest(UUID.randomUUID(), LocalDateTime.now(), "LAW", "FULLNAME", null, "0", "e", "REF");
-    private Topic validTopic = new Topic(UUID.randomUUID(), "VALUE");
+    private InfoTopic validInfoTopic = new InfoTopic("VALUE",UUID.randomUUID());
+    private Topic validTopic = Topic.from(validInfoTopic);
 
     @Before
     public void setup(){
-        caseDataService = new CaseDataService(caseRepository);
+        caseDataService = new CaseDataService(caseRepository, infoClient);
     }
 
     @Test
@@ -189,29 +195,38 @@ public class CaseDataServiceTest {
     public void ShouldCallCollaboratorsCreateTopic() {
 
         when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(caseData));
+        when(infoClient.getTopic(validTopic.getUuid())).thenReturn(validInfoTopic);
 
         caseDataService.createTopic(caseUUID, validTopic.getUuid());
 
         verify(caseRepository, times(1)).findById(caseUUID);
         verify(caseRepository, times(1)).save(caseData);
+        verify(infoClient,times(1)).getTopic(validTopic.getUuid());
+
 
         verify(caseData, times(1)).addTopic(any(Topic.class));
 
         verifyNoMoreInteractions(caseRepository);
         verifyNoMoreInteractions(caseData);
+        verifyNoMoreInteractions(infoClient);
     }
 
     @Test
     public void ShouldCreateNewIfNotFoundCreateTopic() {
 
         when(caseRepository.findById(caseUUID)).thenReturn(Optional.empty());
+        when(infoClient.getTopic(validTopic.getUuid())).thenReturn(validInfoTopic);
 
         caseDataService.createTopic(caseUUID, validTopic.getUuid());
 
         verify(caseRepository, times(1)).findById(caseUUID);
         verify(caseRepository, times(1)).save(any(CaseData.class));
+        verify(infoClient,times(1)).getTopic(validTopic.getUuid());
+
 
         verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(infoClient);
+
     }
 
     @Test
