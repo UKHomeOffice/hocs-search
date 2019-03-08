@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
+import uk.gov.digital.ho.hocs.search.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.search.client.infoclient.InfoTopic;
 import uk.gov.digital.ho.hocs.search.domain.repository.CaseRepository;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.Topic;
@@ -19,9 +21,12 @@ public class CaseDataService {
 
     private final CaseRepository caseDataRepository;
 
+    private final InfoClient infoClient;
+
     @Autowired
-    public CaseDataService(CaseRepository caseDataRepository) {
+    public CaseDataService(CaseRepository caseDataRepository, InfoClient infoClient) {
         this.caseDataRepository = caseDataRepository;
+        this.infoClient = infoClient;
     }
 
     void createCase(UUID caseUUID, CreateCaseRequest createCaseRequest) {
@@ -67,10 +72,8 @@ public class CaseDataService {
     void createTopic(UUID caseUUID, UUID topicUUID) {
         log.debug("Adding topic %s to case %s", topicUUID, caseUUID);
         CaseData caseData = getCaseData(caseUUID);
-        // TODO: info service lookup.
-        String value = "";
-        Topic topic = new Topic(topicUUID, value);
-        caseData.addTopic(topic);
+        InfoTopic infoTopic = infoClient.getTopic(topicUUID);
+        caseData.addTopic(Topic.from(infoTopic));
         caseDataRepository.save(caseData);
         log.debug("Added topic %s to case %s", topicUUID, caseUUID);
     }
