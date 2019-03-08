@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.search.aws;
+package uk.gov.digital.ho.hocs.search.application.aws;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.BasicAWSCredentials;
