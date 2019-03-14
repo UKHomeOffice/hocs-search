@@ -24,20 +24,28 @@ public class CaseData {
     @Id
     private UUID caseUUID;
 
+    @Field(type = FieldType.Date)
     private LocalDateTime created;
 
+    @Field(type = FieldType.Keyword)
     private String type;
 
+    @Field(type = FieldType.Keyword)
     private String reference;
 
+    @Field(type = FieldType.Keyword)
     private UUID primaryTopic;
 
+    @Field(type = FieldType.Keyword)
     private UUID primaryCorrespondent;
 
+    @Field(type = FieldType.Date)
     private LocalDate caseDeadline;
 
+    @Field(type = FieldType.Date)
     private LocalDate dateReceived;
 
+    @Field(type = FieldType.Boolean)
     private Boolean deleted = false;
 
     @Field(type = FieldType.Nested, includeInParent = true)
