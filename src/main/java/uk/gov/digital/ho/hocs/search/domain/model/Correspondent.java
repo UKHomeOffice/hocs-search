@@ -1,52 +1,56 @@
 package uk.gov.digital.ho.hocs.search.domain.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import uk.gov.digital.ho.hocs.search.api.dto.AddressDto;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Document(indexName = "case", type = "caseData")
+@NoArgsConstructor
+@Getter
+@Document(indexName = "correspondent", type = "correspondent")
 public class Correspondent {
 
     @Id
-    @Getter
     private UUID uuid;
 
-    @Getter
+    @Field(type = FieldType.Date)
     private LocalDateTime created;
 
-    @Getter
+    @Field(type = FieldType.Keyword)
     private String type;
 
-    @Getter
+    @Field(type = FieldType.Text)
     private String fullname;
 
-    @Getter
+    @Field(type = FieldType.Text)
     private String postcode;
 
-    @Getter
+    @Field(type = FieldType.Text)
     private String address1;
 
-    @Getter
+    @Field(type = FieldType.Text)
     private String address2;
 
-    @Getter
+    @Field(type = FieldType.Text)
     private String address3;
 
-    @Getter
+    @Field(type = FieldType.Text)
     private String country;
 
-    @Getter
+    @Field(type = FieldType.Text)
     private String telephone;
 
-    @Getter
+    @Field(type = FieldType.Keyword)
     private String email;
 
-    @Getter
+    @Field(type = FieldType.Keyword)
     private String reference;
 
     private Correspondent(CreateCorrespondentRequest createCorrespondentRequest) {
