@@ -33,7 +33,7 @@ public class CaseDataService {
         this.elasticsearchTemplate = elasticsearchTemplate;
     }
 
-    void createCase(UUID caseUUID, CreateCaseRequest createCaseRequest) {
+    public void createCase(UUID caseUUID, CreateCaseRequest createCaseRequest) {
         log.debug("Creating case {}", caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.create(createCaseRequest);
@@ -41,7 +41,7 @@ public class CaseDataService {
         log.debug("Created case {}", caseUUID);
     }
 
-    void updateCase(UUID caseUUID, UpdateCaseRequest updateCaseRequest) {
+    public void updateCase(UUID caseUUID, UpdateCaseRequest updateCaseRequest) {
         log.debug("Updating case {}", caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.update(updateCaseRequest);
@@ -49,7 +49,7 @@ public class CaseDataService {
         log.debug("Updated case {}", caseUUID);
     }
 
-    void deleteCase(UUID caseUUID) {
+    public void deleteCase(UUID caseUUID) {
         log.debug("Deleting case {}", caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.delete();
@@ -57,7 +57,7 @@ public class CaseDataService {
         log.debug("Deleted case {}", caseUUID);
     }
 
-    void createCorrespondent(UUID caseUUID, CreateCorrespondentRequest createCorrespondentRequest) {
+    public void createCorrespondent(UUID caseUUID, CreateCorrespondentRequest createCorrespondentRequest) {
         log.debug("Adding correspondent {} to case {}", createCorrespondentRequest.getUuid(), caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.addCorrespondent(createCorrespondentRequest);
@@ -65,7 +65,7 @@ public class CaseDataService {
         log.debug("Added correspondent {} to case {}", createCorrespondentRequest.getUuid(), caseUUID);
     }
 
-    void deleteCorrespondent(UUID caseUUID, UUID correspondentUUID) {
+    public void deleteCorrespondent(UUID caseUUID, UUID correspondentUUID) {
         log.debug("Deleting correspondent {} from case {}", correspondentUUID, caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.removeCorrespondent(correspondentUUID);
@@ -73,7 +73,7 @@ public class CaseDataService {
         log.debug("Deleted correspondent {} from case {}", correspondentUUID, caseUUID);
     }
 
-    void createTopic(UUID caseUUID, UUID topicUUID) {
+    public void createTopic(UUID caseUUID, UUID topicUUID) {
         log.debug("Adding topic {} to case {}", topicUUID, caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         InfoTopic infoTopic = infoClient.getTopic(topicUUID);
@@ -82,7 +82,7 @@ public class CaseDataService {
         log.debug("Added topic {} to case {}", topicUUID, caseUUID);
     }
 
-    void deleteTopic(UUID caseUUID, UUID topicUUID) {
+    public void deleteTopic(UUID caseUUID, UUID topicUUID) {
         log.debug("Deleting topic {} from case {}", topicUUID, caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.removeTopic(topicUUID);
