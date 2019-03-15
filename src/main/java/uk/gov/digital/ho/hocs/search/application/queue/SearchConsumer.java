@@ -94,6 +94,7 @@ public class SearchConsumer extends RouteBuilder {
                 .otherwise()
                 //.throwException(new ApplicationExceptions.MalwareCheckException("Malware check failed", LogEvent.DOCUMENT_VIRUS_SCAN_FAILURE))
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE))
+                .endChoice()
                 .end()
                 .log("Command processed");
 
@@ -132,9 +133,6 @@ public class SearchConsumer extends RouteBuilder {
     }
 
     private Processor createPayload() {
-        return exchange -> {
-            exchange.getOut().setBody(exchange.getProperty("payload"));
-        };
-
+        return exchange -> exchange.getOut().setBody(exchange.getProperty("payload"));
     }
 }
