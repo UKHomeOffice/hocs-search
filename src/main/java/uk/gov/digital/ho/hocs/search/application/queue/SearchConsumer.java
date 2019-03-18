@@ -66,33 +66,35 @@ public class SearchConsumer extends RouteBuilder {
                 .setProperty(SqsConstants.RECEIPT_HANDLE, header(SqsConstants.RECEIPT_HANDLE))
                 .process(transferHeadersToMDC())
                 .log("Command received: ${body}")
+                .unmarshal().json(JsonLibrary.Jackson, CreateAuditDto.class)
                 .setProperty("caseUUID", simple("${body.caseUUID}"))
-                .setProperty("payLoad", simple("${body.auditPayload}"))
+                .setProperty("payLoad", simple("${body.data}"))
+                .setProperty("type", simple("${body.type}"))
                 .process(createPayload())
                 .choice()
-                .when(simple("${body.type} == '" + EventType.CASE_CREATED + "'"))
+                .when(simple("${property.type} == '" + EventType.CASE_CREATED + "'"))
                 .to(CREATE_CASE_QUEUE)
                 .endChoice()
-                .when(simple("${body.type} == '" + EventType.CASE_UPDATED + "'"))
+                .when(simple("${property.type} == '" + EventType.CASE_UPDATED + "'"))
                 .to(UPDATE_CASE_QUEUE)
                 .endChoice()
-                .when(simple("${body.type} == '" + EventType.CASE_DELETED + "'"))
+                .when(simple("${property.type} == '" + EventType.CASE_DELETED + "'"))
                 .to(DELETE_CASE_QUEUE)
                 .endChoice()
-                .when(simple("${body.type} == '" + EventType.CORRESPONDENT_CREATED + "'"))
+                .when(simple("${property.type} == '" + EventType.CORRESPONDENT_CREATED + "'"))
                 .to(CREATE_CORRESPONDENT_QUEUE)
                 .endChoice()
-                .when(simple("${body.type} == '" + EventType.CORRESPONDENT_DELETED + "'"))
+                .when(simple("${property.type} == '" + EventType.CORRESPONDENT_DELETED + "'"))
                 .to(DELETE_CORRESPONDENT_QUEUE)
                 .endChoice()
-                .when(simple("${body.type} == '" + EventType.CASE_TOPIC_CREATED + "'"))
+                .when(simple("${property.type} == '" + EventType.CASE_TOPIC_CREATED + "'"))
                 .to(CREATE_TOPIC_QUEUE)
                 .endChoice()
-                .when(simple("${body.type} == '" + EventType.CASE_TOPIC_DELETED + "'"))
+                .when(simple("${property.type} == '" + EventType.CASE_TOPIC_DELETED + "'"))
                 .to(DELETE_TOPIC_QUEUE)
                 .endChoice()
                 .otherwise()
-                //.throwException(new ApplicationExceptions.MalwareCheckException("Malware check failed", LogEvent.DOCUMENT_VIRUS_SCAN_FAILURE))
+                .log("Ignoring Message ${property.type}")
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE))
                 .endChoice()
                 .end()
@@ -128,11 +130,9 @@ public class SearchConsumer extends RouteBuilder {
         from(DELETE_TOPIC_QUEUE)
                 .bean(caseDataService, "deleteTopic(${property.caseUUID}, ${body})")
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
-
-
     }
 
     private Processor createPayload() {
-        return exchange -> exchange.getOut().setBody(exchange.getProperty("payload"));
+        return exchange -> exchange.getOut().setBody(exchange.getProperty("payLoad"));
     }
 }
