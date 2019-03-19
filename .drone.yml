@@ -5,8 +5,8 @@ pipeline:
     commands:
       - export SPRING_PROFILES_ACTIVE='development, local'
       - export SERVER_PORT='8080'
-      - export CASE_QUEUE_NAME='case-queue'
-      - export CASE_QUEUE_DLQ_NAME='case-queue-dlq'
+      - export CASE_QUEUE_NAME='search-queue'
+      - export CASE_QUEUE_DLQ_NAME='search-queue-dlq'
       - export DB_HOST='postgres'
       - export AWS_LOCAL_HOST='localstack'
       - ./gradlew cleanTest build --no-daemon --max-workers 2
@@ -36,10 +36,10 @@ pipeline:
       - docker_password
     commands:
       - docker login -u="ukhomeofficedigital+hocs" -p=$${DOCKER_PASSWORD} quay.io
-      - docker tag hocs-search quay.io/ukhomeofficedigital/hocs-casework:build-$${DRONE_BUILD_NUMBER}
-      - docker tag hocs-search quay.io/ukhomeofficedigital/hocs-casework:latest
-      - docker push quay.io/ukhomeofficedigital/hocs-casework:build-$${DRONE_BUILD_NUMBER}
-      - docker push quay.io/ukhomeofficedigital/hocs-casework:latest
+      - docker tag hocs-search quay.io/ukhomeofficedigital/hocs-search:build-$${DRONE_BUILD_NUMBER}
+      - docker tag hocs-search quay.io/ukhomeofficedigital/hocs-search:latest
+      - docker push quay.io/ukhomeofficedigital/hocs-search:build-$${DRONE_BUILD_NUMBER}
+      - docker push quay.io/ukhomeofficedigital/hocs-search:latest
     when:
       branch: [master]
       event: push
@@ -53,7 +53,7 @@ pipeline:
       - github_password
       - docker_password
     commands:
-      - /app/hocs-deploy --version=$${SEMVER} --service=hocs-casework --gitToken=$${GITHUB_PASSWORD} --gitRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git" --environment=qa --dockerRepository=quay.io/ukhomeofficedigital --sourceBuild=$${IMAGE_VERSION} --registryUser=ukhomeofficedigital+hocs --registryPassword=$${DOCKER_PASSWORD}
+      - /app/hocs-deploy --version=$${SEMVER} --service=hocs-search --gitToken=$${GITHUB_PASSWORD} --gitRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git" --environment=qa --dockerRepository=quay.io/ukhomeofficedigital --sourceBuild=$${IMAGE_VERSION} --registryUser=ukhomeofficedigital+hocs --registryPassword=$${DOCKER_PASSWORD}
     when:
       event: deployment
       environment: qa
@@ -61,7 +61,7 @@ pipeline:
   clone-kube-project:
     image: plugins/git
     commands:
-      - git clone https://github.com/UKHomeOffice/kube-hocs-casework.git
+      - git clone https://github.com/UKHomeOffice/kube-hocs-search.git
     when:
       event: [push, tag, deployment]
 
@@ -76,7 +76,7 @@ pipeline:
     commands:
       - source version.txt
       - echo $VERSION
-      - cd kube-hocs-casework
+      - cd kube-hocs-search
       - ./deploy.sh
     when:
       event: deployment
@@ -90,9 +90,9 @@ pipeline:
       - VERSION=build-${DRONE_BUILD_NUMBER}
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_casework_dev
+      - hocs_search_dev
     commands:
-      - cd kube-hocs-casework
+      - cd kube-hocs-search
       - ./deploy.sh
     when:
       branch: master
@@ -105,11 +105,11 @@ pipeline:
       - ENVIRONMENT=${DRONE_DEPLOY_TO}
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_casework_dev
-      - hocs_casework_demo
-      - hocs_casework_qa
+      - hocs_search_dev
+      - hocs_search_demo
+      - hocs_search_qa
     commands:
-      - cd kube-hocs-casework
+      - cd kube-hocs-search
       - ./deploy.sh
     when:
       event: deployment
@@ -123,9 +123,9 @@ pipeline:
       - VERSION=${IMAGE_VERSION}
       - KUBE_SERVER=https://kube-api-prod.prod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_casework_prod
+      - hocs_search_prod
     commands:
-      - cd kube-hocs-casework
+      - cd kube-hocs-search
       - ./deploy.sh
     when:
       event: deployment
