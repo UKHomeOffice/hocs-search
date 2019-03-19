@@ -1,9 +1,9 @@
 FROM quay.io/ukhomeofficedigital/openjdk11
 
-ENV USER user_hocs_casework
+ENV USER user_hocs_search
 ENV USER_ID 1000
-ENV GROUP group_hocs_casework
-ENV NAME hocs-casework
+ENV GROUP group_hocs_search
+ENV NAME hocs-search
 ENV JAR_PATH build/libs
 
 RUN yum update -y glibc && \
