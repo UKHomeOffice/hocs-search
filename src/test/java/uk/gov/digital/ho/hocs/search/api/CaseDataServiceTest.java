@@ -9,6 +9,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
+import uk.gov.digital.ho.hocs.search.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoTopic;
 import uk.gov.digital.ho.hocs.search.domain.repository.CaseRepository;
@@ -35,6 +36,9 @@ public class CaseDataServiceTest {
     private InfoClient infoClient;
 
     @Mock
+    private AuditClient auditClient;
+
+    @Mock
     private ElasticsearchTemplate elasticsearchTemplate;
 
     private CaseDataService caseDataService;
@@ -47,7 +51,7 @@ public class CaseDataServiceTest {
 
     @Before
     public void setup(){
-        caseDataService = new CaseDataService(caseRepository, infoClient, elasticsearchTemplate, 10);
+        caseDataService = new CaseDataService(caseRepository, infoClient, auditClient, elasticsearchTemplate, 10);
     }
 
     @Test
@@ -64,6 +68,7 @@ public class CaseDataServiceTest {
 
         verifyNoMoreInteractions(caseRepository);
         verifyNoMoreInteractions(caseData);
+        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -77,6 +82,7 @@ public class CaseDataServiceTest {
         verify(caseRepository, times(1)).save(any(CaseData.class));
 
         verifyNoMoreInteractions(caseRepository);
+        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -93,6 +99,7 @@ public class CaseDataServiceTest {
 
         verifyNoMoreInteractions(caseRepository);
         verifyNoMoreInteractions(caseData);
+        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -106,6 +113,7 @@ public class CaseDataServiceTest {
         verify(caseRepository, times(1)).save(any(CaseData.class));
 
         verifyNoMoreInteractions(caseRepository);
+        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -122,6 +130,7 @@ public class CaseDataServiceTest {
 
         verifyNoMoreInteractions(caseRepository);
         verifyNoMoreInteractions(caseData);
+        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -135,6 +144,7 @@ public class CaseDataServiceTest {
         verify(caseRepository, times(1)).save(any(CaseData.class));
 
         verifyNoMoreInteractions(caseRepository);
+        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -151,6 +161,7 @@ public class CaseDataServiceTest {
 
         verifyNoMoreInteractions(caseRepository);
         verifyNoMoreInteractions(caseData);
+        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -164,6 +175,7 @@ public class CaseDataServiceTest {
         verify(caseRepository, times(1)).save(any(CaseData.class));
 
         verifyNoMoreInteractions(caseRepository);
+        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -180,6 +192,7 @@ public class CaseDataServiceTest {
 
         verifyNoMoreInteractions(caseRepository);
         verifyNoMoreInteractions(caseData);
+        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -193,6 +206,7 @@ public class CaseDataServiceTest {
         verify(caseRepository, times(1)).save(any(CaseData.class));
 
         verifyNoMoreInteractions(caseRepository);
+        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -213,6 +227,7 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(caseRepository);
         verifyNoMoreInteractions(caseData);
         verifyNoMoreInteractions(infoClient);
+        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -230,7 +245,7 @@ public class CaseDataServiceTest {
 
         verifyNoMoreInteractions(caseRepository);
         verifyNoMoreInteractions(infoClient);
-
+        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -247,6 +262,7 @@ public class CaseDataServiceTest {
 
         verifyNoMoreInteractions(caseRepository);
         verifyNoMoreInteractions(caseData);
+        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -260,5 +276,6 @@ public class CaseDataServiceTest {
         verify(caseRepository, times(1)).save(any(CaseData.class));
 
         verifyNoMoreInteractions(caseRepository);
+        verifyZeroInteractions(auditClient);
     }
 }
