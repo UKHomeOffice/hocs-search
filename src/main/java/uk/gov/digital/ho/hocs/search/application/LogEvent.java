@@ -8,6 +8,6 @@ public enum LogEvent {
     REST_HELPER_MALFORMED_RESPONSE,
     INFO_CLIENT_GET_TOPIC_SUCCESS,
     INFO_CLIENT_GET_TOPIC_FAILURE,
-    CACHE_PRIME_FAILED;
+    UNCAUGHT_EXCEPTION;
     public static final String EVENT = "event_id";
 }
