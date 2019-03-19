@@ -160,12 +160,12 @@ spec:
               value: {{.KUBE_NAMESPACE}}-search-sqs
             - name: SEARCH_QUEUE_DLQ_NAME
               value: {{.KUBE_NAMESPACE}}-search-sqs-dlq
-            - name: SEARCH_AWS_SQS_ACCESS_KEY
+            - name: AWS_SQS_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{.KUBE_NAMESPACE}}-search-sqs
                   key: access_key_id
-            - name: SEARCH_AWS_SQS_SECRET_KEY
+            - name: AWS_SQS_SECRET_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{.KUBE_NAMESPACE}}-search-sqs
