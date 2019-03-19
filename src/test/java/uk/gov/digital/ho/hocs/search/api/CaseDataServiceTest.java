@@ -47,7 +47,7 @@ public class CaseDataServiceTest {
 
     @Before
     public void setup(){
-        caseDataService = new CaseDataService(caseRepository, infoClient, elasticsearchTemplate);
+        caseDataService = new CaseDataService(caseRepository, infoClient, elasticsearchTemplate, 10);
     }
 
     @Test
