@@ -3,6 +3,8 @@ package uk.gov.digital.ho.hocs.search.api;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
@@ -26,11 +28,14 @@ public class CaseDataService {
 
     private final ElasticsearchTemplate elasticsearchTemplate;
 
+    private final int resultsLimit;
+
     @Autowired
-    public CaseDataService(CaseRepository caseDataRepository, InfoClient infoClient, ElasticsearchTemplate elasticsearchTemplate) {
+    public CaseDataService(CaseRepository caseDataRepository, InfoClient infoClient, ElasticsearchTemplate elasticsearchTemplate, @Value("${elastic.results.limit}") int resultsLimit) {
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
         this.elasticsearchTemplate = elasticsearchTemplate;
+        this.resultsLimit = resultsLimit;
     }
 
     public void createCase(UUID caseUUID, CreateCaseRequest createCaseRequest) {
@@ -101,8 +106,7 @@ public class CaseDataService {
         hocsQueryBuilder.activeOnlyFlag(request.getActiveOnly());
 
         NativeSearchQuery query =  new NativeSearchQueryBuilder().withFilter(hocsQueryBuilder.build()).build();
-
-        List<String> caseUUIDs = elasticsearchTemplate.queryForIds(query);
+        List<String> caseUUIDs = elasticsearchTemplate.queryForIds(query.setPageable(PageRequest.of(0, resultsLimit)));
         log.debug("Results {}", caseUUIDs.size());
         return caseUUIDs;
     }
