@@ -10,6 +10,7 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.search.api.dto.*;
+import uk.gov.digital.ho.hocs.search.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoTopic;
 import uk.gov.digital.ho.hocs.search.domain.repository.CaseRepository;
@@ -26,14 +27,17 @@ public class CaseDataService {
 
     private final InfoClient infoClient;
 
+    private final AuditClient auditClient;
+
     private final ElasticsearchTemplate elasticsearchTemplate;
 
     private final int resultsLimit;
 
     @Autowired
-    public CaseDataService(CaseRepository caseDataRepository, InfoClient infoClient, ElasticsearchTemplate elasticsearchTemplate, @Value("${elastic.results.limit}") int resultsLimit) {
+    public CaseDataService(CaseRepository caseDataRepository, InfoClient infoClient, AuditClient auditClient, ElasticsearchTemplate elasticsearchTemplate, @Value("${elastic.results.limit}") int resultsLimit) {
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
+        this.auditClient = auditClient;
         this.elasticsearchTemplate = elasticsearchTemplate;
         this.resultsLimit = resultsLimit;
     }
@@ -108,6 +112,7 @@ public class CaseDataService {
         NativeSearchQuery query =  new NativeSearchQueryBuilder().withFilter(hocsQueryBuilder.build()).build();
         List<String> caseUUIDs = elasticsearchTemplate.queryForIds(query.setPageable(PageRequest.of(0, resultsLimit)));
         log.debug("Results {}", caseUUIDs.size());
+        auditClient.performSearch(request);
         return caseUUIDs;
     }
 
