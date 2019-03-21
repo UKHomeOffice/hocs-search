@@ -5,6 +5,7 @@ import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.http.AWSRequestSigningApacheInterceptor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
 import org.elasticsearch.client.RestClient;
@@ -14,15 +15,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+@Slf4j
 @Configuration
 @Profile({"awselastic"})
 public class AwsElasticSearchConfiguration {
 
   @Value("${elasticsearch.host}")
   private String host;
-
-  @Value("${elasticsearch.port}")
-  private int port;
 
   @Value("${elasticsearch.serviceName}")
   private String serviceName;
@@ -48,6 +47,10 @@ public class AwsElasticSearchConfiguration {
     HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(serviceName, signer, credentialsProvider);
 
     HttpHost httpHost = HttpHost.create(String.format("https://%s",host));
+    log.info("Host: {}", httpHost.toString());
+    log.info("Region: {}", region);
+    log.info("Access: {}", accessKey.length());
+    log.info("Secret: {}", secretKey.length());
     return new RestHighLevelClient(RestClient.builder(httpHost).setHttpClientConfigCallback(hacb -> hacb.addInterceptorLast(interceptor)));
 
   }
