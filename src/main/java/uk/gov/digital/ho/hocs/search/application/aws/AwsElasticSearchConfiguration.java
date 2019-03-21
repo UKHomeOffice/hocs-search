@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile({"awses"})
+@Profile({"awselastic"})
 public class AwsElasticSearchConfiguration {
 
   @Value("${elasticsearch.host}")
