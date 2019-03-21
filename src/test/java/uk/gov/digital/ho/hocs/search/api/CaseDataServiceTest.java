@@ -89,7 +89,7 @@ public class CaseDataServiceTest {
         caseDataService.updateCase(caseUUID, validUpdateCaseRequest);
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).save(caseData);
+        verify(elasticSearchClient, times(1)).update(caseData);
 
         verify(caseData, times(1)).update(validUpdateCaseRequest);
 
@@ -106,7 +106,7 @@ public class CaseDataServiceTest {
         caseDataService.updateCase(caseUUID, validUpdateCaseRequest);
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).save(any(CaseData.class));
+        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyZeroInteractions(auditClient);
@@ -120,7 +120,7 @@ public class CaseDataServiceTest {
         caseDataService.deleteCase(caseUUID);
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).save(caseData);
+        verify(elasticSearchClient, times(1)).update(caseData);
 
         verify(caseData, times(1)).delete();
 
@@ -137,7 +137,7 @@ public class CaseDataServiceTest {
         caseDataService.deleteCase(caseUUID);
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).save(any(CaseData.class));
+        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyZeroInteractions(auditClient);
@@ -151,7 +151,7 @@ public class CaseDataServiceTest {
         caseDataService.createCorrespondent(caseUUID, validCreateCorrespondentRequest);
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).save(caseData);
+        verify(elasticSearchClient, times(1)).update(caseData);
 
         verify(caseData, times(1)).addCorrespondent(validCreateCorrespondentRequest);
 
@@ -168,7 +168,7 @@ public class CaseDataServiceTest {
         caseDataService.createCorrespondent(caseUUID, validCreateCorrespondentRequest);
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).save(any(CaseData.class));
+        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyZeroInteractions(auditClient);
@@ -182,7 +182,7 @@ public class CaseDataServiceTest {
         caseDataService.deleteCorrespondent(caseUUID, validCreateCorrespondentRequest.getUuid());
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).save(caseData);
+        verify(elasticSearchClient, times(1)).update(caseData);
 
         verify(caseData, times(1)).removeCorrespondent(validCreateCorrespondentRequest.getUuid());
 
@@ -199,7 +199,7 @@ public class CaseDataServiceTest {
         caseDataService.deleteCorrespondent(caseUUID, validCreateCorrespondentRequest.getUuid());
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).save(any(CaseData.class));
+        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyZeroInteractions(auditClient);
@@ -214,7 +214,7 @@ public class CaseDataServiceTest {
         caseDataService.createTopic(caseUUID, validTopic.getUuid());
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).save(caseData);
+        verify(elasticSearchClient, times(1)).update(caseData);
         verify(infoClient,times(1)).getTopic(validTopic.getUuid());
 
 
@@ -235,7 +235,7 @@ public class CaseDataServiceTest {
         caseDataService.createTopic(caseUUID, validTopic.getUuid());
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).save(any(CaseData.class));
+        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
         verify(infoClient,times(1)).getTopic(validTopic.getUuid());
 
 
@@ -252,7 +252,7 @@ public class CaseDataServiceTest {
         caseDataService.deleteTopic(caseUUID, validTopic.getUuid());
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).save(caseData);
+        verify(elasticSearchClient, times(1)).update(caseData);
 
         verify(caseData, times(1)).removeTopic(validTopic.getUuid());
 
@@ -269,7 +269,7 @@ public class CaseDataServiceTest {
         caseDataService.deleteTopic(caseUUID, validTopic.getUuid());
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).save(any(CaseData.class));
+        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyZeroInteractions(auditClient);
