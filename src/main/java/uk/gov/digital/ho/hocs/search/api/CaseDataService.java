@@ -4,16 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.search.api.dto.*;
 import uk.gov.digital.ho.hocs.search.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoTopic;
-import uk.gov.digital.ho.hocs.search.domain.repository.CaseRepository;
+import uk.gov.digital.ho.hocs.search.client.elasticsearchclient.ElasticSearchClient;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.Topic;
 
@@ -23,22 +19,20 @@ import java.util.*;
 @Slf4j
 public class CaseDataService {
 
-    private final CaseRepository caseDataRepository;
+    private final ElasticSearchClient elasticSearchClient;
 
     private final InfoClient infoClient;
 
     private final AuditClient auditClient;
 
-    private final ElasticsearchTemplate elasticsearchTemplate;
 
     private final int resultsLimit;
 
     @Autowired
-    public CaseDataService(CaseRepository caseDataRepository, InfoClient infoClient, AuditClient auditClient, ElasticsearchTemplate elasticsearchTemplate, @Value("${elastic.results.limit}") int resultsLimit) {
-        this.caseDataRepository = caseDataRepository;
+    public CaseDataService(ElasticSearchClient elasticSearchClient, InfoClient infoClient, AuditClient auditClient, @Value("${elastic.results.limit}") int resultsLimit) {
+        this.elasticSearchClient = elasticSearchClient;
         this.infoClient = infoClient;
         this.auditClient = auditClient;
-        this.elasticsearchTemplate = elasticsearchTemplate;
         this.resultsLimit = resultsLimit;
     }
 
@@ -46,7 +40,7 @@ public class CaseDataService {
         log.debug("Creating case {}", caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.create(createCaseRequest);
-        caseDataRepository.save(caseData);
+        elasticSearchClient.save(caseData);
         log.debug("Created case {}", caseUUID);
     }
 
@@ -54,7 +48,7 @@ public class CaseDataService {
         log.debug("Updating case {}", caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.update(updateCaseRequest);
-        caseDataRepository.save(caseData);
+        elasticSearchClient.update(caseData);
         log.debug("Updated case {}", caseUUID);
     }
 
@@ -62,7 +56,7 @@ public class CaseDataService {
         log.debug("Deleting case {}", caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.delete();
-        caseDataRepository.save(caseData);
+        elasticSearchClient.update(caseData);
         log.debug("Deleted case {}", caseUUID);
     }
 
@@ -70,7 +64,7 @@ public class CaseDataService {
         log.debug("Adding correspondent {} to case {}", createCorrespondentRequest.getUuid(), caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.addCorrespondent(createCorrespondentRequest);
-        caseDataRepository.save(caseData);
+        elasticSearchClient.update(caseData);
         log.debug("Added correspondent {} to case {}", createCorrespondentRequest.getUuid(), caseUUID);
     }
 
@@ -78,7 +72,7 @@ public class CaseDataService {
         log.debug("Deleting correspondent {} from case {}", correspondentUUID, caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.removeCorrespondent(correspondentUUID);
-        caseDataRepository.save(caseData);
+        elasticSearchClient.update(caseData);
         log.debug("Deleted correspondent {} from case {}", correspondentUUID, caseUUID);
     }
 
@@ -87,7 +81,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         InfoTopic infoTopic = infoClient.getTopic(topicUUID);
         caseData.addTopic(Topic.from(infoTopic));
-        caseDataRepository.save(caseData);
+        elasticSearchClient.update(caseData);
         log.debug("Added topic {} to case {}", topicUUID, caseUUID);
     }
 
@@ -95,11 +89,11 @@ public class CaseDataService {
         log.debug("Deleting topic {} from case {}", topicUUID, caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.removeTopic(topicUUID);
-        caseDataRepository.save(caseData);
+        elasticSearchClient.update(caseData);
         log.debug("Deleted topic {} from case {}", topicUUID, caseUUID);
     }
 
-    List<String> search(SearchRequest request){
+    Set<UUID> search(SearchRequest request){
         log.debug("Searching for case");
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(QueryBuilders.boolQuery());
         hocsQueryBuilder.caseTypes(request.getCaseTypes());
@@ -109,8 +103,8 @@ public class CaseDataService {
         hocsQueryBuilder.dataFields(request.getData());
         hocsQueryBuilder.activeOnlyFlag(request.getActiveOnly());
 
-        NativeSearchQuery query =  new NativeSearchQueryBuilder().withFilter(hocsQueryBuilder.build()).build();
-        List<String> caseUUIDs = elasticsearchTemplate.queryForIds(query.setPageable(PageRequest.of(0, resultsLimit)));
+        Set<UUID> caseUUIDs =  elasticSearchClient.search(hocsQueryBuilder.build());
+
         log.debug("Results {}", caseUUIDs.size());
         auditClient.performSearch(request);
         return caseUUIDs;
@@ -118,13 +112,7 @@ public class CaseDataService {
 
     private CaseData getCaseData(UUID caseUUID){
         log.debug("Fetching Case {}", caseUUID);
-        Optional<CaseData> originalCaseData = caseDataRepository.findById(caseUUID);
-        if(originalCaseData.isPresent()){
-            log.debug("Found Case {}", caseUUID);
-        } else {
-            log.info("Didn't find case {}, creating new", caseUUID);
-        }
-        return originalCaseData.orElse(new CaseData(caseUUID));
+        return elasticSearchClient.findById(caseUUID);
     }
 
 }

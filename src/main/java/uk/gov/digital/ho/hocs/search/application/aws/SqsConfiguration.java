@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.util.StringUtils;
 
 @Configuration
-@Profile({ "sqs"})
+@Profile({"sqs"})
 public class SqsConfiguration {
 
     @Bean

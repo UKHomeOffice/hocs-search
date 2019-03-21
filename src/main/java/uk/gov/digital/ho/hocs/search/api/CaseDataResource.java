@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.SearchRequest;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -28,8 +28,8 @@ class CaseDataResource {
     }
 
     @PostMapping(value = "/case")
-    ResponseEntity<List<String>> search(@RequestBody SearchRequest request) {
-        List<String> results = caseDataService.search(request);
+    ResponseEntity<Set<UUID>> search(@RequestBody SearchRequest request) {
+        Set<UUID> results = caseDataService.search(request);
         return ResponseEntity.ok(results);
     }
 }
