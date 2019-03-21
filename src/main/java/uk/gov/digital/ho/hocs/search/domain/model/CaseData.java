@@ -1,11 +1,8 @@
 package uk.gov.digital.ho.hocs.search.domain.model;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
@@ -18,46 +15,33 @@ import java.util.UUID;
 
 @NoArgsConstructor
 @Getter
-@Document(indexName = "case", type = "caseData")
+@Data
 public class CaseData {
 
-    @Id
     private UUID caseUUID;
 
-    @Field(type = FieldType.Date)
     private LocalDateTime created;
 
-    @Field(type = FieldType.Keyword)
     private String type;
 
-    @Field(type = FieldType.Keyword)
     private String reference;
 
-    @Field(type = FieldType.Keyword)
     private UUID primaryTopic;
 
-    @Field(type = FieldType.Keyword)
     private UUID primaryCorrespondent;
 
-    @Field(type = FieldType.Date)
     private LocalDate caseDeadline;
 
-    @Field(type = FieldType.Date)
     private LocalDate dateReceived;
 
-    @Field(type = FieldType.Boolean)
     private Boolean deleted = false;
 
-    @Field(type = FieldType.Nested, includeInParent = true)
     private Set<Correspondent> currentCorrespondents = new HashSet<>();
 
-    @Field(type = FieldType.Nested, includeInParent = true)
     private Set<Correspondent> allCorrespondents = new HashSet<>();
 
-    @Field(type = FieldType.Nested, includeInParent = true)
     private Set<Topic> currentTopics = new HashSet<>();
 
-    @Field(type = FieldType.Nested, includeInParent = true)
     private Set<Topic> allTopics = new HashSet<>();
 
     public CaseData(UUID uuid) {
