@@ -47,7 +47,8 @@ public class AwsElasticSearchConfiguration {
 
     HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(serviceName, signer, credentialsProvider);
 
-    return new RestHighLevelClient(RestClient.builder(new HttpHost(host, port)).setHttpClientConfigCallback(hacb -> hacb.addInterceptorLast(interceptor)));
+    HttpHost httpHost = HttpHost.create(String.format("https://%s",host));
+    return new RestHighLevelClient(RestClient.builder(httpHost).setHttpClientConfigCallback(hacb -> hacb.addInterceptorLast(interceptor)));
 
   }
 
