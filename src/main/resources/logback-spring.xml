@@ -32,7 +32,7 @@
         </appender>
     </springProfile>
 
-    <logger name="uk.gov" additivity="false" level="INFO">
+    <logger name="uk.gov" additivity="false" level="debug">
         <appender-ref ref="consoleAppender"/>
     </logger>
 

@@ -5,14 +5,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
 import uk.gov.digital.ho.hocs.search.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoTopic;
-import uk.gov.digital.ho.hocs.search.domain.repository.CaseRepository;
+import uk.gov.digital.ho.hocs.search.client.elasticsearchclient.ElasticSearchClient;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.Topic;
 
@@ -27,7 +26,7 @@ import static org.mockito.Mockito.*;
 public class CaseDataServiceTest {
 
     @Mock
-    private CaseRepository caseRepository;
+    private ElasticSearchClient elasticSearchClient;
 
     @Mock
     private CaseData caseData;
@@ -37,9 +36,6 @@ public class CaseDataServiceTest {
 
     @Mock
     private AuditClient auditClient;
-
-    @Mock
-    private ElasticsearchTemplate elasticsearchTemplate;
 
     private CaseDataService caseDataService;
     private UUID caseUUID = UUID.randomUUID();
@@ -51,22 +47,22 @@ public class CaseDataServiceTest {
 
     @Before
     public void setup(){
-        caseDataService = new CaseDataService(caseRepository, infoClient, auditClient, elasticsearchTemplate, 10);
+        caseDataService = new CaseDataService(elasticSearchClient, infoClient, auditClient, 10);
     }
 
     @Test
     public void ShouldCallCollaboratorsCreateCase() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(caseData));
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
 
         caseDataService.createCase(caseUUID, validCreateCaseRequest);
 
-        verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(caseData);
+        verify(elasticSearchClient, times(1)).findById(caseUUID);
+        verify(elasticSearchClient, times(1)).save(caseData);
 
         verify(caseData, times(1)).create(validCreateCaseRequest);
 
-        verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
         verifyZeroInteractions(auditClient);
     }
@@ -74,30 +70,30 @@ public class CaseDataServiceTest {
     @Test
     public void ShouldCreateNewIfNotFoundCreateCase() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.empty());
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
         caseDataService.createCase(caseUUID, validCreateCaseRequest);
 
-        verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(any(CaseData.class));
+        verify(elasticSearchClient, times(1)).findById(caseUUID);
+        verify(elasticSearchClient, times(1)).save(any(CaseData.class));
 
-        verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(elasticSearchClient);
         verifyZeroInteractions(auditClient);
     }
 
     @Test
     public void ShouldCallCollaboratorsUpdateCase() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(caseData));
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
 
         caseDataService.updateCase(caseUUID, validUpdateCaseRequest);
 
-        verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(caseData);
+        verify(elasticSearchClient, times(1)).findById(caseUUID);
+        verify(elasticSearchClient, times(1)).update(caseData);
 
         verify(caseData, times(1)).update(validUpdateCaseRequest);
 
-        verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
         verifyZeroInteractions(auditClient);
     }
@@ -105,30 +101,30 @@ public class CaseDataServiceTest {
     @Test
     public void ShouldCreateNewIfNotFoundUpdateCase() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.empty());
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
         caseDataService.updateCase(caseUUID, validUpdateCaseRequest);
 
-        verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(any(CaseData.class));
+        verify(elasticSearchClient, times(1)).findById(caseUUID);
+        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
 
-        verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(elasticSearchClient);
         verifyZeroInteractions(auditClient);
     }
 
     @Test
     public void ShouldCallCollaboratorsDeleteCase() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(caseData));
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
 
         caseDataService.deleteCase(caseUUID);
 
-        verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(caseData);
+        verify(elasticSearchClient, times(1)).findById(caseUUID);
+        verify(elasticSearchClient, times(1)).update(caseData);
 
         verify(caseData, times(1)).delete();
 
-        verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
         verifyZeroInteractions(auditClient);
     }
@@ -136,30 +132,30 @@ public class CaseDataServiceTest {
     @Test
     public void ShouldCreateNewIfNotFoundDeleteCase() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.empty());
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
         caseDataService.deleteCase(caseUUID);
 
-        verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(any(CaseData.class));
+        verify(elasticSearchClient, times(1)).findById(caseUUID);
+        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
 
-        verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(elasticSearchClient);
         verifyZeroInteractions(auditClient);
     }
 
     @Test
     public void ShouldCallCollaboratorsCreateCorrespondent() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(caseData));
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
 
         caseDataService.createCorrespondent(caseUUID, validCreateCorrespondentRequest);
 
-        verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(caseData);
+        verify(elasticSearchClient, times(1)).findById(caseUUID);
+        verify(elasticSearchClient, times(1)).update(caseData);
 
         verify(caseData, times(1)).addCorrespondent(validCreateCorrespondentRequest);
 
-        verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
         verifyZeroInteractions(auditClient);
     }
@@ -167,30 +163,30 @@ public class CaseDataServiceTest {
     @Test
     public void ShouldCreateNewIfNotFoundCreateCorrespondent() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.empty());
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
         caseDataService.createCorrespondent(caseUUID, validCreateCorrespondentRequest);
 
-        verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(any(CaseData.class));
+        verify(elasticSearchClient, times(1)).findById(caseUUID);
+        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
 
-        verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(elasticSearchClient);
         verifyZeroInteractions(auditClient);
     }
 
     @Test
     public void ShouldCallCollaboratorsDeleteCorrespondent() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(caseData));
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
 
         caseDataService.deleteCorrespondent(caseUUID, validCreateCorrespondentRequest.getUuid());
 
-        verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(caseData);
+        verify(elasticSearchClient, times(1)).findById(caseUUID);
+        verify(elasticSearchClient, times(1)).update(caseData);
 
         verify(caseData, times(1)).removeCorrespondent(validCreateCorrespondentRequest.getUuid());
 
-        verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
         verifyZeroInteractions(auditClient);
     }
@@ -198,33 +194,33 @@ public class CaseDataServiceTest {
     @Test
     public void ShouldCreateNewIfNotFoundDeleteCorrespondent() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.empty());
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
         caseDataService.deleteCorrespondent(caseUUID, validCreateCorrespondentRequest.getUuid());
 
-        verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(any(CaseData.class));
+        verify(elasticSearchClient, times(1)).findById(caseUUID);
+        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
 
-        verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(elasticSearchClient);
         verifyZeroInteractions(auditClient);
     }
 
     @Test
     public void ShouldCallCollaboratorsCreateTopic() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(caseData));
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
         when(infoClient.getTopic(validTopic.getUuid())).thenReturn(validInfoTopic);
 
         caseDataService.createTopic(caseUUID, validTopic.getUuid());
 
-        verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(caseData);
+        verify(elasticSearchClient, times(1)).findById(caseUUID);
+        verify(elasticSearchClient, times(1)).update(caseData);
         verify(infoClient,times(1)).getTopic(validTopic.getUuid());
 
 
         verify(caseData, times(1)).addTopic(any(Topic.class));
 
-        verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
         verifyNoMoreInteractions(infoClient);
         verifyZeroInteractions(auditClient);
@@ -233,17 +229,17 @@ public class CaseDataServiceTest {
     @Test
     public void ShouldCreateNewIfNotFoundCreateTopic() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.empty());
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
         when(infoClient.getTopic(validTopic.getUuid())).thenReturn(validInfoTopic);
 
         caseDataService.createTopic(caseUUID, validTopic.getUuid());
 
-        verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(any(CaseData.class));
+        verify(elasticSearchClient, times(1)).findById(caseUUID);
+        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
         verify(infoClient,times(1)).getTopic(validTopic.getUuid());
 
 
-        verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(infoClient);
         verifyZeroInteractions(auditClient);
     }
@@ -251,16 +247,16 @@ public class CaseDataServiceTest {
     @Test
     public void ShouldCallCollaboratorsDeleteTopic() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.of(caseData));
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
 
         caseDataService.deleteTopic(caseUUID, validTopic.getUuid());
 
-        verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(caseData);
+        verify(elasticSearchClient, times(1)).findById(caseUUID);
+        verify(elasticSearchClient, times(1)).update(caseData);
 
         verify(caseData, times(1)).removeTopic(validTopic.getUuid());
 
-        verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
         verifyZeroInteractions(auditClient);
     }
@@ -268,14 +264,14 @@ public class CaseDataServiceTest {
     @Test
     public void ShouldCreateNewIfNotFoundDeleteTopic() {
 
-        when(caseRepository.findById(caseUUID)).thenReturn(Optional.empty());
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
         caseDataService.deleteTopic(caseUUID, validTopic.getUuid());
 
-        verify(caseRepository, times(1)).findById(caseUUID);
-        verify(caseRepository, times(1)).save(any(CaseData.class));
+        verify(elasticSearchClient, times(1)).findById(caseUUID);
+        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
 
-        verifyNoMoreInteractions(caseRepository);
+        verifyNoMoreInteractions(elasticSearchClient);
         verifyZeroInteractions(auditClient);
     }
 }
