@@ -2,8 +2,8 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  #annotations:
-    #downscaler/uptime: Mon-Fri 09:00-17:30 Europe/London
+  annotations:
+    downscaler/uptime: Mon-Fri 09:00-17:30 Europe/London
   name: hocs-search
   labels:
     version: {{.VERSION}}
@@ -164,9 +164,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: cs-notprod-elasticsearch
-                  key: endpoint
-            - name: ELASTICSEARCH_PORT
-              value: '443'    
+                  key: endpoint 
             - name: ELASTICSEARCH_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
