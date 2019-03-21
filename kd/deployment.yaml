@@ -160,6 +160,23 @@ spec:
               value: {{.KUBE_NAMESPACE}}-search-sqs
             - name: SEARCH_QUEUE_DLQ_NAME
               value: {{.KUBE_NAMESPACE}}-search-sqs-dlq
+            - name: ELASTICSEARCH_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: cs-notprod-elasticsearch
+                  key: endpoint
+            - name: ELASTICSEARCH_PORT
+              value: 80      
+            - name: ELASTICSEARCH_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cs-notprod-elasticsearch
+                  key: access_key_id
+            - name: ELASTICSEARCH_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cs-notprod-elasticsearch
+                  key: secret_access_key
             - name: AWS_SQS_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
