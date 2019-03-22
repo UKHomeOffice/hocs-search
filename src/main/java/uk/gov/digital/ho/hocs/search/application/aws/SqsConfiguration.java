@@ -17,8 +17,8 @@ import org.springframework.util.StringUtils;
 public class SqsConfiguration {
 
     @Bean
-    public AmazonSQS sqsClient(@Value("${search.aws.sqs.access.key}") String accessKey,
-                               @Value("${search.aws.sqs.secret.key}") String secretKey,
+    public AmazonSQS sqsClient(@Value("${aws.sqs.access.key}") String accessKey,
+                               @Value("${aws.sqs.secret.key}") String secretKey,
                                @Value("${aws.sqs.region}") String region) {
 
         if (StringUtils.isEmpty(accessKey)) {
