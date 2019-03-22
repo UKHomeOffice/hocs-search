@@ -8,7 +8,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
-import uk.gov.digital.ho.hocs.search.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoTopic;
 import uk.gov.digital.ho.hocs.search.client.elasticsearchclient.ElasticSearchClient;
@@ -17,7 +16,6 @@ import uk.gov.digital.ho.hocs.search.domain.model.Topic;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
@@ -34,9 +32,6 @@ public class CaseDataServiceTest {
     @Mock
     private InfoClient infoClient;
 
-    @Mock
-    private AuditClient auditClient;
-
     private CaseDataService caseDataService;
     private UUID caseUUID = UUID.randomUUID();
     private CreateCaseRequest validCreateCaseRequest = new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", LocalDate.now().plusDays(1), LocalDate.now().plusDays(2));
@@ -47,7 +42,7 @@ public class CaseDataServiceTest {
 
     @Before
     public void setup(){
-        caseDataService = new CaseDataService(elasticSearchClient, infoClient, auditClient, 10);
+        caseDataService = new CaseDataService(elasticSearchClient, infoClient, 10);
     }
 
     @Test
@@ -64,7 +59,6 @@ public class CaseDataServiceTest {
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
-        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -78,7 +72,6 @@ public class CaseDataServiceTest {
         verify(elasticSearchClient, times(1)).save(any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
-        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -95,7 +88,6 @@ public class CaseDataServiceTest {
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
-        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -109,7 +101,6 @@ public class CaseDataServiceTest {
         verify(elasticSearchClient, times(1)).update(any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
-        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -126,7 +117,6 @@ public class CaseDataServiceTest {
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
-        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -140,7 +130,6 @@ public class CaseDataServiceTest {
         verify(elasticSearchClient, times(1)).update(any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
-        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -157,7 +146,6 @@ public class CaseDataServiceTest {
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
-        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -171,7 +159,6 @@ public class CaseDataServiceTest {
         verify(elasticSearchClient, times(1)).update(any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
-        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -188,7 +175,6 @@ public class CaseDataServiceTest {
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
-        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -202,7 +188,6 @@ public class CaseDataServiceTest {
         verify(elasticSearchClient, times(1)).update(any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
-        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -223,7 +208,6 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
         verifyNoMoreInteractions(infoClient);
-        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -241,7 +225,6 @@ public class CaseDataServiceTest {
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(infoClient);
-        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -258,7 +241,6 @@ public class CaseDataServiceTest {
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
-        verifyZeroInteractions(auditClient);
     }
 
     @Test
@@ -272,6 +254,5 @@ public class CaseDataServiceTest {
         verify(elasticSearchClient, times(1)).update(any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
-        verifyZeroInteractions(auditClient);
     }
 }
