@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.search.api;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.*;
@@ -15,6 +16,8 @@ class HocsQueryBuilder {
 
     private BoolQueryBuilder mqb;
 
+    private boolean hasClause = false;
+
     HocsQueryBuilder(BoolQueryBuilder mqb) {
         this.mqb = mqb;
     }
@@ -24,6 +27,7 @@ class HocsQueryBuilder {
             log.debug("caseTypes size {}, adding to query", caseTypes.size());
             QueryBuilder typeQb = QueryBuilders.termsQuery("type", caseTypes);
             mqb.must(typeQb);
+            hasClause = true;
         } else {
             log.debug("caseTypes was null or empty");
         }
@@ -47,6 +51,7 @@ class HocsQueryBuilder {
             }
             if((dateRangeDto.getFrom() != null && !dateRangeDto.getFrom().isEmpty()) || (dateRangeDto.getTo() != null && !dateRangeDto.getTo().isEmpty())) {
                 mqb.must(rangeQb);
+                hasClause = true;
             }
         } else {
             log.debug("dateRange was null");
@@ -61,6 +66,7 @@ class HocsQueryBuilder {
             QueryBuilder fullnameQb = QueryBuilders.matchQuery("currentCorrespondents.fullname", correspondentName).operator(Operator.AND);
             QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", fullnameQb, ScoreMode.None);
             mqb.must(correspondentQb);
+            hasClause = true;
         } else {
             log.debug("CorrespondentName was null or empty");
         }
@@ -74,6 +80,7 @@ class HocsQueryBuilder {
             QueryBuilder topicTextQb = QueryBuilders.matchQuery("currentTopics.text", topicName).operator(Operator.AND);
             QueryBuilder topicQb = QueryBuilders.nestedQuery("currentTopics", topicTextQb, ScoreMode.None);
             mqb.must(topicQb);
+            hasClause = true;
         } else {
             log.debug("TopicName was null or empty");
         }
@@ -87,6 +94,7 @@ class HocsQueryBuilder {
             log.debug("filtered data size {}, adding to query", dataQb.size());
             for (QueryBuilder qb : dataQb) {
                 mqb.must(qb);
+                hasClause = true;
             }
         } else {
             log.debug("Data was null or empty");
@@ -99,6 +107,7 @@ class HocsQueryBuilder {
             log.debug("activeOnly is true size, adding to query");
             QueryBuilder activeQb = QueryBuilders.matchQuery("deleted", false).operator(Operator.AND);
             mqb.must(activeQb);
+            hasClause = true;
         } else {
             log.debug("activeOnly was null or false");
         }
@@ -107,5 +116,9 @@ class HocsQueryBuilder {
 
     BoolQueryBuilder build(){
         return this.mqb;
+    }
+
+    boolean hasClauses(){
+        return hasClause;
     }
 }

@@ -98,7 +98,12 @@ public class CaseDataService {
         hocsQueryBuilder.dataFields(request.getData());
         hocsQueryBuilder.activeOnlyFlag(request.getActiveOnly());
 
-        Set<UUID> caseUUIDs =  elasticSearchClient.search(hocsQueryBuilder.build());
+        Set<UUID> caseUUIDs;
+        if(hocsQueryBuilder.hasClauses()) {
+            caseUUIDs = elasticSearchClient.search(hocsQueryBuilder.build());
+        } else {
+            caseUUIDs = new HashSet<>(0);
+        }
 
         log.info("Results {}", caseUUIDs.size());
         return caseUUIDs;
