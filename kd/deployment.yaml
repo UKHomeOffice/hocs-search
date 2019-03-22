@@ -175,16 +175,26 @@ spec:
                 secretKeyRef:
                   name: cs-notprod-elasticsearch
                   key: secret_access_key
-            - name: AWS_SQS_ACCESS_KEY
+            - name: SEARCH_AWS_SQS_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{.KUBE_NAMESPACE}}-search-sqs
                   key: access_key_id
-            - name: AWS_SQS_SECRET_KEY
+            - name: SEARCH_AWS_SQS_SECRET_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{.KUBE_NAMESPACE}}-search-sqs
                   key: secret_access_key
+             - name: AUDIT_AWS_SNS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{.KUBE_NAMESPACE}}-audit-sqs
+                  key: access_key_id
+            - name: AUDIT_AWS_SNS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{.KUBE_NAMESPACE}}-audit-sqs
+                  key: secret_access_key      
             - name: AUDITING_DEPLOYMENT_NAME
               valueFrom:
                 fieldRef:
