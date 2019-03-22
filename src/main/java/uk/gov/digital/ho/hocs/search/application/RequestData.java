@@ -74,7 +74,7 @@ public class RequestData implements HandlerInterceptor {
 
     private String initialiseGroups(HttpServletRequest request) {
         String groups = request.getHeader(GROUP_HEADER);
-        return !isNullOrEmpty(groups) ? groups : "/ANONYMOUS/ANONYMOUS";
+        return !isNullOrEmpty(groups) ? groups : "/QU5PTllNT1VTCg==";
     }
 
 
