@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.search.api.dto.*;
-import uk.gov.digital.ho.hocs.search.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoTopic;
 import uk.gov.digital.ho.hocs.search.client.elasticsearchclient.ElasticSearchClient;
@@ -23,16 +22,12 @@ public class CaseDataService {
 
     private final InfoClient infoClient;
 
-    private final AuditClient auditClient;
-
-
     private final int resultsLimit;
 
     @Autowired
-    public CaseDataService(ElasticSearchClient elasticSearchClient, InfoClient infoClient, AuditClient auditClient, @Value("${elastic.results.limit}") int resultsLimit) {
+    public CaseDataService(ElasticSearchClient elasticSearchClient, InfoClient infoClient, @Value("${elastic.results.limit}") int resultsLimit) {
         this.elasticSearchClient = elasticSearchClient;
         this.infoClient = infoClient;
-        this.auditClient = auditClient;
         this.resultsLimit = resultsLimit;
     }
 
@@ -41,7 +36,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.create(createCaseRequest);
         elasticSearchClient.save(caseData);
-        log.debug("Created case {}", caseUUID);
+        log.info("Created case {}", caseUUID);
     }
 
     public void updateCase(UUID caseUUID, UpdateCaseRequest updateCaseRequest) {
@@ -49,7 +44,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.update(updateCaseRequest);
         elasticSearchClient.update(caseData);
-        log.debug("Updated case {}", caseUUID);
+        log.info("Updated case {}", caseUUID);
     }
 
     public void deleteCase(UUID caseUUID) {
@@ -57,7 +52,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.delete();
         elasticSearchClient.update(caseData);
-        log.debug("Deleted case {}", caseUUID);
+        log.info("Deleted case {}", caseUUID);
     }
 
     public void createCorrespondent(UUID caseUUID, CreateCorrespondentRequest createCorrespondentRequest) {
@@ -65,7 +60,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.addCorrespondent(createCorrespondentRequest);
         elasticSearchClient.update(caseData);
-        log.debug("Added correspondent {} to case {}", createCorrespondentRequest.getUuid(), caseUUID);
+        log.info("Added correspondent {} to case {}", createCorrespondentRequest.getUuid(), caseUUID);
     }
 
     public void deleteCorrespondent(UUID caseUUID, UUID correspondentUUID) {
@@ -73,7 +68,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.removeCorrespondent(correspondentUUID);
         elasticSearchClient.update(caseData);
-        log.debug("Deleted correspondent {} from case {}", correspondentUUID, caseUUID);
+        log.info("Deleted correspondent {} from case {}", correspondentUUID, caseUUID);
     }
 
     public void createTopic(UUID caseUUID, UUID topicUUID) {
@@ -82,7 +77,7 @@ public class CaseDataService {
         InfoTopic infoTopic = infoClient.getTopic(topicUUID);
         caseData.addTopic(Topic.from(infoTopic));
         elasticSearchClient.update(caseData);
-        log.debug("Added topic {} to case {}", topicUUID, caseUUID);
+        log.info("Added topic {} to case {}", topicUUID, caseUUID);
     }
 
     public void deleteTopic(UUID caseUUID, UUID topicUUID) {
@@ -90,11 +85,11 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.removeTopic(topicUUID);
         elasticSearchClient.update(caseData);
-        log.debug("Deleted topic {} from case {}", topicUUID, caseUUID);
+        log.info("Deleted topic {} from case {}", topicUUID, caseUUID);
     }
 
     Set<UUID> search(SearchRequest request){
-        log.debug("Searching for case");
+        log.info("Searching for case {}", request.toString());
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(QueryBuilders.boolQuery());
         hocsQueryBuilder.caseTypes(request.getCaseTypes());
         hocsQueryBuilder.dateRange(request.getDateReceived());
@@ -105,8 +100,7 @@ public class CaseDataService {
 
         Set<UUID> caseUUIDs =  elasticSearchClient.search(hocsQueryBuilder.build());
 
-        log.debug("Results {}", caseUUIDs.size());
-        auditClient.performSearch(request);
+        log.info("Results {}", caseUUIDs.size());
         return caseUUIDs;
     }
 
