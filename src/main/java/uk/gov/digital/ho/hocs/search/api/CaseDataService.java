@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.search.api.dto.*;
-import uk.gov.digital.ho.hocs.search.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoTopic;
 import uk.gov.digital.ho.hocs.search.client.elasticsearchclient.ElasticSearchClient;
@@ -23,16 +22,12 @@ public class CaseDataService {
 
     private final InfoClient infoClient;
 
-    private final AuditClient auditClient;
-
-
     private final int resultsLimit;
 
     @Autowired
-    public CaseDataService(ElasticSearchClient elasticSearchClient, InfoClient infoClient, AuditClient auditClient, @Value("${elastic.results.limit}") int resultsLimit) {
+    public CaseDataService(ElasticSearchClient elasticSearchClient, InfoClient infoClient, @Value("${elastic.results.limit}") int resultsLimit) {
         this.elasticSearchClient = elasticSearchClient;
         this.infoClient = infoClient;
-        this.auditClient = auditClient;
         this.resultsLimit = resultsLimit;
     }
 
@@ -106,7 +101,6 @@ public class CaseDataService {
         Set<UUID> caseUUIDs =  elasticSearchClient.search(hocsQueryBuilder.build());
 
         log.debug("Results {}", caseUUIDs.size());
-        auditClient.performSearch(request);
         return caseUUIDs;
     }
 
