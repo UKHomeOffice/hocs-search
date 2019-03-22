@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoTopic;
@@ -252,6 +253,17 @@ public class CaseDataServiceTest {
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
         verify(elasticSearchClient, times(1)).update(any(CaseData.class));
+
+        verifyNoMoreInteractions(elasticSearchClient);
+    }
+
+    @Test
+    public void ShouldNotSearchIfNoParams() {
+
+        SearchRequest searchRequest = new SearchRequest();
+        caseDataService.search(searchRequest);
+
+        verify(elasticSearchClient, times(0)).update(any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
     }
