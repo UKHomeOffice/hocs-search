@@ -3,8 +3,9 @@ package uk.gov.digital.ho.hocs.search.application;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.search.domain.exceptions.ApplicationExceptions;
@@ -33,13 +34,11 @@ public class RestHelper {
         this.requestData = requestData;
     }
 
+    @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 2000))
     public <R> R get(String serviceBaseURL, String url, Class<R> responseType) {
-        ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.GET, new HttpEntity<>(null, createAuthHeaders()), responseType);
-        return validateResponse(response);
-    }
-
-    public <R> R get(String serviceBaseURL, String url, ParameterizedTypeReference<R> responseType) {
-        ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.GET, new HttpEntity<>(null, createAuthHeaders()), responseType);
+        String requestUrl = String.format("%s%s", serviceBaseURL, url);
+        log.debug("GET {}", requestUrl);
+        ResponseEntity<R> response = restTemplate.exchange(requestUrl, HttpMethod.GET, new HttpEntity<>(null, createAuthHeaders()), responseType);
         return validateResponse(response);
     }
 
