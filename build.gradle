@@ -59,8 +59,9 @@ dependencies {
 
     implementation('org.springframework.boot:spring-boot-starter-json')
     implementation('org.springframework.boot:spring-boot-starter-cache')
+    implementation('org.springframework.retry:spring-retry')
+    implementation('org.springframework:spring-aspects')
     implementation("org.apache.camel:camel-spring-boot-starter:${camelVersion}")
-
 
     implementation("org.apache.camel:camel-jackson:${camelVersion}")
     implementation("org.apache.camel:camel-aws:${camelVersion}")

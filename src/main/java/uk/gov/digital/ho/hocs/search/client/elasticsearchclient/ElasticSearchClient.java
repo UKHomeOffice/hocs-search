@@ -17,6 +17,8 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.search.domain.exceptions.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
@@ -41,19 +43,7 @@ public class ElasticSearchClient {
         this.client = client;
     }
 
-    public void save(CaseData caseData) {
-
-        Map<String, Object> documentMapper = objectMapper.convertValue(caseData, Map.class);
-
-        IndexRequest indexRequest = new IndexRequest("case", "caseData", caseData.getCaseUUID().toString()).source(documentMapper);
-
-        try {
-            IndexResponse indexResponse = client.index(indexRequest, RequestOptions.DEFAULT);
-        } catch (IOException e) {
-            throw new ApplicationExceptions.ResourceServerException(String.format("Unable to find Case: %s", caseData.getCaseUUID()), CASE_SAVE_FAILED);
-        }
-    }
-
+    @Retryable(backoff = @Backoff(delay = 2000))
     public CaseData findById(UUID uuid){
 
         GetRequest getRequest = new GetRequest("case", "caseData", uuid.toString());
@@ -67,12 +57,29 @@ public class ElasticSearchClient {
         Map<String, Object> resultMap = getResponse.getSource();
 
         if(resultMap == null) {
+            log.debug("Not found case {}, creating...", uuid);
             return new CaseData(uuid);
         } else {
+            log.debug("Found case {}", uuid);
             return objectMapper.convertValue(resultMap, CaseData.class);
         }
     }
 
+    @Retryable(backoff = @Backoff(delay = 2000))
+    public void save(CaseData caseData) {
+
+        Map<String, Object> documentMapper = objectMapper.convertValue(caseData, Map.class);
+
+        IndexRequest indexRequest = new IndexRequest("case", "caseData", caseData.getCaseUUID().toString()).source(documentMapper);
+
+        try {
+            IndexResponse indexResponse = client.index(indexRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            throw new ApplicationExceptions.ResourceServerException(String.format("Unable to find Case: %s", caseData.getCaseUUID()), CASE_SAVE_FAILED);
+        }
+    }
+
+    @Retryable(backoff = @Backoff(delay = 2000))
     public void update(CaseData caseData) {
 
         CaseData resultDocument = findById(caseData.getCaseUUID());
@@ -90,6 +97,7 @@ public class ElasticSearchClient {
         }
     }
 
+    @Retryable(backoff = @Backoff(delay = 2000))
     public Set<UUID> search(BoolQueryBuilder query) {
 
         SearchRequest searchRequest = new SearchRequest();

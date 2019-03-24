@@ -62,15 +62,15 @@ public class SearchConsumer extends RouteBuilder {
                 .asyncDelayedRedelivery()
                 .logRetryStackTrace(true));
 
-        from(searchQueue)
+        from(searchQueue).routeId("searchCommandRoute")
                 .setProperty(SqsConstants.RECEIPT_HANDLE, header(SqsConstants.RECEIPT_HANDLE))
                 .process(transferHeadersToMDC())
                 .log(LoggingLevel.INFO, "Audit message received")
                 .unmarshal().json(JsonLibrary.Jackson, CreateAuditDto.class)
                 .setProperty("type", simple("${body.type}"))
-                .log(LoggingLevel.INFO, ": ${body.type}")
+                .log(LoggingLevel.INFO, "type: ${body.type}")
                 .setProperty("caseUUID", simple("${body.caseUUID}"))
-                .log(LoggingLevel.INFO, "CaseUUID: ${body.caseUUID}")
+                .log(LoggingLevel.INFO, "caseUUID: ${body.caseUUID}")
                 .setProperty("payLoad", simple("${body.data}"))
                 .log(LoggingLevel.DEBUG, "payLoad: ${body}")
                 .process(createPayload())
