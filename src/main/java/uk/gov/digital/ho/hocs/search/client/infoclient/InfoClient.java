@@ -30,15 +30,14 @@ public class InfoClient {
 
     public Set<String> getAllTopicUUIDs() {
         try {
-            Set<String> topics = restHelper.get(serviceBaseURL, String.format("/topics"), Set.class);
+            Set<String> topics = restHelper.get(serviceBaseURL, "/topics", Set.class);
             log.info("Got {} Topics", topics.size(), value(EVENT, INFO_CLIENT_GET_ALL_TOPIC_UUID_SUCCESS));
             return topics;
         } catch (ApplicationExceptions.ResourceException e) {
             log.error("Could not get all Topic UUIDs", value(EVENT, INFO_CLIENT_GET_ALL_TOPIC_UUID_FAILURE));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get all Topic UUIDS"), INFO_CLIENT_GET_ALL_TOPIC_UUID_FAILURE);
+            throw new ApplicationExceptions.EntityNotFoundException("Could not get all Topic UUIDS", INFO_CLIENT_GET_ALL_TOPIC_UUID_FAILURE);
         }
     }
-
 
     @Cacheable(value = "InfoClientGetTopic")
     public InfoTopic getTopic(UUID topicUUID) {

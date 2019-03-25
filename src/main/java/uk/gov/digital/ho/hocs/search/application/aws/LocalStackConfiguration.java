@@ -26,7 +26,7 @@ public class LocalStackConfiguration {
 
         @Override
         public void refresh() {
-
+            // Do Nothing.
         }
     };
 
