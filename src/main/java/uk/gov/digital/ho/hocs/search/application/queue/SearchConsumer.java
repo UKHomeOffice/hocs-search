@@ -18,13 +18,6 @@ import static uk.gov.digital.ho.hocs.search.application.RequestData.transferHead
 @Component
 public class SearchConsumer extends RouteBuilder {
 
-    private final CaseDataService caseDataService;
-    private final String searchQueue;
-    private final String dlq;
-    private final int maximumRedeliveries;
-    private final int redeliveryDelay;
-    private final int backOffMultiplier;
-
     private static final String CREATE_CASE_QUEUE = "direct:createCaseQueue";
     private static final String UPDATE_CASE_QUEUE = "direct:updateCaseQueue";
     private static final String DELETE_CASE_QUEUE = "direct:deleteCasetQueue";
@@ -32,6 +25,12 @@ public class SearchConsumer extends RouteBuilder {
     private static final String DELETE_CORRESPONDENT_QUEUE = "direct:deleteCorrespondentQueue";
     private static final String CREATE_TOPIC_QUEUE = "direct:createTopicQueue";
     private static final String DELETE_TOPIC_QUEUE = "direct:deleteTopicQueue";
+    private final CaseDataService caseDataService;
+    private final String searchQueue;
+    private final String dlq;
+    private final int maximumRedeliveries;
+    private final int redeliveryDelay;
+    private final int backOffMultiplier;
 
     @Autowired
     public SearchConsumer(CaseDataService caseDataService,

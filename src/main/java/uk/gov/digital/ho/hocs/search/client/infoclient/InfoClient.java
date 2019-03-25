@@ -29,9 +29,9 @@ public class InfoClient {
     }
 
     public Set<String> getAllTopicUUIDs() {
-        try{
+        try {
             Set<String> topics = restHelper.get(serviceBaseURL, String.format("/topics"), Set.class);
-            log.info("Got {} Topics" , topics.size(), value(EVENT, INFO_CLIENT_GET_ALL_TOPIC_UUID_SUCCESS));
+            log.info("Got {} Topics", topics.size(), value(EVENT, INFO_CLIENT_GET_ALL_TOPIC_UUID_SUCCESS));
             return topics;
         } catch (ApplicationExceptions.ResourceException e) {
             log.error("Could not get all Topic UUIDs", value(EVENT, INFO_CLIENT_GET_ALL_TOPIC_UUID_FAILURE));

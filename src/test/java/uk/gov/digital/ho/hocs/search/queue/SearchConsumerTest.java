@@ -37,7 +37,7 @@ public class SearchConsumerTest extends CamelTestSupport {
     private CaseDataService mockDataService;
 
     @Before
-    public void setUpTest(){
+    public void setUpTest() {
 
         mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
@@ -49,7 +49,7 @@ public class SearchConsumerTest extends CamelTestSupport {
 
     @Override
     protected RouteBuilder createRouteBuilder() {
-        return new SearchConsumer(mockDataService, searchQueue, dlq, 0,0,0);
+        return new SearchConsumer(mockDataService, searchQueue, dlq, 0, 0, 0);
 
     }
 

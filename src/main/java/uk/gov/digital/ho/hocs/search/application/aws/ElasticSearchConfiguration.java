@@ -12,16 +12,16 @@ import org.springframework.context.annotation.Profile;
 @Profile({"localelastic"})
 public class ElasticSearchConfiguration {
 
-  @Value("${elasticsearch.host}")
-  private String host;
+    @Value("${elasticsearch.host}")
+    private String host;
 
-  @Value("${elasticsearch.port}")
-  private int port;
+    @Value("${elasticsearch.port}")
+    private int port;
 
-  @Bean(destroyMethod = "close")
-  public RestHighLevelClient client() {
+    @Bean(destroyMethod = "close")
+    public RestHighLevelClient client() {
 
-    return new RestHighLevelClient(RestClient.builder(new HttpHost(host, port)));
-  }
+        return new RestHighLevelClient(RestClient.builder(new HttpHost(host, port)));
+    }
 
 }
