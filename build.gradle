@@ -64,9 +64,7 @@ dependencies {
     
     implementation('org.springframework.retry:spring-retry')
     implementation('org.springframework:spring-aspects')
-
-    implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client:6.6.2')
-
+    
     implementation("org.apache.camel:camel-spring-boot-starter:${camelVersion}")
     implementation("org.apache.camel:camel-jackson:${camelVersion}")
     implementation("org.apache.camel:camel-aws:${camelVersion}")
@@ -74,6 +72,8 @@ dependencies {
 
     implementation('org.apache.httpcomponents:httpmime:4.5.7')
     implementation('com.amazonaws:aws-java-sdk:1.11.524')
+
+    implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client:6.6.2')
     implementation 'com.github.awslabs:aws-request-signing-apache-interceptor:b3772780da'
 
     implementation('net.logstash.logback:logstash-logback-encoder:5.3')
