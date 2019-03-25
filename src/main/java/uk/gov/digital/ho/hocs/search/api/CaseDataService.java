@@ -63,27 +63,27 @@ public class CaseDataService {
         log.info("Added correspondent {} to case {}", createCorrespondentRequest.getUuid(), caseUUID);
     }
 
-    public void deleteCorrespondent(UUID caseUUID, UUID correspondentUUID) {
+    public void deleteCorrespondent(UUID caseUUID, String correspondentUUID) {
         log.debug("Deleting correspondent {} from case {}", correspondentUUID, caseUUID);
         CaseData caseData = getCaseData(caseUUID);
-        caseData.removeCorrespondent(correspondentUUID);
+        caseData.removeCorrespondent(UUID.fromString(correspondentUUID));
         elasticSearchClient.update(caseData);
         log.info("Deleted correspondent {} from case {}", correspondentUUID, caseUUID);
     }
 
-    public void createTopic(UUID caseUUID, UUID topicUUID) {
+    public void createTopic(UUID caseUUID, String topicUUID) {
         log.debug("Adding topic {} to case {}", topicUUID, caseUUID);
         CaseData caseData = getCaseData(caseUUID);
-        InfoTopic infoTopic = infoClient.getTopic(topicUUID);
+        InfoTopic infoTopic = infoClient.getTopic(UUID.fromString(topicUUID));
         caseData.addTopic(Topic.from(infoTopic));
         elasticSearchClient.update(caseData);
         log.info("Added topic {} to case {}", topicUUID, caseUUID);
     }
 
-    public void deleteTopic(UUID caseUUID, UUID topicUUID) {
+    public void deleteTopic(UUID caseUUID, String topicUUID) {
         log.debug("Deleting topic {} from case {}", topicUUID, caseUUID);
         CaseData caseData = getCaseData(caseUUID);
-        caseData.removeTopic(topicUUID);
+        caseData.removeTopic(UUID.fromString(topicUUID));
         elasticSearchClient.update(caseData);
         log.info("Deleted topic {} from case {}", topicUUID, caseUUID);
     }
