@@ -44,7 +44,7 @@ public class ElasticSearchClient {
     }
 
     @Retryable(backoff = @Backoff(delay = 2000))
-    public CaseData findById(UUID uuid){
+    public CaseData findById(UUID uuid) {
 
         GetRequest getRequest = new GetRequest("case", "caseData", uuid.toString());
 
@@ -56,7 +56,7 @@ public class ElasticSearchClient {
         }
         Map<String, Object> resultMap = getResponse.getSource();
 
-        if(resultMap == null) {
+        if (resultMap == null) {
             log.debug("Not found case {}, creating...", uuid);
             return new CaseData(uuid);
         } else {

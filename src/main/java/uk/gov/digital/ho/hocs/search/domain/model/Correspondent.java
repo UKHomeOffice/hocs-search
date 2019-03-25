@@ -53,7 +53,8 @@ public class Correspondent {
 
         this.telephone = createCorrespondentRequest.getTelephone();
         this.email = createCorrespondentRequest.getEmail();
-        this.reference = createCorrespondentRequest.getReference();    }
+        this.reference = createCorrespondentRequest.getReference();
+    }
 
     public static Correspondent from(CreateCorrespondentRequest createCorrespondentRequest) {
         return new Correspondent(createCorrespondentRequest);

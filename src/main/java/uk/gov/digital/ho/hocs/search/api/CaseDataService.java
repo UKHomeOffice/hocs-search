@@ -1,18 +1,26 @@
 package uk.gov.digital.ho.hocs.search.api;
 
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.search.api.dto.*;
+import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.SearchRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
+import uk.gov.digital.ho.hocs.search.client.elasticsearchclient.ElasticSearchClient;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoTopic;
-import uk.gov.digital.ho.hocs.search.client.elasticsearchclient.ElasticSearchClient;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.Topic;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
+import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.search.application.LogEvent.*;
 
 @Service
 @Slf4j
@@ -36,7 +44,8 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.create(createCaseRequest);
         elasticSearchClient.save(caseData);
-        log.info("Created case {}", caseUUID);
+        log.info("Created case {}", caseUUID, value(EVENT, SEARCH_CASE_CREATED));
+
     }
 
     public void updateCase(UUID caseUUID, UpdateCaseRequest updateCaseRequest) {
@@ -44,7 +53,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.update(updateCaseRequest);
         elasticSearchClient.update(caseData);
-        log.info("Updated case {}", caseUUID);
+        log.info("Updated case {}", caseUUID, value(EVENT, SEARCH_CASE_UPDATED));
     }
 
     public void deleteCase(UUID caseUUID) {
@@ -52,7 +61,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.delete();
         elasticSearchClient.update(caseData);
-        log.info("Deleted case {}", caseUUID);
+        log.info("Deleted case {}", caseUUID, value(EVENT, SEARCH_CASE_DELETED));
     }
 
     public void createCorrespondent(UUID caseUUID, CreateCorrespondentRequest createCorrespondentRequest) {
@@ -60,7 +69,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.addCorrespondent(createCorrespondentRequest);
         elasticSearchClient.update(caseData);
-        log.info("Added correspondent {} to case {}", createCorrespondentRequest.getUuid(), caseUUID);
+        log.info("Added correspondent {} to case {}", createCorrespondentRequest.getUuid(), caseUUID, value(EVENT, SEARCH_CORRESPONDENT_ADDED));
     }
 
     public void deleteCorrespondent(UUID caseUUID, String correspondentUUID) {
@@ -68,7 +77,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.removeCorrespondent(UUID.fromString(correspondentUUID));
         elasticSearchClient.update(caseData);
-        log.info("Deleted correspondent {} from case {}", correspondentUUID, caseUUID);
+        log.info("Deleted correspondent {} from case {}", correspondentUUID, caseUUID, value(EVENT, SEARCH_CORRESPONDENT_DELETED));
     }
 
     public void createTopic(UUID caseUUID, String topicUUID) {
@@ -77,7 +86,7 @@ public class CaseDataService {
         InfoTopic infoTopic = infoClient.getTopic(UUID.fromString(topicUUID));
         caseData.addTopic(Topic.from(infoTopic));
         elasticSearchClient.update(caseData);
-        log.info("Added topic {} to case {}", topicUUID, caseUUID);
+        log.info("Added topic {} to case {}", topicUUID, caseUUID, value(EVENT, SEARCH_TOPIC_ADDED));
     }
 
     public void deleteTopic(UUID caseUUID, String topicUUID) {
@@ -85,11 +94,11 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.removeTopic(UUID.fromString(topicUUID));
         elasticSearchClient.update(caseData);
-        log.info("Deleted topic {} from case {}", topicUUID, caseUUID);
+        log.info("Deleted topic {} from case {}", topicUUID, caseUUID, value(EVENT, SEARCH_TOPIC_DELETED));
     }
 
-    Set<UUID> search(SearchRequest request){
-        log.info("Searching for case {}", request.toString());
+    Set<UUID> search(SearchRequest request) {
+        log.info("Searching for case {}", request.toString(), value(EVENT, SEARCH_REQUEST));
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(QueryBuilders.boolQuery());
         hocsQueryBuilder.caseTypes(request.getCaseTypes());
         hocsQueryBuilder.dateRange(request.getDateReceived());
@@ -99,17 +108,17 @@ public class CaseDataService {
         hocsQueryBuilder.activeOnlyFlag(request.getActiveOnly());
 
         Set<UUID> caseUUIDs;
-        if(hocsQueryBuilder.hasClauses()) {
+        if (hocsQueryBuilder.hasClauses()) {
             caseUUIDs = elasticSearchClient.search(hocsQueryBuilder.build());
         } else {
             caseUUIDs = new HashSet<>(0);
         }
 
-        log.info("Results {}", caseUUIDs.size());
+        log.info("Results {}", caseUUIDs.size(), value(EVENT, SEARCH_RESPONSE));
         return caseUUIDs;
     }
 
-    private CaseData getCaseData(UUID caseUUID){
+    private CaseData getCaseData(UUID caseUUID) {
         log.debug("Fetching Case {}", caseUUID);
         return elasticSearchClient.findById(caseUUID);
     }

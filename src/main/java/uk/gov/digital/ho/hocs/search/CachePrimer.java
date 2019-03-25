@@ -41,11 +41,11 @@ public class CachePrimer {
             log.debug("Priming topic cache");
             Set<String> topics = infoClient.getAllTopicUUIDs();
             for (String topic : topics) {
-               infoClient.getTopic(UUID.fromString(topic));
+                infoClient.getTopic(UUID.fromString(topic));
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             log.warn("Failed to prime topic cache", value(EVENT, CACHE_PRIME_FAILED));
         }
-        log.info("Caches primed");
+        log.info("Finished priming caches");
     }
 }
