@@ -167,7 +167,7 @@ public class CaseDataServiceTest {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
 
-        caseDataService.deleteCorrespondent(caseUUID, validCreateCorrespondentRequest.getUuid());
+        caseDataService.deleteCorrespondent(caseUUID, validCreateCorrespondentRequest.getUuid().toString());
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
         verify(elasticSearchClient, times(1)).update(caseData);
@@ -183,7 +183,7 @@ public class CaseDataServiceTest {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
-        caseDataService.deleteCorrespondent(caseUUID, validCreateCorrespondentRequest.getUuid());
+        caseDataService.deleteCorrespondent(caseUUID, validCreateCorrespondentRequest.getUuid().toString());
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
         verify(elasticSearchClient, times(1)).update(any(CaseData.class));
@@ -197,7 +197,7 @@ public class CaseDataServiceTest {
         when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
         when(infoClient.getTopic(validTopic.getUuid())).thenReturn(validInfoTopic);
 
-        caseDataService.createTopic(caseUUID, validTopic.getUuid());
+        caseDataService.createTopic(caseUUID, validTopic.getUuid().toString());
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
         verify(elasticSearchClient, times(1)).update(caseData);
@@ -217,7 +217,7 @@ public class CaseDataServiceTest {
         when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
         when(infoClient.getTopic(validTopic.getUuid())).thenReturn(validInfoTopic);
 
-        caseDataService.createTopic(caseUUID, validTopic.getUuid());
+        caseDataService.createTopic(caseUUID, validTopic.getUuid().toString());
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
         verify(elasticSearchClient, times(1)).update(any(CaseData.class));
@@ -233,7 +233,7 @@ public class CaseDataServiceTest {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
 
-        caseDataService.deleteTopic(caseUUID, validTopic.getUuid());
+        caseDataService.deleteTopic(caseUUID, validTopic.getUuid().toString());
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
         verify(elasticSearchClient, times(1)).update(caseData);
@@ -249,7 +249,7 @@ public class CaseDataServiceTest {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
-        caseDataService.deleteTopic(caseUUID, validTopic.getUuid());
+        caseDataService.deleteTopic(caseUUID, validTopic.getUuid().toString());
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
         verify(elasticSearchClient, times(1)).update(any(CaseData.class));
