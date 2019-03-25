@@ -12,6 +12,12 @@
                 <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
             </layout>
         </appender>
+        <logger name="uk.gov" additivity="false" level="DEBUG">
+            <appender-ref ref="consoleAppender"/>
+        </logger>
+        <logger name="searchCommandRoute" additivity="false" level="DEBUG">
+            <appender-ref ref="consoleAppender"/>
+        </logger>
     </springProfile>
 
     <springProfile name="!development">
@@ -31,11 +37,13 @@
                 </provider>
             </encoder>
         </appender>
+        <logger name="uk.gov" additivity="false" level="INFO">
+            <appender-ref ref="consoleAppender"/>
+        </logger>
+        <logger name="searchCommandRoute" additivity="false" level="INFO">
+            <appender-ref ref="consoleAppender"/>
+        </logger>
     </springProfile>
-
-    <logger name="uk.gov" additivity="false" level="INFO">
-        <appender-ref ref="consoleAppender"/>
-    </logger>
 
     <logger name="org.elasticsearch" additivity="false" level="WARN">
         <appender-ref ref="consoleAppender"/>
@@ -70,6 +78,10 @@
     </logger>
 
     <logger name="com.zaxxer" additivity="false" level="WARN">
+        <appender-ref ref="consoleAppender"/>
+    </logger>
+
+    <logger name="org.xnio" additivity="false" level="WARN">
         <appender-ref ref="consoleAppender"/>
     </logger>
 
