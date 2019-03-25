@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Slf4j
 class HocsQueryBuilder {
 
-    private BoolQueryBuilder mqb;
+    private final BoolQueryBuilder mqb;
 
     private boolean hasClause = false;
 

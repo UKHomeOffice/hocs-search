@@ -21,7 +21,7 @@ import static uk.gov.digital.ho.hocs.search.application.LogEvent.EVENT;
 @Profile({"cache"})
 public class CachePrimer {
 
-    private InfoClient infoClient;
+    private final InfoClient infoClient;
 
     @Autowired
     public CachePrimer(InfoClient infoClient) {

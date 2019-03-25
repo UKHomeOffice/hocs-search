@@ -21,11 +21,11 @@ import static uk.gov.digital.ho.hocs.search.application.LogEvent.*;
 @Component
 public class RestHelper {
 
-    private String basicAuth;
+    private final String basicAuth;
 
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
-    private RequestData requestData;
+    private final RequestData requestData;
 
     @Autowired
     public RestHelper(RestTemplate restTemplate, @Value("${hocs.basicauth}") String basicAuth, RequestData requestData) {

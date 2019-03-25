@@ -6,11 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
-import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -33,9 +31,9 @@ import static uk.gov.digital.ho.hocs.search.application.LogEvent.*;
 @Component
 public class ElasticSearchClient {
 
-    ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-    RestHighLevelClient client;
+    private final RestHighLevelClient client;
 
     @Autowired
     public ElasticSearchClient(ObjectMapper objectMapper, RestHighLevelClient client) {
@@ -73,7 +71,7 @@ public class ElasticSearchClient {
         IndexRequest indexRequest = new IndexRequest("case", "caseData", caseData.getCaseUUID().toString()).source(documentMapper);
 
         try {
-            IndexResponse indexResponse = client.index(indexRequest, RequestOptions.DEFAULT);
+            client.index(indexRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
             throw new ApplicationExceptions.ResourceServerException(String.format("Unable to find Case: %s", caseData.getCaseUUID()), CASE_SAVE_FAILED);
         }
@@ -91,7 +89,7 @@ public class ElasticSearchClient {
         updateRequest.doc(documentMapper);
 
         try {
-            UpdateResponse updateResponse = client.update(updateRequest, RequestOptions.DEFAULT);
+            client.update(updateRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
             throw new ApplicationExceptions.ResourceServerException(String.format("Unable to update Case: %s", caseData.getCaseUUID()), CASE_UPDATE_FAILED);
         }

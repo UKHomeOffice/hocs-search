@@ -1,8 +1,8 @@
 package uk.gov.digital.ho.hocs.search.application.aws;
 
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import org.springframework.beans.factory.BeanCreationException;
@@ -35,7 +35,7 @@ public class SqsConfiguration {
 
         return AmazonSQSClientBuilder.standard()
                 .withRegion(region)
-                .withCredentials(new StaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey)))
+                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey)))
                 .withClientConfiguration(new ClientConfiguration())
                 .build();
     }
