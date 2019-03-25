@@ -20,35 +20,35 @@ import org.springframework.context.annotation.Profile;
 @Profile({"awselastic"})
 public class AwsElasticSearchConfiguration {
 
-  @Value("${elasticsearch.host}")
-  private String host;
+    @Value("${elasticsearch.host}")
+    private String host;
 
-  @Value("${elasticsearch.serviceName}")
-  private String serviceName;
+    @Value("${elasticsearch.serviceName}")
+    private String serviceName;
 
-  @Value("${aws.sqs.region}")
-  private String region;
+    @Value("${aws.sqs.region}")
+    private String region;
 
-  @Value("${elasticsearch.access.key}")
-  private String accessKey;
+    @Value("${elasticsearch.access.key}")
+    private String accessKey;
 
-  @Value("${elasticsearch.secret.key}")
-  private String secretKey;
+    @Value("${elasticsearch.secret.key}")
+    private String secretKey;
 
-  @Bean(destroyMethod = "close")
-  public RestHighLevelClient client() {
+    @Bean(destroyMethod = "close")
+    public RestHighLevelClient client() {
 
-    AWSCredentialsProvider credentialsProvider = new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
+        AWSCredentialsProvider credentialsProvider = new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
 
-    AWS4Signer signer = new AWS4Signer();
-    signer.setServiceName(serviceName);
-    signer.setRegionName(region);
+        AWS4Signer signer = new AWS4Signer();
+        signer.setServiceName(serviceName);
+        signer.setRegionName(region);
 
-    HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(serviceName, signer, credentialsProvider);
+        HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(serviceName, signer, credentialsProvider);
 
-    HttpHost httpHost = HttpHost.create(String.format("https://%s",host));
-    return new RestHighLevelClient(RestClient.builder(httpHost).setHttpClientConfigCallback(hacb -> hacb.addInterceptorLast(interceptor)));
+        HttpHost httpHost = HttpHost.create(String.format("https://%s", host));
+        return new RestHighLevelClient(RestClient.builder(httpHost).setHttpClientConfigCallback(hacb -> hacb.addInterceptorLast(interceptor)));
 
-  }
+    }
 
 }

@@ -9,9 +9,9 @@ import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
+import uk.gov.digital.ho.hocs.search.client.elasticsearchclient.ElasticSearchClient;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.search.client.infoclient.InfoTopic;
-import uk.gov.digital.ho.hocs.search.client.elasticsearchclient.ElasticSearchClient;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.Topic;
 
@@ -38,11 +38,11 @@ public class CaseDataServiceTest {
     private CreateCaseRequest validCreateCaseRequest = new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", LocalDate.now().plusDays(1), LocalDate.now().plusDays(2));
     private UpdateCaseRequest validUpdateCaseRequest = new UpdateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", UUID.randomUUID(), UUID.randomUUID(), LocalDate.now().plusDays(1), LocalDate.now().plusDays(2));
     private CreateCorrespondentRequest validCreateCorrespondentRequest = new CreateCorrespondentRequest(UUID.randomUUID(), LocalDateTime.now(), "LAW", "FULLNAME", null, "0", "e", "REF");
-    private InfoTopic validInfoTopic = new InfoTopic("VALUE",UUID.randomUUID());
+    private InfoTopic validInfoTopic = new InfoTopic("VALUE", UUID.randomUUID());
     private Topic validTopic = Topic.from(validInfoTopic);
 
     @Before
-    public void setup(){
+    public void setup() {
         caseDataService = new CaseDataService(elasticSearchClient, infoClient, 10);
     }
 
@@ -201,7 +201,7 @@ public class CaseDataServiceTest {
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
         verify(elasticSearchClient, times(1)).update(caseData);
-        verify(infoClient,times(1)).getTopic(validTopic.getUuid());
+        verify(infoClient, times(1)).getTopic(validTopic.getUuid());
 
 
         verify(caseData, times(1)).addTopic(any(Topic.class));
@@ -221,7 +221,7 @@ public class CaseDataServiceTest {
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
         verify(elasticSearchClient, times(1)).update(any(CaseData.class));
-        verify(infoClient,times(1)).getTopic(validTopic.getUuid());
+        verify(infoClient, times(1)).getTopic(validTopic.getUuid());
 
 
         verifyNoMoreInteractions(elasticSearchClient);

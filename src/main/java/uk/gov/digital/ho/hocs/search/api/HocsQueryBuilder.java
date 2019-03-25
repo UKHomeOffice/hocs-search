@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.search.api;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.*;
@@ -23,7 +22,7 @@ class HocsQueryBuilder {
     }
 
     HocsQueryBuilder caseTypes(List<String> caseTypes) {
-        if(caseTypes != null && !caseTypes.isEmpty()) {
+        if (caseTypes != null && !caseTypes.isEmpty()) {
             log.debug("caseTypes size {}, adding to query", caseTypes.size());
             QueryBuilder typeQb = QueryBuilders.termsQuery("type", caseTypes);
             mqb.must(typeQb);
@@ -35,21 +34,21 @@ class HocsQueryBuilder {
     }
 
     HocsQueryBuilder dateRange(DateRangeDto dateRangeDto) {
-        if(dateRangeDto != null) {
+        if (dateRangeDto != null) {
             RangeQueryBuilder rangeQb = QueryBuilders.rangeQuery("created");
-            if(dateRangeDto.getFrom() != null && !dateRangeDto.getFrom().isEmpty()) {
+            if (dateRangeDto.getFrom() != null && !dateRangeDto.getFrom().isEmpty()) {
                 log.debug("dateRange From {}, adding to query", dateRangeDto.getFrom());
                 rangeQb.from(dateRangeDto.getFrom());
             } else {
                 log.debug("dateRange From was null or empty");
             }
-            if(dateRangeDto.getTo() != null && !dateRangeDto.getTo().isEmpty()) {
+            if (dateRangeDto.getTo() != null && !dateRangeDto.getTo().isEmpty()) {
                 log.debug("dateRange To {}, adding to query", dateRangeDto.getTo());
                 rangeQb.to(dateRangeDto.getTo());
             } else {
                 log.debug("dateRange To was null or empty");
             }
-            if((dateRangeDto.getFrom() != null && !dateRangeDto.getFrom().isEmpty()) || (dateRangeDto.getTo() != null && !dateRangeDto.getTo().isEmpty())) {
+            if ((dateRangeDto.getFrom() != null && !dateRangeDto.getFrom().isEmpty()) || (dateRangeDto.getTo() != null && !dateRangeDto.getTo().isEmpty())) {
                 mqb.must(rangeQb);
                 hasClause = true;
             }
@@ -61,7 +60,7 @@ class HocsQueryBuilder {
     }
 
     HocsQueryBuilder correspondent(String correspondentName) {
-        if(correspondentName != null && !correspondentName.isEmpty()) {
+        if (correspondentName != null && !correspondentName.isEmpty()) {
             log.debug("CorrespondentName {}, adding to query", correspondentName);
             QueryBuilder fullnameQb = QueryBuilders.matchQuery("currentCorrespondents.fullname", correspondentName).operator(Operator.AND);
             QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", fullnameQb, ScoreMode.None);
@@ -75,7 +74,7 @@ class HocsQueryBuilder {
     }
 
     HocsQueryBuilder topic(String topicName) {
-        if(topicName != null && !topicName.isEmpty()) {
+        if (topicName != null && !topicName.isEmpty()) {
             log.debug("TopicName {}, adding to query", topicName);
             QueryBuilder topicTextQb = QueryBuilders.matchQuery("currentTopics.text", topicName).operator(Operator.AND);
             QueryBuilder topicQb = QueryBuilders.nestedQuery("currentTopics", topicTextQb, ScoreMode.None);
@@ -88,7 +87,7 @@ class HocsQueryBuilder {
     }
 
     HocsQueryBuilder dataFields(Map<String, String> data) {
-        if(data != null && !data.isEmpty()) {
+        if (data != null && !data.isEmpty()) {
             log.debug("data size {}, adding to query", data.size());
             Set<QueryBuilder> dataQb = data.entrySet().stream().filter(v -> v.getValue() != null && !v.getValue().isEmpty()).map(v -> QueryBuilders.matchQuery(v.getKey(), v.getValue()).operator(Operator.AND)).collect(Collectors.toSet());
             log.debug("filtered data size {}, adding to query", dataQb.size());
@@ -103,7 +102,7 @@ class HocsQueryBuilder {
     }
 
     HocsQueryBuilder activeOnlyFlag(Boolean activeOnly) {
-        if(activeOnly != null && activeOnly) {
+        if (activeOnly != null && activeOnly) {
             log.debug("activeOnly is true size, adding to query");
             QueryBuilder activeQb = QueryBuilders.matchQuery("deleted", false).operator(Operator.AND);
             mqb.must(activeQb);
@@ -114,11 +113,11 @@ class HocsQueryBuilder {
         return this;
     }
 
-    BoolQueryBuilder build(){
+    BoolQueryBuilder build() {
         return this.mqb;
     }
 
-    boolean hasClauses(){
+    boolean hasClauses() {
         return hasClause;
     }
 }

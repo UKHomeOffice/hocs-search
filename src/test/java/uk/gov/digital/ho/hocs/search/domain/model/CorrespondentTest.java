@@ -15,7 +15,7 @@ public class CorrespondentTest {
     private CreateCorrespondentRequest validCreateCorrespondentRequest = new CreateCorrespondentRequest(UUID.randomUUID(), LocalDateTime.now(), "LAW", "FULLNAME", validAddressDto, "0", "e", "REF");
 
     @Test
-    public void shouldCreateCorrespondentConstructor(){
+    public void shouldCreateCorrespondentConstructor() {
 
         Correspondent correspondent = Correspondent.from(validCreateCorrespondentRequest);
 

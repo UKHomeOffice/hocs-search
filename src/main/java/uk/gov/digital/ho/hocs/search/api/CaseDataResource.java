@@ -3,8 +3,9 @@ package uk.gov.digital.ho.hocs.search.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.digital.ho.hocs.search.api.dto.SearchRequest;
 
 import java.util.Set;
@@ -19,12 +20,6 @@ class CaseDataResource {
     @Autowired
     public CaseDataResource(CaseDataService caseDataService) {
         this.caseDataService = caseDataService;
-    }
-
-    @PostMapping(value = "/case/{caseUUID}")
-    ResponseEntity createCase(@PathVariable UUID caseUUID, @RequestBody CreateCaseRequest request) {
-        caseDataService.createCase(caseUUID, request);
-        return ResponseEntity.ok().build();
     }
 
     @PostMapping(value = "/case")
