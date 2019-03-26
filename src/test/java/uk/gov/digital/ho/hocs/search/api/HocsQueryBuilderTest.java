@@ -15,8 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -125,7 +125,7 @@ public class HocsQueryBuilderTest {
 
     @Test
     public void ShouldAddData() {
-        Map<String,String> data = new HashMap<>();
+        Map<String, String> data = new HashMap<>();
         data.put("dataKey", "dataValue");
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
@@ -139,7 +139,7 @@ public class HocsQueryBuilderTest {
 
     @Test
     public void ShouldNotAddNoData() {
-        Map<String,String> data = new HashMap<>();
+        Map<String, String> data = new HashMap<>();
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
         hocsQueryBuilder.dataFields(data);

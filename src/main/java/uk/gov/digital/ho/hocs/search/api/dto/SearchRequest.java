@@ -31,6 +31,6 @@ public class SearchRequest {
     private Map<String, String> data;
 
     @JsonProperty("activeOnly")
-    private Boolean ActiveOnly;
+    private Boolean activeOnly;
 
 }
