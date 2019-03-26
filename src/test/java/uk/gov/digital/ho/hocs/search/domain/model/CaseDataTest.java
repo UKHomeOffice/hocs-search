@@ -3,8 +3,8 @@ package uk.gov.digital.ho.hocs.search.domain.model;
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.CreateTopicRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
-import uk.gov.digital.ho.hocs.search.client.infoclient.InfoTopic;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,7 +18,7 @@ public class CaseDataTest {
     private CreateCaseRequest validCreateCaseRequest = new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", LocalDate.now().plusDays(1), LocalDate.now().plusDays(2));
     private UpdateCaseRequest validUpdateCaseRequest = new UpdateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", UUID.randomUUID(), UUID.randomUUID(), LocalDate.now().plusDays(1), LocalDate.now().plusDays(2));
     private CreateCorrespondentRequest validCreateCorrespondentRequest = new CreateCorrespondentRequest(UUID.randomUUID(), LocalDateTime.now(), "LAW", "FULLNAME", null, "0", "e", "REF");
-    private Topic validTopic = Topic.from(new InfoTopic("VALUE", UUID.randomUUID()));
+    private Topic validTopic = Topic.from(new CreateTopicRequest(UUID.randomUUID(), "VALUE"));
 
     @Test
     public void shouldCreateCaseDataConstructor() {
