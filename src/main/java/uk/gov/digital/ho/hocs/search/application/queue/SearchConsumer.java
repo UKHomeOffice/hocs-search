@@ -103,33 +103,40 @@ public class SearchConsumer extends RouteBuilder {
                 .log("Command processed");
 
         from(CREATE_CASE_QUEUE)
+                .log(LoggingLevel.INFO, CREATE_CASE_QUEUE)
                 .unmarshal().json(JsonLibrary.Jackson, CreateCaseRequest.class)
                 .bean(caseDataService, "createCase(${property.caseUUID}, ${body})")
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
 
         from(UPDATE_CASE_QUEUE)
+                .log(LoggingLevel.INFO, UPDATE_CASE_QUEUE)
                 .unmarshal().json(JsonLibrary.Jackson, UpdateCaseRequest.class)
                 .bean(caseDataService, "updateCase(${property.caseUUID}, ${body})")
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
 
         from(DELETE_CASE_QUEUE)
+                .log(LoggingLevel.INFO, DELETE_CASE_QUEUE)
                 .bean(caseDataService, "deleteCase(${property.caseUUID})")
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
 
         from(CREATE_CORRESPONDENT_QUEUE)
+                .log(LoggingLevel.INFO, CREATE_CORRESPONDENT_QUEUE)
                 .unmarshal().json(JsonLibrary.Jackson, CreateCorrespondentRequest.class)
                 .bean(caseDataService, "createCorrespondent(${property.caseUUID}, ${body})")
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
 
         from(DELETE_CORRESPONDENT_QUEUE)
+                .log(LoggingLevel.INFO, DELETE_CORRESPONDENT_QUEUE)
                 .bean(caseDataService, "deleteCorrespondent(${property.caseUUID}, ${body})")
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
 
         from(CREATE_TOPIC_QUEUE)
+                .log(LoggingLevel.INFO, CREATE_TOPIC_QUEUE)
                 .bean(caseDataService, "createTopic(${property.caseUUID}, ${body})")
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
 
         from(DELETE_TOPIC_QUEUE)
+                .log(LoggingLevel.INFO, DELETE_TOPIC_QUEUE)
                 .bean(caseDataService, "deleteTopic(${property.caseUUID}, ${body})")
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
     }
