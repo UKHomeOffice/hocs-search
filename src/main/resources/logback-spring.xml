@@ -37,7 +37,7 @@
                 </provider>
             </encoder>
         </appender>
-        <logger name="uk.gov" additivity="false" level="INFO">
+        <logger name="uk.gov" additivity="false" level="DEBUG">
             <appender-ref ref="consoleAppender"/>
         </logger>
         <logger name="searchCommandRoute" additivity="false" level="DEBUG">
