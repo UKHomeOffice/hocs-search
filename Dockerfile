@@ -1,4 +1,4 @@
-FROM quay.io/ukhomeofficedigital/openjdk8
+FROM quay.io/ukhomeofficedigital/openjdk11
 
 ENV USER user_hocs_search
 ENV USER_ID 1000
