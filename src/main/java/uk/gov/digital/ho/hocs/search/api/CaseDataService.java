@@ -109,7 +109,7 @@ public class CaseDataService {
 
         Set<UUID> caseUUIDs;
         if (hocsQueryBuilder.hasClauses()) {
-            caseUUIDs = elasticSearchClient.search(hocsQueryBuilder.build());
+            caseUUIDs = elasticSearchClient.search(hocsQueryBuilder.build(), resultsLimit);
         } else {
             caseUUIDs = new HashSet<>(0);
         }
