@@ -51,7 +51,7 @@ public class RestHelper {
         }
     }
 
-    @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 2000))
+    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     public <R> R get(String serviceBaseURL, String url, Class<R> responseType) {
         String requestUrl = String.format("%s%s", serviceBaseURL, url);
         log.debug("GET {}", requestUrl);
