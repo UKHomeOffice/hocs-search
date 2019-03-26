@@ -5,13 +5,8 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
-import uk.gov.digital.ho.hocs.search.api.dto.SearchRequest;
-import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.*;
 import uk.gov.digital.ho.hocs.search.client.elasticsearchclient.ElasticSearchClient;
-import uk.gov.digital.ho.hocs.search.client.infoclient.InfoClient;
-import uk.gov.digital.ho.hocs.search.client.infoclient.InfoTopic;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.Topic;
 
@@ -28,14 +23,11 @@ public class CaseDataService {
 
     private final ElasticSearchClient elasticSearchClient;
 
-    private final InfoClient infoClient;
-
     private final int resultsLimit;
 
     @Autowired
-    public CaseDataService(ElasticSearchClient elasticSearchClient, InfoClient infoClient, @Value("${elastic.results.limit}") int resultsLimit) {
+    public CaseDataService(ElasticSearchClient elasticSearchClient, @Value("${elastic.results.limit}") int resultsLimit) {
         this.elasticSearchClient = elasticSearchClient;
-        this.infoClient = infoClient;
         this.resultsLimit = resultsLimit;
     }
 
@@ -80,13 +72,12 @@ public class CaseDataService {
         log.info("Deleted correspondent {} from case {}", correspondentUUID, caseUUID, value(EVENT, SEARCH_CORRESPONDENT_DELETED));
     }
 
-    public void createTopic(UUID caseUUID, String topicUUID) {
-        log.debug("Adding topic {} to case {}", topicUUID, caseUUID);
+    public void createTopic(UUID caseUUID, CreateTopicRequest createTopicRequest) {
+        log.debug("Adding topic {} to case {}", createTopicRequest.getUuid(), caseUUID);
         CaseData caseData = getCaseData(caseUUID);
-        InfoTopic infoTopic = infoClient.getTopic(UUID.fromString(topicUUID));
-        caseData.addTopic(Topic.from(infoTopic));
+        caseData.addTopic(Topic.from(createTopicRequest));
         elasticSearchClient.update(caseData);
-        log.info("Added topic {} to case {}", topicUUID, caseUUID, value(EVENT, SEARCH_TOPIC_ADDED));
+        log.info("Added topic {} to case {}", createTopicRequest.getUuid(), caseUUID, value(EVENT, SEARCH_TOPIC_ADDED));
     }
 
     public void deleteTopic(UUID caseUUID, String topicUUID) {

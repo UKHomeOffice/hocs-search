@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.search.api.CaseDataService;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.CreateTopicRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
 
 import static uk.gov.digital.ho.hocs.search.application.RequestData.transferHeadersToMDC;
@@ -132,6 +133,7 @@ public class SearchConsumer extends RouteBuilder {
 
         from(CREATE_TOPIC_QUEUE)
                 .log(LoggingLevel.DEBUG, CREATE_TOPIC_QUEUE)
+                .unmarshal().json(JsonLibrary.Jackson, CreateTopicRequest.class)
                 .bean(caseDataService, "createTopic(${property.caseUUID}, ${body})")
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
 
