@@ -14,6 +14,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.search.api.CaseDataService;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.CreateTopicRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
 import uk.gov.digital.ho.hocs.search.application.queue.CreateAuditDto;
 import uk.gov.digital.ho.hocs.search.application.queue.EventType;
@@ -106,10 +107,10 @@ public class SearchConsumerTest extends CamelTestSupport {
     @Test
     public void shouldCallCreateTopic() throws JsonProcessingException {
 
-        CreateAuditDto auditDto = new CreateAuditDto(caseUUID, "\"11111111-2222-2222-2222-333333333333\"", EventType.CASE_TOPIC_CREATED.toString());
+        CreateAuditDto auditDto = new CreateAuditDto(caseUUID, data, EventType.CASE_TOPIC_CREATED.toString());
         String json = mapper.writeValueAsString(auditDto);
         template.sendBody(searchQueue, json);
-        verify(mockDataService, times(1)).createTopic(eq(caseUUID), eq("11111111-2222-2222-2222-333333333333"));
+        verify(mockDataService, times(1)).createTopic(eq(caseUUID), any(CreateTopicRequest.class));
         verifyNoMoreInteractions(mockDataService);
     }
 

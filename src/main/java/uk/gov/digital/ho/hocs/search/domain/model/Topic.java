@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import uk.gov.digital.ho.hocs.search.client.infoclient.InfoTopic;
+import uk.gov.digital.ho.hocs.search.api.dto.CreateTopicRequest;
 
 import java.util.UUID;
 
@@ -17,7 +17,7 @@ public class Topic {
 
     private String text;
 
-    public static Topic from(InfoTopic infoTopic) {
-        return new Topic(infoTopic.getValue(), infoTopic.getLabel());
+    public static Topic from(CreateTopicRequest topicRequest) {
+        return new Topic(topicRequest.getUuid(), topicRequest.getTopicName());
     }
 }
