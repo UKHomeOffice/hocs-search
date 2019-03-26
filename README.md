@@ -1,2 +1,2 @@
-# hocs-casework
-hocs caseworking service
+# hocs-search
+hocs search service
