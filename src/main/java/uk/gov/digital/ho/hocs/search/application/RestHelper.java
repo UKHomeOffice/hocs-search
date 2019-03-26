@@ -21,17 +21,34 @@ import static uk.gov.digital.ho.hocs.search.application.LogEvent.*;
 @Component
 public class RestHelper {
 
-    private String basicAuth;
+    private final String basicAuth;
 
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
-    private RequestData requestData;
+    private final RequestData requestData;
 
     @Autowired
     public RestHelper(RestTemplate restTemplate, @Value("${hocs.basicauth}") String basicAuth, RequestData requestData) {
         this.restTemplate = restTemplate;
         this.basicAuth = basicAuth;
         this.requestData = requestData;
+    }
+
+    private static <T> T validateResponse(ResponseEntity<T> responseEntity) {
+        if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
+            if (responseEntity.hasBody()) {
+                return responseEntity.getBody();
+            } else {
+                log.error("Server returned malformed response %s", responseEntity.getStatusCodeValue(), value(EVENT, REST_HELPER_MALFORMED_RESPONSE));
+                throw new ApplicationExceptions.ResourceServerException("Server returned malformed response", REST_HELPER_MALFORMED_RESPONSE);
+            }
+        } else if (responseEntity.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+            log.error("Server returned not found response %s", responseEntity.getStatusCodeValue(), value(EVENT, REST_HELPER_MALFORMED_RESPONSE));
+            throw new ApplicationExceptions.ResourceNotFoundException("Server returned not found response", REST_HELPER_NOT_FOUND);
+        } else {
+            log.error("Server returned invalid response %s", responseEntity.getStatusCodeValue(), value(EVENT, REST_HELPER_MALFORMED_RESPONSE));
+            throw new ApplicationExceptions.ResourceServerException("Server returned invalid response", REST_HELPER_INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 2000))
@@ -54,23 +71,6 @@ public class RestHelper {
 
     private String getBasicAuth() {
         return String.format("Basic %s", Base64.getEncoder().encodeToString(basicAuth.getBytes(Charset.forName("UTF-8"))));
-    }
-
-    private static <T> T validateResponse(ResponseEntity<T>  responseEntity) {
-        if(responseEntity.getStatusCode().equals(HttpStatus.OK)) {
-            if(responseEntity.hasBody()) {
-                return responseEntity.getBody();
-            } else {
-                log.error("Server returned malformed response %s", responseEntity.getStatusCodeValue() , value(EVENT, REST_HELPER_MALFORMED_RESPONSE));
-                throw new ApplicationExceptions.ResourceServerException("Server returned malformed response", REST_HELPER_MALFORMED_RESPONSE );
-            }
-        } else if(responseEntity.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-            log.error("Server returned not found response %s", responseEntity.getStatusCodeValue() , value(EVENT, REST_HELPER_MALFORMED_RESPONSE));
-            throw new ApplicationExceptions.ResourceNotFoundException("Server returned not found response", REST_HELPER_NOT_FOUND);
-        } else {
-            log.error("Server returned invalid response %s", responseEntity.getStatusCodeValue() , value(EVENT, REST_HELPER_MALFORMED_RESPONSE));
-            throw new ApplicationExceptions.ResourceServerException("Server returned invalid response", REST_HELPER_INTERNAL_SERVER_ERROR);
-        }
     }
 
 }

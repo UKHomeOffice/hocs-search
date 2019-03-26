@@ -15,11 +15,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class HocsSearchApplication {
 
     public static void main(String[] args) {
-        try {
-            SpringApplication.run(HocsSearchApplication.class, args);
-        } catch (Exception e) {
-            log.warn(e.toString());
-        }
+        SpringApplication.run(HocsSearchApplication.class, args);
     }
 
 }

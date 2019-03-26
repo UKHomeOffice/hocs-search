@@ -14,13 +14,13 @@ import java.util.UUID;
 @ToString
 public class CreateAuditDto {
 
-    @JsonProperty(value= "caseUUID")
+    @JsonProperty(value = "caseUUID")
     private UUID caseUUID;
 
-    @JsonProperty(value= "data")
+    @JsonProperty(value = "data")
     private String data;
 
-    @JsonProperty(value= "type")
+    @JsonProperty(value = "type")
     private String type;
 
 }

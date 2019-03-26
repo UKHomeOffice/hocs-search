@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.search.application.aws;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
-import uk.gov.digital.ho.hocs.search.application.aws.SqsConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
