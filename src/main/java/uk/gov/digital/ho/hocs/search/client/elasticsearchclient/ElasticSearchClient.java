@@ -41,7 +41,7 @@ public class ElasticSearchClient {
         this.client = client;
     }
 
-    @Retryable(backoff = @Backoff(delay = 2000))
+    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     public CaseData findById(UUID uuid) {
 
         GetRequest getRequest = new GetRequest("case", "caseData", uuid.toString());
@@ -63,7 +63,7 @@ public class ElasticSearchClient {
         }
     }
 
-    @Retryable(backoff = @Backoff(delay = 2000))
+    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     public void save(CaseData caseData) {
 
         Map<String, Object> documentMapper = objectMapper.convertValue(caseData, Map.class);
@@ -77,7 +77,7 @@ public class ElasticSearchClient {
         }
     }
 
-    @Retryable(backoff = @Backoff(delay = 2000))
+    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     public void update(CaseData caseData) {
 
         CaseData resultDocument = findById(caseData.getCaseUUID());
@@ -95,7 +95,7 @@ public class ElasticSearchClient {
         }
     }
 
-    @Retryable(backoff = @Backoff(delay = 2000))
+    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     public Set<UUID> search(BoolQueryBuilder query, int resultsLimit) {
 
         SearchRequest searchRequest = new SearchRequest();
