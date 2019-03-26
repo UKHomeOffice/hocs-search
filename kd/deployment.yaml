@@ -151,6 +151,8 @@ spec:
               value: 'false'
             - name: SPRING_PROFILES_ACTIVE
               value: 'sqs,awselastic,cache'
+            - name: HOCS_INFO_SERVICE
+              value: 'https://hocs-info-service.{{.KUBE_NAMESPACE}}.svc.cluster.local'
             - name: HOCS_BASICAUTH
               valueFrom:
                 secretKeyRef:
@@ -202,7 +204,7 @@ spec:
               httpHeaders:
                 - name: X-probe
                   value: kubelet
-            initialDelaySeconds: 60
+            initialDelaySeconds: 45
             periodSeconds: 20
             timeoutSeconds: 10
           readinessProbe:
@@ -212,7 +214,7 @@ spec:
               httpHeaders:
                 - name: X-probe
                   value: kubelet
-            initialDelaySeconds: 60
+            initialDelaySeconds: 45
             periodSeconds: 20
             timeoutSeconds: 10
           volumeMounts:
