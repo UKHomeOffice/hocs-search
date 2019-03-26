@@ -35,7 +35,7 @@ class HocsQueryBuilder {
 
     HocsQueryBuilder dateRange(DateRangeDto dateRangeDto) {
         if (dateRangeDto != null) {
-            RangeQueryBuilder rangeQb = QueryBuilders.rangeQuery("created");
+            RangeQueryBuilder rangeQb = QueryBuilders.rangeQuery("dateReceived");
             if (dateRangeDto.getFrom() != null && !dateRangeDto.getFrom().isEmpty()) {
                 log.debug("dateRange From {}, adding to query", dateRangeDto.getFrom());
                 rangeQb.from(dateRangeDto.getFrom());
