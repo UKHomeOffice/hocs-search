@@ -96,11 +96,12 @@ public class ElasticSearchClient {
     }
 
     @Retryable(backoff = @Backoff(delay = 2000))
-    public Set<UUID> search(BoolQueryBuilder query) {
+    public Set<UUID> search(BoolQueryBuilder query, int resultsLimit) {
 
         SearchRequest searchRequest = new SearchRequest();
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(query);
+        searchSourceBuilder.size(resultsLimit);
         searchRequest.source(searchSourceBuilder);
 
         SearchResponse searchResponse = null;
