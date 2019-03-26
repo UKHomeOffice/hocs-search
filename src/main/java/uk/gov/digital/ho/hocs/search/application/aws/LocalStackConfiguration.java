@@ -17,6 +17,19 @@ import org.springframework.context.annotation.Profile;
 @Profile({"local"})
 public class LocalStackConfiguration {
 
+    private final AWSCredentialsProvider awsCredentialsProvider = new AWSCredentialsProvider() {
+
+        @Override
+        public AWSCredentials getCredentials() {
+            return new BasicAWSCredentials("test", "test");
+        }
+
+        @Override
+        public void refresh() {
+            // Do Nothing.
+        }
+    };
+
     @Value("${aws.local.host:localhost}")
     private String awsHost;
 
@@ -32,19 +45,5 @@ public class LocalStackConfiguration {
                 .withEndpointConfiguration(endpoint)
                 .build();
     }
-
-    private final AWSCredentialsProvider awsCredentialsProvider = new AWSCredentialsProvider() {
-
-        @Override
-        public AWSCredentials getCredentials() {
-            return new BasicAWSCredentials("test", "test");
-        }
-
-        @Override
-        public void refresh() {
-
-        }
-
-    };
 
 }

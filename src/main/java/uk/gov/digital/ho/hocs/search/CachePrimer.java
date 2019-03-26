@@ -21,7 +21,7 @@ import static uk.gov.digital.ho.hocs.search.application.LogEvent.EVENT;
 @Profile({"cache"})
 public class CachePrimer {
 
-    private InfoClient infoClient;
+    private final InfoClient infoClient;
 
     @Autowired
     public CachePrimer(InfoClient infoClient) {
@@ -41,11 +41,11 @@ public class CachePrimer {
             log.debug("Priming topic cache");
             Set<String> topics = infoClient.getAllTopicUUIDs();
             for (String topic : topics) {
-               infoClient.getTopic(UUID.fromString(topic));
+                infoClient.getTopic(UUID.fromString(topic));
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             log.warn("Failed to prime topic cache", value(EVENT, CACHE_PRIME_FAILED));
         }
-        log.info("Caches primed");
+        log.info("Finished priming caches");
     }
 }

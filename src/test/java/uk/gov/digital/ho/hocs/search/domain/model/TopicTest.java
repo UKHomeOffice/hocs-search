@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TopicTest {
 
     @Test
-    public void shouldCreateTopic(){
+    public void shouldCreateTopic() {
         UUID uuid = UUID.randomUUID();
         String value = "VALUE";
 

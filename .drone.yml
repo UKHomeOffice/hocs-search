@@ -1,12 +1,12 @@
 pipeline:
 
   build-project:
-    image: quay.io/ukhomeofficedigital/openjdk8
+    image: quay.io/ukhomeofficedigital/openjdk11
     commands:
       - export SPRING_PROFILES_ACTIVE='development, local'
       - export SERVER_PORT='8080'
-      - export CASE_QUEUE_NAME='search-queue'
-      - export CASE_QUEUE_DLQ_NAME='search-queue-dlq'
+      - export SEARCH_QUEUE_NAME='search-queue'
+      - export SEARCH_QUEUE_DLQ_NAME='search-queue-dlq'
       - export DB_HOST='postgres'
       - export AWS_LOCAL_HOST='localstack'
       - ./gradlew cleanTest build --no-daemon --max-workers 2
@@ -132,11 +132,6 @@ pipeline:
       environment: prod
 
 services:
-  postgres:
-    image: quay.io/ukhomeofficedigital/postgres-alpine
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: dev
   localstack:
     image: localstack/localstack:latest
     environment:
@@ -149,31 +144,9 @@ services:
       - /bin/sh
       - -c
       - |
-          aws --endpoint-url=http://localstack:4572 s3 mb s3://untrusted-bucket
-          aws --endpoint-url=http://localstack:4572 s3 mb s3://trusted-bucket
-          aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name case-queue
-          aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name case-queue-dlq
-          aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name document-queue
-          aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name document-queue-dlq
-          aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name reporting-queue
-          aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name reporting-queue-dlq
+          aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name search-queue
+          aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name search-queue-dlq
     environment:
       AWS_ACCESS_KEY_ID: UNSET
       AWS_SECRET_ACCESS_KEY: UNSET
       AWS_DEFAULT_REGION: 'eu-west-2'
-  #selenium:
-  #  image: selenium/hub
-
-  #chrome:
-  #  image: selenium/node-chrome
-  #  environment:
-  #    HUB_PORT_4444_TCP_ADDR: selenium
-  #    HUB_PORT_4444_TCP_PORT: "4444"
-  #    DISPLAY: ":99.0"
-
-  #firefox:
-  #  image: selenium/node-firefox
-  #  environment:
-  #    HUB_PORT_4444_TCP_ADDR: selenium
-  #    HUB_PORT_4444_TCP_PORT: "4444"
-  #    DISPLAY: ":98.0"
