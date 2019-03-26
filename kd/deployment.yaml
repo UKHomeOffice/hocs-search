@@ -3,7 +3,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   annotations:
-    downscaler/uptime: Mon-Fri 09:00-17:30 Europe/London
+    downscaler/uptime: Mon-Fri 07:55-17:30 Europe/London
   name: hocs-search
   labels:
     version: {{.VERSION}}
@@ -81,7 +81,7 @@ spec:
               readOnly: true
 
         - name: proxy
-          image: quay.io/ukhomeofficedigital/nginx-proxy:v3.4.2
+          image: quay.io/ukhomeofficedigital/nginx-proxy:v3.4.9
           imagePullPolicy: Always
           securityContext:
             runAsNonRoot: true
@@ -150,7 +150,7 @@ spec:
             - name: ENDPOINTS_INFO_ENABLED
               value: 'false'
             - name: SPRING_PROFILES_ACTIVE
-              value: 'sqs,awselastic'
+              value: 'sqs,awselastic,cache'
             - name: HOCS_BASICAUTH
               valueFrom:
                 secretKeyRef:
