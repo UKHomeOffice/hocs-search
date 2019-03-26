@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.search.api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.*;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import uk.gov.digital.ho.hocs.search.api.dto.DateRangeDto;
 
 import java.util.List;
