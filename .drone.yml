@@ -72,7 +72,7 @@ pipeline:
       - ENVIRONMENT=qa
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_casework_qa
+      - hocs_search_qa
     commands:
       - source version.txt
       - echo $VERSION
