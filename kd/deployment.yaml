@@ -155,7 +155,7 @@ spec:
                   name: ui-casework-creds
                   key: plaintext
             - name: ELASTIC_SEARCH_INDEX
-              value: {{.KUBE_NAMESPACE}}-search-sqs
+              value: {{.KUBE_NAMESPACE}}
             - name: SEARCH_QUEUE_NAME
               value: {{.KUBE_NAMESPACE}}-search-sqs
             - name: SEARCH_QUEUE_DLQ_NAME
