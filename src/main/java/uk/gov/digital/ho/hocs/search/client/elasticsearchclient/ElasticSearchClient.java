@@ -42,7 +42,7 @@ public class ElasticSearchClient {
     public ElasticSearchClient(ObjectMapper objectMapper, RestHighLevelClient client, @Value("${elastic.index.prefix}") String prefix) {
         this.objectMapper = objectMapper;
         this.client = client;
-        this.index = String.join(prefix, "case");
+        this.index = String.format("%s%s",prefix, "case");
         log.info("Using index %s", index);
     }
 
