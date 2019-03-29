@@ -2,8 +2,6 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  annotations:
-    downscaler/uptime: Mon-Fri 07:55-17:30 Europe/London
   name: hocs-search
   labels:
     version: {{.VERSION}}
