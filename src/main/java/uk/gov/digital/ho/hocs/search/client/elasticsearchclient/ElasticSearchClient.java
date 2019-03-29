@@ -43,6 +43,7 @@ public class ElasticSearchClient {
         this.objectMapper = objectMapper;
         this.client = client;
         this.index = String.join(prefix, "case");
+        log.info("Using index %s", index);
     }
 
     @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
