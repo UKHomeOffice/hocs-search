@@ -42,8 +42,8 @@ public class ElasticSearchClient {
     public ElasticSearchClient(ObjectMapper objectMapper, RestHighLevelClient client, @Value("${elastic.index.prefix}") String prefix) {
         this.objectMapper = objectMapper;
         this.client = client;
-        this.index = String.format("%s%s",prefix, "case");
-        log.info("Using index %s", index);
+        this.index = String.format("%s-%s", prefix, "case");
+        log.info("Using index {}", index);
     }
 
     @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
