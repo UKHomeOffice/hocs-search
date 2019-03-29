@@ -154,7 +154,7 @@ spec:
                 secretKeyRef:
                   name: ui-casework-creds
                   key: plaintext
-            - name: ELASTIC_SEARCH_INDEX
+            - name: ELASTIC_INDEX_PREFIX
               value: {{.KUBE_NAMESPACE}}
             - name: SEARCH_QUEUE_NAME
               value: {{.KUBE_NAMESPACE}}-search-sqs
