@@ -15,6 +15,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
@@ -35,16 +36,19 @@ public class ElasticSearchClient {
 
     private final RestHighLevelClient client;
 
+    private final String index;
+
     @Autowired
-    public ElasticSearchClient(ObjectMapper objectMapper, RestHighLevelClient client) {
+    public ElasticSearchClient(ObjectMapper objectMapper, RestHighLevelClient client, @Value("${elastic.index.prefix}") String prefix) {
         this.objectMapper = objectMapper;
         this.client = client;
+        this.index = String.join(prefix, "case");
     }
 
     @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     public CaseData findById(UUID uuid) {
 
-        GetRequest getRequest = new GetRequest("case", "caseData", uuid.toString());
+        GetRequest getRequest = new GetRequest(index, "caseData", uuid.toString());
 
         GetResponse getResponse = null;
         try {
@@ -68,7 +72,7 @@ public class ElasticSearchClient {
 
         Map<String, Object> documentMapper = objectMapper.convertValue(caseData, Map.class);
 
-        IndexRequest indexRequest = new IndexRequest("case", "caseData", caseData.getCaseUUID().toString()).source(documentMapper);
+        IndexRequest indexRequest = new IndexRequest(index, "caseData", caseData.getCaseUUID().toString()).source(documentMapper);
 
         try {
             client.index(indexRequest, RequestOptions.DEFAULT);
@@ -82,7 +86,7 @@ public class ElasticSearchClient {
 
         CaseData resultDocument = findById(caseData.getCaseUUID());
 
-        UpdateRequest updateRequest = new UpdateRequest("case", "caseData", resultDocument.getCaseUUID().toString());
+        UpdateRequest updateRequest = new UpdateRequest(index, "caseData", resultDocument.getCaseUUID().toString());
 
         Map<String, Object> documentMapper = objectMapper.convertValue(caseData, Map.class);
 
