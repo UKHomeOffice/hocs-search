@@ -8,6 +8,8 @@ import com.amazonaws.http.AWSRequestSigningApacheInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -46,14 +48,19 @@ public class AwsElasticSearchConfiguration {
         signer.setRegionName(region);
 
         RestClientBuilder builder = RestClient.builder( new HttpHost(String.format("https://%s", host)));
-        builder.setHttpClientConfigCallback(httpClientBuilder -> {
-            httpClientBuilder.useSystemProperties();
-            return httpClientBuilder;
+        builder.setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
+            @Override
+            public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+                httpClientBuilder.useSystemProperties();
+                return httpClientBuilder;
+            }
         });
 
         HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(serviceName, signer, credentialsProvider);
         builder.setHttpClientConfigCallback(hacb -> hacb.addInterceptorLast(interceptor));
 
         return new RestHighLevelClient(builder);
+
     }
+
 }
