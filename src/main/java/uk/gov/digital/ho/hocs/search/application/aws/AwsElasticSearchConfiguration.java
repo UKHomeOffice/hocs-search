@@ -55,7 +55,7 @@ public class AwsElasticSearchConfiguration {
             }
         };
 
-        RestClientBuilder builder = RestClient.builder( new HttpHost(String.format("https://%s", host)));
+        RestClientBuilder builder = RestClient.builder( new HttpHost(host,-1, "HTTPS"));
         builder.setHttpClientConfigCallback(rcb);
 
         HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(serviceName, signer, credentialsProvider);
