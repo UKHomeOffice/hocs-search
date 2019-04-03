@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -44,11 +45,15 @@ public class AwsElasticSearchConfiguration {
         signer.setServiceName(serviceName);
         signer.setRegionName(region);
 
+        RestClientBuilder builder = RestClient.builder( new HttpHost(String.format("https://%s", host)));
+        builder.setHttpClientConfigCallback(httpClientBuilder -> {
+            httpClientBuilder.useSystemProperties();
+            return httpClientBuilder;
+        });
+
         HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(serviceName, signer, credentialsProvider);
+        builder.setHttpClientConfigCallback(hacb -> hacb.addInterceptorLast(interceptor));
 
-        HttpHost httpHost = HttpHost.create(String.format("https://%s", host));
-        return new RestHighLevelClient(RestClient.builder(httpHost).setHttpClientConfigCallback(hacb -> hacb.addInterceptorLast(interceptor)));
-
+        return new RestHighLevelClient(builder);
     }
-
 }
