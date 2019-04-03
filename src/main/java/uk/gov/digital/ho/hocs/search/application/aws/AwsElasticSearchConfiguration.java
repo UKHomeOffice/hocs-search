@@ -55,8 +55,7 @@ public class AwsElasticSearchConfiguration {
             @Override
             public HttpAsyncClientBuilder customizeHttpClient(
                     HttpAsyncClientBuilder httpClientBuilder) {
-                return httpClientBuilder.setProxy(
-                        new HttpHost("hocs-outbound-proxy.cs-dev.svc.cluster.local", 31290, "http")).addInterceptorLast(interceptor);
+                return httpClientBuilder.useSystemProperties().addInterceptorLast(interceptor);
             }
         });
 
