@@ -47,19 +47,18 @@ public class AwsElasticSearchConfiguration {
         signer.setServiceName(serviceName);
         signer.setRegionName(region);
 
-        RestClientBuilder.HttpClientConfigCallback rcb = new RestClientBuilder.HttpClientConfigCallback() {
-            @Override
-            public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
-                httpClientBuilder.useSystemProperties().setProxy(new HttpHost("https://hocs-outbound-proxy.cs-dev.svc.cluster.local:31290"));
-                return httpClientBuilder;
-            }
-        };
-
-        RestClientBuilder builder = RestClient.builder( new HttpHost(host,-1, "HTTPS"));
-        builder.setHttpClientConfigCallback(rcb);
-
         HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(serviceName, signer, credentialsProvider);
-        builder.setHttpClientConfigCallback(hacb -> hacb.addInterceptorLast(interceptor));
+
+        RestClientBuilder builder = RestClient.builder(
+                new HttpHost("host", 443, "https"));
+        builder.setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
+            @Override
+            public HttpAsyncClientBuilder customizeHttpClient(
+                    HttpAsyncClientBuilder httpClientBuilder) {
+                return httpClientBuilder.setProxy(
+                        new HttpHost("hocs-outbound-proxy.cs-dev.svc.cluster.local", 31290, "https")).addInterceptorLast(interceptor);
+            }
+        });
 
         return new RestHighLevelClient(builder);
 
