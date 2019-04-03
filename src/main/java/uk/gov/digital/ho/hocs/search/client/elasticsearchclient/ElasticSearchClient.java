@@ -55,7 +55,7 @@ public class ElasticSearchClient {
         try {
             getResponse = client.get(getRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Unable to find Case: %s", uuid), CASE_NOT_FOUND);
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Unable to find Case: %s. %s", uuid, e.toString()), CASE_NOT_FOUND);
         }
         Map<String, Object> resultMap = getResponse.getSource();
 
@@ -78,7 +78,7 @@ public class ElasticSearchClient {
         try {
             client.index(indexRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            throw new ApplicationExceptions.ResourceServerException(String.format("Unable to find Case: %s", caseData.getCaseUUID()), CASE_SAVE_FAILED);
+            throw new ApplicationExceptions.ResourceServerException(String.format("Unable to find Case: %s. %s", caseData.getCaseUUID(), e.toString()), CASE_SAVE_FAILED);
         }
     }
 
@@ -96,7 +96,7 @@ public class ElasticSearchClient {
         try {
             client.update(updateRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            throw new ApplicationExceptions.ResourceServerException(String.format("Unable to update Case: %s", caseData.getCaseUUID()), CASE_UPDATE_FAILED);
+            throw new ApplicationExceptions.ResourceServerException(String.format("Unable to update Case: %s. %s", caseData.getCaseUUID(), e.toString()), CASE_UPDATE_FAILED);
         }
     }
 
@@ -113,7 +113,7 @@ public class ElasticSearchClient {
         try {
             searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            log.warn("Search failed, returning empty set");
+            log.warn("Search failed, returning empty set.");
             return new HashSet<>();
         }
 
