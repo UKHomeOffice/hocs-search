@@ -50,7 +50,7 @@ public class AwsElasticSearchConfiguration {
         HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(serviceName, signer, credentialsProvider);
 
         RestClientBuilder builder = RestClient.builder(
-                new HttpHost("host", 443, "https"));
+                new HttpHost(host, 443, "https"));
         builder.setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
             @Override
             public HttpAsyncClientBuilder customizeHttpClient(
