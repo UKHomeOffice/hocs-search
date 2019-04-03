@@ -50,13 +50,13 @@ public class AwsElasticSearchConfiguration {
         HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(serviceName, signer, credentialsProvider);
 
         RestClientBuilder builder = RestClient.builder(
-                new HttpHost(host, 443, "https"));
+                new HttpHost(host, -1, "https"));
         builder.setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
             @Override
             public HttpAsyncClientBuilder customizeHttpClient(
                     HttpAsyncClientBuilder httpClientBuilder) {
                 return httpClientBuilder.setProxy(
-                        new HttpHost("hocs-outbound-proxy.cs-dev.svc.cluster.local", 31290, "https")).addInterceptorLast(interceptor);
+                        new HttpHost("hocs-outbound-proxy.cs-dev.svc.cluster.local", 31290, "http")).addInterceptorLast(interceptor);
             }
         });
 
