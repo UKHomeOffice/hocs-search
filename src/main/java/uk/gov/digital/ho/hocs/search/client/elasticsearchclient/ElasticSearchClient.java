@@ -103,7 +103,7 @@ public class ElasticSearchClient {
     @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     public Set<UUID> search(BoolQueryBuilder query, int resultsLimit) {
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest(this.index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(query);
         searchSourceBuilder.size(resultsLimit);
@@ -113,7 +113,7 @@ public class ElasticSearchClient {
         try {
             searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            log.warn("Search failed, returning empty set.");
+            log.warn("Search failed, returning empty set. {}", e.toString());
             return new HashSet<>();
         }
 
