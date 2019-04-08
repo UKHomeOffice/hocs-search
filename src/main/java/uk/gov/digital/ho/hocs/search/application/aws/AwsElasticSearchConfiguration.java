@@ -8,7 +8,6 @@ import com.amazonaws.http.AWSRequestSigningApacheInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
