@@ -79,7 +79,7 @@ spec:
               readOnly: true
 
         - name: proxy
-          image: quay.io/ukhomeofficedigital/nginx-proxy:v3.4.9
+          image: quay.io/ukhomeofficedigital/nginx-proxy:v3.4.12
           imagePullPolicy: Always
           securityContext:
             runAsNonRoot: true
@@ -202,7 +202,7 @@ spec:
               httpHeaders:
                 - name: X-probe
                   value: kubelet
-            initialDelaySeconds: 45
+            initialDelaySeconds: 60
             periodSeconds: 20
             timeoutSeconds: 10
           readinessProbe:
@@ -212,7 +212,7 @@ spec:
               httpHeaders:
                 - name: X-probe
                   value: kubelet
-            initialDelaySeconds: 45
+            initialDelaySeconds: 60
             periodSeconds: 20
             timeoutSeconds: 10
           volumeMounts:
