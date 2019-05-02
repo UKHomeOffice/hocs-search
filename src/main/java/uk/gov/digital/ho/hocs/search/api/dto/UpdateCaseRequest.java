@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -37,5 +38,8 @@ public class UpdateCaseRequest {
 
     @JsonProperty("dateReceived")
     private LocalDate dateReceived;
+
+    @JsonProperty("data")
+    private Map<String,String> data;
 
 }
