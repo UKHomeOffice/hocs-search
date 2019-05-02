@@ -173,7 +173,7 @@ spec:
             - name: ELASTICSEARCH_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: cs-notprod-elasticsearch
+                  name: {{.KUBE_NAMESPACE}}-elasticsearch
                   key: secret_access_key
             - name: AWS_SQS_ACCESS_KEY
               valueFrom:
