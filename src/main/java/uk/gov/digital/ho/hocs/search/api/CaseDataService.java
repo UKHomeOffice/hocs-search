@@ -56,6 +56,14 @@ public class CaseDataService {
         log.info("Deleted case {}", caseUUID, value(EVENT, SEARCH_CASE_DELETED));
     }
 
+    public void completeCase(UUID caseUUID) {
+        log.debug("Complete case {}", caseUUID);
+        CaseData caseData = getCaseData(caseUUID);
+        caseData.complete();
+        elasticSearchClient.update(caseData);
+        log.info("Compeleted case {}", caseUUID, value(EVENT, SEARCH_CASE_DELETED));
+    }
+
     public void createCorrespondent(UUID caseUUID, CreateCorrespondentRequest createCorrespondentRequest) {
         log.debug("Adding correspondent {} to case {}", createCorrespondentRequest.getUuid(), caseUUID);
         CaseData caseData = getCaseData(caseUUID);

@@ -85,6 +85,16 @@ public class SearchConsumerTest extends CamelTestSupport {
     }
 
     @Test
+    public void shouldCallCompleteCase() throws JsonProcessingException {
+
+        CreateAuditDto auditDto = new CreateAuditDto(caseUUID, data, EventType.CASE_COMPLETED.toString());
+        String json = mapper.writeValueAsString(auditDto);
+        template.sendBody(searchQueue, json);
+        verify(mockDataService, times(1)).deleteCase(eq(caseUUID));
+        verifyNoMoreInteractions(mockDataService);
+    }
+
+    @Test
     public void shouldCallCreateCorrespondent() throws JsonProcessingException {
 
         CreateAuditDto auditDto = new CreateAuditDto(caseUUID, data, EventType.CORRESPONDENT_CREATED.toString());
