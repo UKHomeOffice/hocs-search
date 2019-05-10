@@ -116,7 +116,7 @@ public class CaseDataServiceTest {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
 
-        caseDataService.deleteCase(caseUUID);
+        caseDataService.completeCase(caseUUID);
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
         verify(elasticSearchClient, times(1)).update(caseData);
@@ -133,6 +133,19 @@ public class CaseDataServiceTest {
         when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
         caseDataService.deleteCase(caseUUID);
+
+        verify(elasticSearchClient, times(1)).findById(caseUUID);
+        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
+
+        verifyNoMoreInteractions(elasticSearchClient);
+    }
+
+    @Test
+    public void ShouldCreateNewIfNotFoundCompleteCase() {
+
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
+
+        caseDataService.completeCase(caseUUID);
 
         verify(elasticSearchClient, times(1)).findById(caseUUID);
         verify(elasticSearchClient, times(1)).update(any(CaseData.class));
