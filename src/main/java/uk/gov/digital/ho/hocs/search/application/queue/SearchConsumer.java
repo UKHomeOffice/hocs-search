@@ -21,7 +21,8 @@ public class SearchConsumer extends RouteBuilder {
 
     private static final String CREATE_CASE_QUEUE = "direct:createCaseQueue";
     private static final String UPDATE_CASE_QUEUE = "direct:updateCaseQueue";
-    private static final String DELETE_CASE_QUEUE = "direct:deleteCasetQueue";
+    private static final String DELETE_CASE_QUEUE = "direct:deleteCaseQueue";
+    private static final String COMPLETE_CASE_QUEUE = "direct:completeCaseQueue";
     private static final String CREATE_CORRESPONDENT_QUEUE = "direct:createCorrespondentQueue";
     private static final String DELETE_CORRESPONDENT_QUEUE = "direct:deleteCorrespondentQueue";
     private static final String CREATE_TOPIC_QUEUE = "direct:createTopicQueue";
@@ -84,6 +85,9 @@ public class SearchConsumer extends RouteBuilder {
                 .when(simple("${property.type} == '" + EventType.CASE_DELETED + "'"))
                 .to(DELETE_CASE_QUEUE)
                 .endChoice()
+                .when(simple("${property.type} == '" + EventType.CASE_COMPLETED + "'"))
+                .to(COMPLETE_CASE_QUEUE)
+                .endChoice()
                 .when(simple("${property.type} == '" + EventType.CORRESPONDENT_CREATED + "'"))
                 .to(CREATE_CORRESPONDENT_QUEUE)
                 .endChoice()
@@ -118,6 +122,11 @@ public class SearchConsumer extends RouteBuilder {
         from(DELETE_CASE_QUEUE)
                 .log(LoggingLevel.DEBUG, DELETE_CASE_QUEUE)
                 .bean(caseDataService, "deleteCase(${property.caseUUID})")
+                .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
+
+        from(COMPLETE_CASE_QUEUE)
+                .log(LoggingLevel.DEBUG, COMPLETE_CASE_QUEUE)
+                .bean(caseDataService, "completeCase(${property.caseUUID})")
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
 
         from(CREATE_CORRESPONDENT_QUEUE)
