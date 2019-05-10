@@ -90,7 +90,7 @@ public class SearchConsumerTest extends CamelTestSupport {
         CreateAuditDto auditDto = new CreateAuditDto(caseUUID, data, EventType.CASE_COMPLETED.toString());
         String json = mapper.writeValueAsString(auditDto);
         template.sendBody(searchQueue, json);
-        verify(mockDataService, times(1)).deleteCase(eq(caseUUID));
+        verify(mockDataService, times(1)).completeCase(eq(caseUUID));
         verifyNoMoreInteractions(mockDataService);
     }
 
