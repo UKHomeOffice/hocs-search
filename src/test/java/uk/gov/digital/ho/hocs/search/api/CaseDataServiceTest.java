@@ -112,6 +112,22 @@ public class CaseDataServiceTest {
     }
 
     @Test
+    public void ShouldCallCollaboratorsCompleteCase() {
+
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
+
+        caseDataService.deleteCase(caseUUID);
+
+        verify(elasticSearchClient, times(1)).findById(caseUUID);
+        verify(elasticSearchClient, times(1)).update(caseData);
+
+        verify(caseData, times(1)).complete();
+
+        verifyNoMoreInteractions(elasticSearchClient);
+        verifyNoMoreInteractions(caseData);
+    }
+
+    @Test
     public void ShouldCreateNewIfNotFoundDeleteCase() {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));

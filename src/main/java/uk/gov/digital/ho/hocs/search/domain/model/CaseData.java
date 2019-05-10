@@ -36,6 +36,8 @@ public class CaseData {
 
     private Boolean deleted = false;
 
+    private Boolean completed = false;
+
     private Set<Correspondent> currentCorrespondents = new HashSet<>();
 
     private Set<Correspondent> allCorrespondents = new HashSet<>();
@@ -68,6 +70,10 @@ public class CaseData {
 
     public void delete() {
         this.deleted = true;
+    }
+
+    public void complete() {
+        this.completed = true;
     }
 
     public void addCorrespondent(CreateCorrespondentRequest createCorrespondentRequest) {

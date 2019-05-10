@@ -84,7 +84,6 @@ public class CaseDataTest {
         assertThat(caseData.getAllTopics()).isEmpty();
     }
 
-
     @Test
     public void shouldDeleteCaseData() {
         CaseData caseData = new CaseData(caseUUID);
@@ -94,6 +93,17 @@ public class CaseDataTest {
         caseData.delete();
 
         assertThat(caseData.getDeleted()).isTrue();
+    }
+
+    @Test
+    public void shouldCompleteCaseData() {
+        CaseData caseData = new CaseData(caseUUID);
+
+        assertThat(caseData.getCompleted()).isFalse();
+
+        caseData.complete();
+
+        assertThat(caseData.getCompleted()).isTrue();
     }
 
     @Test
