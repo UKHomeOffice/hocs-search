@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.search.api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.*;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
 import uk.gov.digital.ho.hocs.search.api.dto.DateRangeDto;
 
 import java.util.List;
@@ -105,7 +104,7 @@ class HocsQueryBuilder {
     HocsQueryBuilder activeOnlyFlag(Boolean activeOnly) {
         if (activeOnly != null && activeOnly) {
             log.debug("activeOnly is true size, adding to query");
-            QueryBuilder activeQb = QueryBuilders.matchQuery("deleted", false).operator(Operator.AND);
+            QueryBuilder activeQb = QueryBuilders.matchQuery("completed", false).operator(Operator.AND);
             mqb.must(activeQb);
             hasClause = true;
         } else {
@@ -115,6 +114,8 @@ class HocsQueryBuilder {
     }
 
     BoolQueryBuilder build() {
+        QueryBuilder deletedQb = QueryBuilders.matchQuery("deleted", false).operator(Operator.AND);
+        this.mqb.must(deletedQb);
         return this.mqb;
     }
 
