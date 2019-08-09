@@ -89,7 +89,7 @@ class HocsQueryBuilder {
     HocsQueryBuilder dataFields(Map<String, String> data) {
         if (data != null && !data.isEmpty()) {
             log.debug("data size {}, adding to query", data.size());
-            Set<QueryBuilder> dataQb = data.entrySet().stream().filter(v -> v.getValue() != null && !v.getValue().isEmpty()).map(v -> QueryBuilders.matchQuery(v.getKey(), v.getValue()).operator(Operator.AND)).collect(Collectors.toSet());
+            Set<QueryBuilder> dataQb = data.entrySet().stream().filter(v -> v.getValue() != null && !v.getValue().isEmpty()).map(v -> QueryBuilders.matchQuery("data." + v.getKey(), v.getValue()).operator(Operator.AND)).collect(Collectors.toSet());
             log.debug("filtered data size {}, adding to query", dataQb.size());
             for (QueryBuilder qb : dataQb) {
                 mqb.must(qb);
