@@ -133,7 +133,7 @@ public class HocsQueryBuilderTest {
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
 
-        assertThat(bqb.toString()).contains("dataKey");
+        assertThat(bqb.toString()).contains("data.dataKey");
         assertThat(bqb.toString()).contains("dataValue");
     }
 
