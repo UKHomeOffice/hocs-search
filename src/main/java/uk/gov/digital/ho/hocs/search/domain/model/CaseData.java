@@ -10,6 +10,7 @@ import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -46,6 +47,8 @@ public class CaseData {
 
     private Set<Topic> allTopics = new HashSet<>();
 
+    private Map data;
+
     public CaseData(UUID uuid) {
         this.caseUUID = uuid;
     }
@@ -56,6 +59,7 @@ public class CaseData {
         this.reference = createCaseRequest.getReference();
         this.caseDeadline = createCaseRequest.getCaseDeadline();
         this.dateReceived = createCaseRequest.getDateReceived();
+        this.data = createCaseRequest.getData();
     }
 
     public void update(UpdateCaseRequest updateCaseRequest) {
@@ -66,6 +70,7 @@ public class CaseData {
         this.primaryCorrespondent = updateCaseRequest.getPrimaryCorrespondent();
         this.caseDeadline = updateCaseRequest.getCaseDeadline();
         this.dateReceived = updateCaseRequest.getDateReceived();
+        this.data = updateCaseRequest.getData();
     }
 
     public void delete() {
