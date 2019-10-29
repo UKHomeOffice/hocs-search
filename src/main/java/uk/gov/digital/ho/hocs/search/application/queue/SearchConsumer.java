@@ -153,6 +153,9 @@ public class SearchConsumer extends RouteBuilder {
     }
 
     private Processor createPayload() {
-        return exchange -> exchange.getOut().setBody(exchange.getProperty("payLoad"));
+        return exchange -> {
+            final Object payLoad = exchange.getProperty("payLoad");
+            exchange.getOut().setBody(payLoad);
+        };
     }
 }
