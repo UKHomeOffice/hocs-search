@@ -39,241 +39,264 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void ShouldCallCollaboratorsCreateCase() {
+    public void createCase_newCaseData() {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
+        when(caseData.isNewCaseData()).thenReturn(true);
 
         caseDataService.createCase(caseUUID, validCreateCaseRequest);
 
-        verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).save(caseData);
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).save(caseData);
 
-        verify(caseData, times(1)).create(validCreateCaseRequest);
+        verify(caseData).create(validCreateCaseRequest);
+        verify(caseData).isNewCaseData();
 
-        verifyNoMoreInteractions(elasticSearchClient);
-        verifyNoMoreInteractions(caseData);
+        verifyNoMoreInteractions(elasticSearchClient, caseData);
     }
 
     @Test
-    public void ShouldCreateNewIfNotFoundCreateCase() {
+    public void createCase_oldCaseData() {
 
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
+        when(caseData.isNewCaseData()).thenReturn(false);
 
         caseDataService.createCase(caseUUID, validCreateCaseRequest);
 
-        verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).save(any(CaseData.class));
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).update(caseData);
 
-        verifyNoMoreInteractions(elasticSearchClient);
+        verify(caseData).create(validCreateCaseRequest);
+        verify(caseData).isNewCaseData();
+
+        verifyNoMoreInteractions(elasticSearchClient, caseData);
     }
 
     @Test
-    public void ShouldCallCollaboratorsUpdateCase() {
+    public void updateCase_newCaseData() {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
+        when(caseData.isNewCaseData()).thenReturn(true);
 
         caseDataService.updateCase(caseUUID, validUpdateCaseRequest);
 
-        verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).update(caseData);
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).save(caseData);
 
-        verify(caseData, times(1)).update(validUpdateCaseRequest);
+        verify(caseData).update(validUpdateCaseRequest);
+        verify(caseData).isNewCaseData();
 
-        verifyNoMoreInteractions(elasticSearchClient);
-        verifyNoMoreInteractions(caseData);
+        verifyNoMoreInteractions(elasticSearchClient, caseData);
     }
 
     @Test
-    public void ShouldCreateNewIfNotFoundUpdateCase() {
+    public void updateCase_oldCaseData() {
+
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
+        when(caseData.isNewCaseData()).thenReturn(false);
+
+        caseDataService.updateCase(caseUUID, validUpdateCaseRequest);
+
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).update(caseData);
+
+        verify(caseData).update(validUpdateCaseRequest);
+        verify(caseData).isNewCaseData();
+
+        verifyNoMoreInteractions(elasticSearchClient, caseData);
+    }
+
+    @Test
+    public void shouldCreateNewIfNotFoundSaveCase() {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
         caseDataService.updateCase(caseUUID, validUpdateCaseRequest);
 
-        verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).save(any(CaseData.class));
 
-        verifyNoMoreInteractions(elasticSearchClient);
+        verifyNoMoreInteractions(elasticSearchClient, caseData);
     }
 
     @Test
-    public void ShouldCallCollaboratorsDeleteCase() {
+    public void shouldCallCollaboratorsDeleteCase() {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
 
         caseDataService.deleteCase(caseUUID);
 
-        verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).update(caseData);
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).update(caseData);
 
-        verify(caseData, times(1)).delete();
+        verify(caseData).delete();
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
     }
 
     @Test
-    public void ShouldCallCollaboratorsCompleteCase() {
+    public void shouldCallCollaboratorsCompleteCase() {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
 
         caseDataService.completeCase(caseUUID);
 
-        verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).update(caseData);
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).update(caseData);
 
-        verify(caseData, times(1)).complete();
+        verify(caseData).complete();
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
     }
 
     @Test
-    public void ShouldCreateNewIfNotFoundDeleteCase() {
+    public void shouldCreateNewIfNotFoundDeleteCase() {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
         caseDataService.deleteCase(caseUUID);
 
-        verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).update(any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
     }
 
     @Test
-    public void ShouldCreateNewIfNotFoundCompleteCase() {
+    public void shouldCreateNewIfNotFoundCompleteCase() {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
         caseDataService.completeCase(caseUUID);
 
-        verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).update(any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
     }
 
     @Test
-    public void ShouldCallCollaboratorsCreateCorrespondent() {
+    public void shouldCallCollaboratorsCreateCorrespondent() {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
 
         caseDataService.createCorrespondent(caseUUID, validCreateCorrespondentRequest);
 
-        verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).update(caseData);
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).update(caseData);
 
-        verify(caseData, times(1)).addCorrespondent(validCreateCorrespondentRequest);
+        verify(caseData).addCorrespondent(validCreateCorrespondentRequest);
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
     }
 
     @Test
-    public void ShouldCreateNewIfNotFoundCreateCorrespondent() {
+    public void shouldCreateNewIfNotFoundCreateCorrespondent() {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
         caseDataService.createCorrespondent(caseUUID, validCreateCorrespondentRequest);
 
-        verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).update(any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
     }
 
     @Test
-    public void ShouldCallCollaboratorsDeleteCorrespondent() {
+    public void shouldCallCollaboratorsDeleteCorrespondent() {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
 
         caseDataService.deleteCorrespondent(caseUUID, validCreateCorrespondentRequest.getUuid().toString());
 
-        verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).update(caseData);
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).update(caseData);
 
-        verify(caseData, times(1)).removeCorrespondent(validCreateCorrespondentRequest.getUuid());
+        verify(caseData).removeCorrespondent(validCreateCorrespondentRequest.getUuid());
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
     }
 
     @Test
-    public void ShouldCreateNewIfNotFoundDeleteCorrespondent() {
+    public void shouldCreateNewIfNotFoundDeleteCorrespondent() {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
         caseDataService.deleteCorrespondent(caseUUID, validCreateCorrespondentRequest.getUuid().toString());
 
-        verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).update(any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
     }
 
     @Test
-    public void ShouldCallCollaboratorsCreateTopic() {
+    public void shouldCallCollaboratorsCreateTopic() {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
 
         caseDataService.createTopic(caseUUID, validCreateTopicRequest);
 
-        verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).update(caseData);
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).update(caseData);
 
 
-        verify(caseData, times(1)).addTopic(any(Topic.class));
+        verify(caseData).addTopic(any(Topic.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
     }
 
     @Test
-    public void ShouldCreateNewIfNotFoundCreateTopic() {
+    public void shouldCreateNewIfNotFoundCreateTopic() {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
         caseDataService.createTopic(caseUUID, validCreateTopicRequest);
 
-        verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).update(any(CaseData.class));
 
 
         verifyNoMoreInteractions(elasticSearchClient);
     }
 
     @Test
-    public void ShouldCallCollaboratorsDeleteTopic() {
+    public void shouldCallCollaboratorsDeleteTopic() {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
 
         caseDataService.deleteTopic(caseUUID, validCreateTopicRequest.getUuid().toString());
 
-        verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).update(caseData);
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).update(caseData);
 
-        verify(caseData, times(1)).removeTopic(validCreateTopicRequest.getUuid());
+        verify(caseData).removeTopic(validCreateTopicRequest.getUuid());
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
     }
 
     @Test
-    public void ShouldCreateNewIfNotFoundDeleteTopic() {
+    public void shouldCreateNewIfNotFoundDeleteTopic() {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
         caseDataService.deleteTopic(caseUUID, validCreateTopicRequest.getUuid().toString());
 
-        verify(elasticSearchClient, times(1)).findById(caseUUID);
-        verify(elasticSearchClient, times(1)).update(any(CaseData.class));
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).update(any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
     }
 
     @Test
-    public void ShouldNotSearchIfNoParams() {
+    public void shouldNotSearchIfNoParams() {
 
         SearchRequest searchRequest = new SearchRequest();
         caseDataService.search(searchRequest);
