@@ -7,6 +7,7 @@ import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
 
+import java.beans.Transient;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -48,9 +49,12 @@ public class CaseData {
     private Set<Topic> allTopics = new HashSet<>();
 
     private Map data;
+    
+    private transient boolean newCaseData = false;
 
     public CaseData(UUID uuid) {
         this.caseUUID = uuid;
+        this.newCaseData = true;
     }
 
     public void create(CreateCaseRequest createCaseRequest) {

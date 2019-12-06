@@ -21,6 +21,18 @@ class HocsQueryBuilder {
         this.mqb = mqb;
     }
 
+    HocsQueryBuilder reference(String reference) {
+        if (reference != null && !reference.isEmpty()) {
+            log.debug("reference {} , adding to query", reference);
+            QueryBuilder typeQb = QueryBuilders.matchQuery("reference", reference);
+            mqb.must(typeQb);
+            hasClause = true;
+        } else {
+            log.debug("reference was null or empty");
+        }
+        return this;
+    }
+
     HocsQueryBuilder caseTypes(List<String> caseTypes) {
         if (caseTypes != null && !caseTypes.isEmpty()) {
             log.debug("caseTypes size {}, adding to query", caseTypes.size());
