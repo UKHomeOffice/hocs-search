@@ -71,7 +71,7 @@ public class ElasticSearchClient {
     @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     public void save(CaseData caseData) {
 
-        Map<String, Object> documentMapper = objectMapper.convertValue(caseData, Map.class);
+        Map<String, Object> documentMapper = removeRedundantMappings(objectMapper.convertValue(caseData, Map.class));
 
         IndexRequest indexRequest = new IndexRequest(index, "caseData", caseData.getCaseUUID().toString()).source(documentMapper);
 
@@ -89,7 +89,7 @@ public class ElasticSearchClient {
 
         UpdateRequest updateRequest = new UpdateRequest(index, "caseData", resultDocument.getCaseUUID().toString());
 
-        Map<String, Object> documentMapper = objectMapper.convertValue(caseData, Map.class);
+        Map<String, Object> documentMapper = removeRedundantMappings(objectMapper.convertValue(caseData, Map.class));
 
         updateRequest.doc(documentMapper);
 
@@ -136,5 +136,13 @@ public class ElasticSearchClient {
         } else {
             return new HashSet<>();
         }
+    }
+
+    private Map<String, Object> removeRedundantMappings(Map<String, Object> map){
+
+        Map<String, Object> result = new HashMap<>(map);
+        result.values().removeAll(Arrays.asList("", null));
+
+        return result;
     }
 }
