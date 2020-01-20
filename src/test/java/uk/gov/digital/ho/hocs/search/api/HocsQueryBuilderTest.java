@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 @RunWith(MockitoJUnitRunner.class)
 public class HocsQueryBuilderTest {
 
-    BoolQueryBuilder bqb;
+    private BoolQueryBuilder bqb;
 
     @Before
     public void setup() {
@@ -30,7 +30,38 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldAddCaseTypes() {
+    public void shouldAddReference() {
+        String reference = "reference123";
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.reference(reference);
+
+        Mockito.verify(bqb).must(any(QueryBuilder.class));
+        Mockito.verifyNoMoreInteractions(bqb);
+
+        assertThat(bqb.toString()).contains(reference);
+    }
+
+    @Test
+    public void shouldNotAddBlankReference() {
+        String reference = "";
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.reference(reference);
+
+        Mockito.verifyNoMoreInteractions(bqb);
+    }
+
+    @Test
+    public void shouldNotAddNullReference() {
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.reference(null);
+
+        Mockito.verifyNoMoreInteractions(bqb);
+    }
+
+    @Test
+    public void shouldAddCaseTypes() {
         List<String> caseTypes = new ArrayList<>();
         caseTypes.add("ANYTYPE");
 
@@ -43,7 +74,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldNotAddNoCaseTypes() {
+    public void shouldNotAddNoCaseTypes() {
         List<String> caseTypes = new ArrayList<>();
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
@@ -53,7 +84,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldNotAddNullCaseTypes() {
+    public void shouldNotAddNullCaseTypes() {
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
         hocsQueryBuilder.caseTypes(null);
@@ -62,7 +93,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldAddCorrespondent() {
+    public void shouldAddCorrespondent() {
         String correspondent = "MYNAME";
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
@@ -74,7 +105,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldNotAddNoCorrespondent() {
+    public void shouldNotAddNoCorrespondent() {
         String correspondent = "";
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
@@ -84,7 +115,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldNotAddNullCorrespondent() {
+    public void shouldNotAddNullCorrespondent() {
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
         hocsQueryBuilder.correspondent(null);
@@ -93,7 +124,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldAddTopic() {
+    public void shouldAddTopic() {
         String topic = "MYNAME";
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
@@ -105,7 +136,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldNotAddNoTopic() {
+    public void shouldNotAddNoTopic() {
         String topic = "";
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
@@ -115,7 +146,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldNotAddNullTopic() {
+    public void shouldNotAddNullTopic() {
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
         hocsQueryBuilder.topic(null);
@@ -124,7 +155,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldAddData() {
+    public void shouldAddData() {
         Map<String, String> data = new HashMap<>();
         data.put("dataKey", "dataValue");
 
@@ -138,7 +169,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldNotAddNoData() {
+    public void shouldNotAddNoData() {
         Map<String, String> data = new HashMap<>();
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
@@ -148,7 +179,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldNotAddNullData() {
+    public void shouldNotAddNullData() {
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
         hocsQueryBuilder.dataFields(null);
@@ -157,7 +188,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldAddActiveFalse() {
+    public void shouldAddActiveFalse() {
         Boolean activeOnly = false;
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
@@ -168,7 +199,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldAddActiveTrue() {
+    public void shouldAddActiveTrue() {
         Boolean activeOnly = true;
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
@@ -179,7 +210,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldNotAddActive() {
+    public void shouldNotAddActive() {
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
         hocsQueryBuilder.dataFields(null);
@@ -188,7 +219,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldAddDateRange() {
+    public void shouldAddDateRange() {
         DateRangeDto dateRangeDto = new DateRangeDto("fromDate", "toDate");
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
@@ -201,7 +232,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldAddDateRangeFromEmpty() {
+    public void shouldAddDateRangeFromEmpty() {
         DateRangeDto dateRangeDto = new DateRangeDto("", "toDate");
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
@@ -213,7 +244,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldAddDateRangeFromNull() {
+    public void shouldAddDateRangeFromNull() {
         DateRangeDto dateRangeDto = new DateRangeDto(null, "toDate");
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
@@ -225,7 +256,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldAddDateRangeToEmpty() {
+    public void shouldAddDateRangeToEmpty() {
         DateRangeDto dateRangeDto = new DateRangeDto("fromDate", "");
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
@@ -237,7 +268,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldAddDateRangeToNull() {
+    public void shouldAddDateRangeToNull() {
         DateRangeDto dateRangeDto = new DateRangeDto("fromDate", null);
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
@@ -249,7 +280,7 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void ShouldNotAddDateRangeActive() {
+    public void shouldNotAddDateRangeActive() {
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
         hocsQueryBuilder.dateRange(null);
