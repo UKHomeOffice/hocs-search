@@ -15,6 +15,9 @@ import java.util.Map;
 @ToString
 public class SearchRequest {
 
+    @JsonProperty("reference")
+    private String reference;
+
     @JsonProperty("caseType")
     private List<String> caseTypes;
 

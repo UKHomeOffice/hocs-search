@@ -35,7 +35,12 @@ public class CaseDataService {
         log.debug("Creating case {}", caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.create(createCaseRequest);
-        elasticSearchClient.save(caseData);
+        if(caseData.isNewCaseData()){
+            elasticSearchClient.save(caseData);
+        }else{
+            log.warn("Updating case {} as already exists in elastic search", caseUUID);
+            elasticSearchClient.update(caseData);
+        }
         log.info("Created case {}", caseUUID, value(EVENT, SEARCH_CASE_CREATED));
 
     }
@@ -44,7 +49,12 @@ public class CaseDataService {
         log.debug("Updating case {}", caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.update(updateCaseRequest);
-        elasticSearchClient.update(caseData);
+        if(caseData.isNewCaseData()){
+            log.warn("Creating case {} as does not exists in elastic search", caseUUID);
+            elasticSearchClient.save(caseData);
+        }else{
+            elasticSearchClient.update(caseData);
+        }
         log.info("Updated case {}", caseUUID, value(EVENT, SEARCH_CASE_UPDATED));
     }
 
@@ -99,6 +109,7 @@ public class CaseDataService {
     Set<UUID> search(SearchRequest request) {
         log.info("Searching for case {}", request.toString(), value(EVENT, SEARCH_REQUEST));
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(QueryBuilders.boolQuery());
+        hocsQueryBuilder.reference(request.getReference());
         hocsQueryBuilder.caseTypes(request.getCaseTypes());
         hocsQueryBuilder.dateRange(request.getDateReceived());
         hocsQueryBuilder.correspondent(request.getCorrespondentName());
