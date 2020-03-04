@@ -21,6 +21,17 @@ class HocsQueryBuilder {
         this.mqb = mqb;
     }
 
+    HocsQueryBuilder deleted(Boolean deleted) {
+        if (deleted != null){
+            log.debug("deleted {} , adding to query", deleted);
+            QueryBuilder typeQb = QueryBuilders.matchQuery("deleted", deleted);
+            mqb.must(typeQb);
+        } else {
+            log.debug("deleted was null");
+        }
+        return this;
+    }
+
     HocsQueryBuilder reference(String reference) {
         if (reference != null && !reference.isEmpty()) {
             log.debug("reference {} , adding to query", reference);

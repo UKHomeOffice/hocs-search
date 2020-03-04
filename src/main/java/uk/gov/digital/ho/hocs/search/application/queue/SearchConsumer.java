@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.search.api.CaseDataService;
-import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
-import uk.gov.digital.ho.hocs.search.api.dto.CreateTopicRequest;
-import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.*;
 
 import static uk.gov.digital.ho.hocs.search.application.RequestData.transferHeadersToMDC;
 
@@ -121,7 +118,8 @@ public class SearchConsumer extends RouteBuilder {
 
         from(DELETE_CASE_QUEUE)
                 .log(LoggingLevel.DEBUG, DELETE_CASE_QUEUE)
-                .bean(caseDataService, "deleteCase(${property.caseUUID})")
+                .unmarshal().json(JsonLibrary.Jackson, DeleteCaseRequest.class)
+                .bean(caseDataService, "deleteCase(${property.caseUUID}, ${body})")
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
 
         from(COMPLETE_CASE_QUEUE)
