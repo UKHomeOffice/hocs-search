@@ -12,10 +12,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.search.api.CaseDataService;
-import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
-import uk.gov.digital.ho.hocs.search.api.dto.CreateTopicRequest;
-import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.*;
 import uk.gov.digital.ho.hocs.search.application.queue.CreateAuditDto;
 import uk.gov.digital.ho.hocs.search.application.queue.EventType;
 import uk.gov.digital.ho.hocs.search.application.queue.SearchConsumer;
@@ -77,10 +74,11 @@ public class SearchConsumerTest extends CamelTestSupport {
     @Test
     public void shouldCallDeleteCase() throws JsonProcessingException {
 
-        CreateAuditDto auditDto = new CreateAuditDto(caseUUID, data, EventType.CASE_DELETED.toString());
+        DeleteCaseRequest deleteCaseRequest = new DeleteCaseRequest(caseUUID, true);
+        CreateAuditDto auditDto = new CreateAuditDto(caseUUID, mapper.writeValueAsString(deleteCaseRequest), EventType.CASE_DELETED.toString());
         String json = mapper.writeValueAsString(auditDto);
         template.sendBody(searchQueue, json);
-        verify(mockDataService, times(1)).deleteCase(eq(caseUUID));
+        verify(mockDataService, times(1)).deleteCase(eq(caseUUID), any(DeleteCaseRequest.class));
         verifyNoMoreInteractions(mockDataService);
     }
 
