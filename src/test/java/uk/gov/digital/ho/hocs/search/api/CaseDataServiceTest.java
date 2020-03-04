@@ -123,13 +123,14 @@ public class CaseDataServiceTest {
     public void shouldCallCollaboratorsDeleteCase() {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
+        DeleteCaseRequest deleteCaseRequest = new DeleteCaseRequest(caseUUID, true);
 
-        caseDataService.deleteCase(caseUUID);
+        caseDataService.deleteCase(caseUUID, deleteCaseRequest);
 
         verify(elasticSearchClient).findById(caseUUID);
         verify(elasticSearchClient).update(caseData);
 
-        verify(caseData).delete();
+        verify(caseData).delete(true);
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
@@ -155,8 +156,9 @@ public class CaseDataServiceTest {
     public void shouldCreateNewIfNotFoundDeleteCase() {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
+        DeleteCaseRequest deleteCaseRequest = new DeleteCaseRequest(caseUUID, true);
 
-        caseDataService.deleteCase(caseUUID);
+        caseDataService.deleteCase(caseUUID, deleteCaseRequest);
 
         verify(elasticSearchClient).findById(caseUUID);
         verify(elasticSearchClient).update(any(CaseData.class));
