@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.search.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,7 +50,8 @@ public class CaseData {
     private Set<Topic> allTopics = new HashSet<>();
 
     private Map data;
-    
+
+    @JsonIgnore
     private transient boolean newCaseData = false;
 
     public CaseData(UUID uuid) {
