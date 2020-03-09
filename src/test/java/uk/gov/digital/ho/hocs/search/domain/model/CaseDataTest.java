@@ -91,9 +91,21 @@ public class CaseDataTest {
 
         assertThat(caseData.getDeleted()).isFalse();
 
-        caseData.delete();
+        caseData.delete(true);
 
         assertThat(caseData.getDeleted()).isTrue();
+    }
+
+    @Test
+    public void shouldUndeleteCaseData() {
+        CaseData caseData = new CaseData(caseUUID);
+        caseData.setDeleted(true);
+
+        assertThat(caseData.getDeleted()).isTrue();
+
+        caseData.delete(false);
+
+        assertThat(caseData.getDeleted()).isFalse();
     }
 
     @Test
