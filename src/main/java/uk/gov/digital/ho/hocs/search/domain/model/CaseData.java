@@ -79,8 +79,8 @@ public class CaseData {
         this.data = updateCaseRequest.getData();
     }
 
-    public void delete() {
-        this.deleted = true;
+    public void delete(Boolean deleted) {
+        this.deleted = deleted;
     }
 
     public void complete() {
