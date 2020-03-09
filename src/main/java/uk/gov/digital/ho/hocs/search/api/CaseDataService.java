@@ -58,12 +58,12 @@ public class CaseDataService {
         log.info("Updated case {}", caseUUID, value(EVENT, SEARCH_CASE_UPDATED));
     }
 
-    public void deleteCase(UUID caseUUID) {
-        log.debug("Deleting case {}", caseUUID);
+    public void deleteCase(UUID caseUUID, DeleteCaseRequest deleteCaseRequest) {
+        log.debug("Deleting ({}) case {}", deleteCaseRequest.getDeleted(), caseUUID);
         CaseData caseData = getCaseData(caseUUID);
-        caseData.delete();
+        caseData.delete(deleteCaseRequest.getDeleted());
         elasticSearchClient.update(caseData);
-        log.info("Deleted case {}", caseUUID, value(EVENT, SEARCH_CASE_DELETED));
+        log.info("Deleted ({}) case {}", deleteCaseRequest.getDeleted(), caseUUID, value(EVENT, SEARCH_CASE_DELETED));
     }
 
     public void completeCase(UUID caseUUID) {
@@ -109,6 +109,7 @@ public class CaseDataService {
     Set<UUID> search(SearchRequest request) {
         log.info("Searching for case {}", request.toString(), value(EVENT, SEARCH_REQUEST));
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(QueryBuilders.boolQuery());
+        hocsQueryBuilder.deleted(false);
         hocsQueryBuilder.reference(request.getReference());
         hocsQueryBuilder.caseTypes(request.getCaseTypes());
         hocsQueryBuilder.dateRange(request.getDateReceived());
