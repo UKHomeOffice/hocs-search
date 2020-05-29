@@ -105,10 +105,10 @@ public class SearchConsumerTest extends CamelTestSupport {
     @Test
     public void shouldCallDeleteCorrespondent() throws JsonProcessingException {
 
-        CreateAuditDto auditDto = new CreateAuditDto(caseUUID, "\"11111111-2222-2222-2222-333333333333\"", EventType.CORRESPONDENT_DELETED.toString());
+        CreateAuditDto auditDto = new CreateAuditDto(caseUUID, data, EventType.CORRESPONDENT_DELETED.toString());
         String json = mapper.writeValueAsString(auditDto);
         template.sendBody(searchQueue, json);
-        verify(mockDataService, times(1)).deleteCorrespondent(eq(caseUUID), eq("11111111-2222-2222-2222-333333333333"));
+        verify(mockDataService, times(1)).deleteCorrespondent(eq(caseUUID), any(CreateCorrespondentRequest.class));
         verifyNoMoreInteractions(mockDataService);
     }
 
