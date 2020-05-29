@@ -36,6 +36,8 @@ public class Correspondent {
 
     private String reference;
 
+    private String externalKey;
+
     private Correspondent(CreateCorrespondentRequest createCorrespondentRequest) {
         this.uuid = createCorrespondentRequest.getUuid();
         this.created = createCorrespondentRequest.getCreated();
@@ -54,6 +56,7 @@ public class Correspondent {
         this.telephone = createCorrespondentRequest.getTelephone();
         this.email = createCorrespondentRequest.getEmail();
         this.reference = createCorrespondentRequest.getReference();
+        this.externalKey = createCorrespondentRequest.getExternalKey();
     }
 
     public static Correspondent from(CreateCorrespondentRequest createCorrespondentRequest) {

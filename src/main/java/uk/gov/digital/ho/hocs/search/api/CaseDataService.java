@@ -82,12 +82,12 @@ public class CaseDataService {
         log.info("Added correspondent {} to case {}", createCorrespondentRequest.getUuid(), caseUUID, value(EVENT, SEARCH_CORRESPONDENT_ADDED));
     }
 
-    public void deleteCorrespondent(UUID caseUUID, String correspondentUUID) {
-        log.debug("Deleting correspondent {} from case {}", correspondentUUID, caseUUID);
+    public void deleteCorrespondent(UUID caseUUID, CreateCorrespondentRequest createCorrespondentRequest) {
+        log.debug("Deleting correspondent {} from case {}", createCorrespondentRequest.getUuid(), caseUUID);
         CaseData caseData = getCaseData(caseUUID);
-        caseData.removeCorrespondent(UUID.fromString(correspondentUUID));
+        caseData.removeCorrespondent(createCorrespondentRequest.getUuid());
         elasticSearchClient.update(caseData);
-        log.info("Deleted correspondent {} from case {}", correspondentUUID, caseUUID, value(EVENT, SEARCH_CORRESPONDENT_DELETED));
+        log.info("Deleted correspondent {} from case {}", createCorrespondentRequest.getUuid(), caseUUID, value(EVENT, SEARCH_CORRESPONDENT_DELETED));
     }
 
     public void createTopic(UUID caseUUID, CreateTopicRequest createTopicRequest) {
@@ -113,7 +113,9 @@ public class CaseDataService {
         hocsQueryBuilder.reference(request.getReference());
         hocsQueryBuilder.caseTypes(request.getCaseTypes());
         hocsQueryBuilder.dateRange(request.getDateReceived());
-        hocsQueryBuilder.correspondent(request.getCorrespondentName());
+        hocsQueryBuilder.correspondentName(request.getCorrespondentName());
+        hocsQueryBuilder.correspondentReference(request.getCorrespondentReference());
+        hocsQueryBuilder.correspondentExternalKey(request.getCorrespondentExternalKey());
         hocsQueryBuilder.topic(request.getTopic());
         hocsQueryBuilder.dataFields(request.getData());
         hocsQueryBuilder.activeOnlyFlag(request.getActiveOnly());
