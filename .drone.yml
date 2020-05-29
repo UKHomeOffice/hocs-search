@@ -74,7 +74,7 @@ pipeline:
       - VERSION=build-${DRONE_BUILD_NUMBER}
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_search_dev
+      - hocs_search_cs_dev
     commands:
       - cd kube-hocs-search
       - ./deploy.sh
@@ -90,7 +90,7 @@ pipeline:
       - VERSION=build-${DRONE_BUILD_NUMBER}
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_search_dev
+      - hocs_search_wcs_dev
     commands:
       - cd kube-hocs-search
       - ./deploy.sh
@@ -104,8 +104,10 @@ pipeline:
       - ENVIRONMENT=${DRONE_DEPLOY_TO}
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_search_dev
-      - hocs_search_demo
+      - hocs_search_cs_dev
+      - hocs_search_cs_demo
+      - hocs_search_wcs_dev
+      - hocs_search_wcs_demo
     commands:
       - cd kube-hocs-search
       - ./deploy.sh
@@ -113,13 +115,14 @@ pipeline:
       event: deployment
       environment: [dev, demo]
 
-  deploy-to-qa:
+  deploy-to-cs-qa:
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     environment:
+      - KUBE_NAMESPACE=cs-qa
       - ENVIRONMENT=qa
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_search_qa
+      - hocs_search_cs_qa
     commands:
       - source version.txt
       - echo $VERSION
@@ -129,13 +132,46 @@ pipeline:
       event: deployment
       environment: qa
 
-  deploy-to-prod:
+  deploy-to-wcs-qa:
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     environment:
+      - KUBE_NAMESPACE=wcs-qa
+      - ENVIRONMENT=qa
+      - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+    secrets:
+      - hocs_search_wcs_qa
+    commands:
+      - source version.txt
+      - echo $VERSION
+      - cd kube-hocs-search
+      - ./deploy.sh
+    when:
+      event: deployment
+      environment: qa
+
+  deploy-to-cs-prod:
+    image: quay.io/ukhomeofficedigital/kd:v1.16.0
+    environment:
+      - KUBE_NAMESPACE=cs-prod
       - ENVIRONMENT=prod
       - KUBE_SERVER=https://kube-api-prod.prod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_search_prod
+      - hocs_search_cs_prod
+    commands:
+      - cd kube-hocs-search
+      - ./deploy.sh
+    when:
+      event: deployment
+      environment: prod
+
+  deploy-to-wcs-prod:
+    image: quay.io/ukhomeofficedigital/kd:v1.16.0
+    environment:
+      - KUBE_NAMESPACE=wcs-prod
+      - ENVIRONMENT=prod
+      - KUBE_SERVER=https://kube-api-prod.prod.acp.homeoffice.gov.uk
+    secrets:
+      - hocs_search_wcs_prod
     commands:
       - cd kube-hocs-search
       - ./deploy.sh
