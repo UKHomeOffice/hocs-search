@@ -27,6 +27,12 @@ public class SearchRequest {
     @JsonProperty("correspondentName")
     private String correspondentName;
 
+    @JsonProperty("correspondentReference")
+    private String correspondentReference;
+
+    @JsonProperty("correspondentExternalKey")
+    private String correspondentExternalKey;
+
     @JsonProperty("topic")
     private String topic;
 
