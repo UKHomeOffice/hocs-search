@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CorrespondentTest {
 
     private AddressDto validAddressDto = new AddressDto("Postcode", "add1", "add2", "add3", "country");
-    private CreateCorrespondentRequest validCreateCorrespondentRequest = new CreateCorrespondentRequest(UUID.randomUUID(), LocalDateTime.now(), "LAW", "FULLNAME", validAddressDto, "0", "e", "REF");
+    private CreateCorrespondentRequest validCreateCorrespondentRequest = new CreateCorrespondentRequest(UUID.randomUUID(), LocalDateTime.now(), "LAW", "FULLNAME", validAddressDto, "0", "e", "REF", "ExtKey");
 
     @Test
     public void shouldCreateCorrespondentConstructor() {
@@ -31,6 +31,7 @@ public class CorrespondentTest {
         assertThat(correspondent.getTelephone()).isEqualTo(validCreateCorrespondentRequest.getTelephone());
         assertThat(correspondent.getEmail()).isEqualTo(validCreateCorrespondentRequest.getEmail());
         assertThat(correspondent.getReference()).isEqualTo(validCreateCorrespondentRequest.getReference());
+        assertThat(correspondent.getExternalKey()).isEqualTo(validCreateCorrespondentRequest.getExternalKey());
     }
 
 }

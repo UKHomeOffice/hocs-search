@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.search.api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.*;
+import org.springframework.util.StringUtils;
 import uk.gov.digital.ho.hocs.search.api.dto.DateRangeDto;
 
 import java.util.List;
@@ -22,7 +23,7 @@ class HocsQueryBuilder {
     }
 
     HocsQueryBuilder deleted(Boolean deleted) {
-        if (deleted != null){
+        if (deleted != null) {
             log.debug("deleted {} , adding to query", deleted);
             QueryBuilder typeQb = QueryBuilders.matchQuery("deleted", deleted);
             mqb.must(typeQb);
@@ -82,8 +83,8 @@ class HocsQueryBuilder {
         return this;
     }
 
-    HocsQueryBuilder correspondent(String correspondentName) {
-        if (correspondentName != null && !correspondentName.isEmpty()) {
+    HocsQueryBuilder correspondentName(String correspondentName) {
+        if (StringUtils.hasText(correspondentName)) {
             log.debug("CorrespondentName {}, adding to query", correspondentName);
             QueryBuilder fullnameQb = QueryBuilders.matchQuery("currentCorrespondents.fullname", correspondentName).operator(Operator.AND);
             QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", fullnameQb, ScoreMode.None);
@@ -91,6 +92,34 @@ class HocsQueryBuilder {
             hasClause = true;
         } else {
             log.debug("CorrespondentName was null or empty");
+        }
+
+        return this;
+    }
+
+    HocsQueryBuilder correspondentReference(String correspondentReference) {
+        if (StringUtils.hasText(correspondentReference)) {
+            log.debug("correspondentReference {}, adding to query", correspondentReference);
+            QueryBuilder referenceQb = QueryBuilders.wildcardQuery("currentCorrespondents.reference", "*" + correspondentReference + "*");
+            QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", referenceQb, ScoreMode.None);
+            mqb.must(correspondentQb);
+            hasClause = true;
+        } else {
+            log.debug("correspondentReference was null or empty");
+        }
+
+        return this;
+    }
+
+    HocsQueryBuilder correspondentExternalKey(String correspondentExternalKey) {
+        if (StringUtils.hasText(correspondentExternalKey)) {
+            log.debug("correspondentExternalKey {}, adding to query", correspondentExternalKey);
+            QueryBuilder fullnameQb = QueryBuilders.matchQuery("currentCorrespondents.externalKey", correspondentExternalKey).operator(Operator.AND);
+            QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", fullnameQb, ScoreMode.None);
+            mqb.must(correspondentQb);
+            hasClause = true;
+        } else {
+            log.debug("correspondentExternalKey was null or empty");
         }
 
         return this;

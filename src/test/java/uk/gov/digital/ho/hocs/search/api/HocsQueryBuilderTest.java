@@ -93,11 +93,11 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void shouldAddCorrespondent() {
-        String correspondent = "MYNAME";
+    public void shouldAddCorrespondentName() {
+        String correspondentName = "MYNAME";
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
-        hocsQueryBuilder.correspondent(correspondent);
+        hocsQueryBuilder.correspondentName(correspondentName);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
 
@@ -105,20 +105,82 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void shouldNotAddNoCorrespondent() {
-        String correspondent = "";
+    public void shouldNotAddNoCorrespondentName() {
+        String correspondentName = "";
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
-        hocsQueryBuilder.correspondent(correspondent);
+        hocsQueryBuilder.correspondentName(correspondentName);
 
         Mockito.verifyNoMoreInteractions(bqb);
     }
 
     @Test
-    public void shouldNotAddNullCorrespondent() {
+    public void shouldNotAddNullCorrespondentName() {
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
-        hocsQueryBuilder.correspondent(null);
+        hocsQueryBuilder.correspondentName(null);
+
+        Mockito.verifyNoMoreInteractions(bqb);
+    }
+
+    @Test
+    public void shouldAddCorrespondentReference() {
+        String correspondentReference = "MYReference";
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.correspondentReference(correspondentReference);
+
+        Mockito.verify(bqb).must(any(QueryBuilder.class));
+
+        assertThat(bqb.toString()).contains("MYReference");
+    }
+
+    @Test
+    public void shouldNotAddNoCorrespondentReference() {
+        String correspondentReference = "";
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.correspondentReference(correspondentReference);
+
+        Mockito.verifyNoMoreInteractions(bqb);
+    }
+
+    @Test
+    public void shouldNotAddNullCorrespondentReference() {
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.correspondentReference(null);
+
+        Mockito.verifyNoMoreInteractions(bqb);
+    }
+
+    @Test
+    public void shouldAddCorrespondentExternalKey() {
+        String correspondentExternalKey = "MYExternalKey";
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.correspondentExternalKey(correspondentExternalKey);
+
+        Mockito.verify(bqb).must(any(QueryBuilder.class));
+
+        assertThat(bqb.toString()).contains("MYExternalKey");
+    }
+
+    @Test
+    public void shouldNotAddNoCorrespondentExternalKey() {
+        String correspondentExternalKey = "";
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.correspondentExternalKey(correspondentExternalKey);
+
+        Mockito.verifyNoMoreInteractions(bqb);
+    }
+
+    @Test
+    public void shouldNotAddNullCorrespondentExternalKey() {
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.correspondentExternalKey(null);
 
         Mockito.verifyNoMoreInteractions(bqb);
     }
