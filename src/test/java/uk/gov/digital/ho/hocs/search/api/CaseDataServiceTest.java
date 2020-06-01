@@ -30,7 +30,7 @@ public class CaseDataServiceTest {
     private UUID caseUUID = UUID.randomUUID();
     private CreateCaseRequest validCreateCaseRequest = new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), new HashMap());
     private UpdateCaseRequest validUpdateCaseRequest = new UpdateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", UUID.randomUUID(), UUID.randomUUID(), LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), new HashMap());
-    private CreateCorrespondentRequest validCreateCorrespondentRequest = new CreateCorrespondentRequest(UUID.randomUUID(), LocalDateTime.now(), "LAW", "FULLNAME", null, "0", "e", "REF");
+    private CreateCorrespondentRequest validCreateCorrespondentRequest = new CreateCorrespondentRequest(UUID.randomUUID(), LocalDateTime.now(), "LAW", "FULLNAME", null, "0", "e", "REF", "ExtKey");
     private CreateTopicRequest validCreateTopicRequest = new CreateTopicRequest(UUID.randomUUID(), "Test Topic");
 
     @Before
@@ -213,7 +213,7 @@ public class CaseDataServiceTest {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
 
-        caseDataService.deleteCorrespondent(caseUUID, validCreateCorrespondentRequest.getUuid().toString());
+        caseDataService.deleteCorrespondent(caseUUID, validCreateCorrespondentRequest);
 
         verify(elasticSearchClient).findById(caseUUID);
         verify(elasticSearchClient).update(caseData);
@@ -229,7 +229,7 @@ public class CaseDataServiceTest {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
-        caseDataService.deleteCorrespondent(caseUUID, validCreateCorrespondentRequest.getUuid().toString());
+        caseDataService.deleteCorrespondent(caseUUID, validCreateCorrespondentRequest);
 
         verify(elasticSearchClient).findById(caseUUID);
         verify(elasticSearchClient).update(any(CaseData.class));

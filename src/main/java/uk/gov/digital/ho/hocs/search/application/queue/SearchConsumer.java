@@ -135,6 +135,7 @@ public class SearchConsumer extends RouteBuilder {
 
         from(DELETE_CORRESPONDENT_QUEUE)
                 .log(LoggingLevel.DEBUG, DELETE_CORRESPONDENT_QUEUE)
+                .unmarshal().json(JsonLibrary.Jackson, CreateCorrespondentRequest.class)
                 .bean(caseDataService, "deleteCorrespondent(${property.caseUUID}, ${body})")
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
 
