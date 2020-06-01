@@ -57,7 +57,7 @@ pipeline:
       - /app/hocs-deploy --version=$${SEMVER} --service=hocs-search --serviceGitToken=$${GIT_PASSWORD} --gitToken=$${GITHUB_PASSWORD} --gitRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git" --environment=qa --dockerRepository=quay.io/ukhomeofficedigital --sourceBuild=$${IMAGE_VERSION} --registryUser=ukhomeofficedigital+hocs --registryPassword=$${DOCKER_PASSWORD}
     when:
       event: deployment
-      environment: qa
+      environment: [cs-qa, wcs-qa]
 
   clone-kube-project:
     image: plugins/git
@@ -69,8 +69,7 @@ pipeline:
   deploy-to-cs-dev-from-build-number:
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     environment:
-      - KUBE_NAMESPACE=cs-dev
-      - ENVIRONMENT=dev
+      - ENVIRONMENT=cs-dev
       - VERSION=build-${DRONE_BUILD_NUMBER}
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
@@ -85,8 +84,7 @@ pipeline:
   deploy-to-wcs-dev-from-build-number:
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     environment:
-      - KUBE_NAMESPACE=wcs-dev
-      - ENVIRONMENT=dev
+      - ENVIRONMENT=wcs-dev
       - VERSION=build-${DRONE_BUILD_NUMBER}
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
@@ -113,13 +111,12 @@ pipeline:
       - ./deploy.sh
     when:
       event: deployment
-      environment: [dev, demo]
+      environment: [cs-dev, cs-demo, wcs-dev, wcs-demo]
 
   deploy-to-cs-qa:
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     environment:
-      - KUBE_NAMESPACE=cs-qa
-      - ENVIRONMENT=qa
+      - ENVIRONMENT=cs-qa
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
       - hocs_search_cs_qa
@@ -130,13 +127,12 @@ pipeline:
       - ./deploy.sh
     when:
       event: deployment
-      environment: qa
+      environment: cs-qa
 
   deploy-to-wcs-qa:
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     environment:
-      - KUBE_NAMESPACE=wcs-qa
-      - ENVIRONMENT=qa
+      - ENVIRONMENT=wcs-qa
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
       - hocs_search_wcs_qa
@@ -147,13 +143,12 @@ pipeline:
       - ./deploy.sh
     when:
       event: deployment
-      environment: qa
+      environment: wcs-qa
 
   deploy-to-cs-prod:
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     environment:
-      - KUBE_NAMESPACE=cs-prod
-      - ENVIRONMENT=prod
+      - ENVIRONMENT=cs-prod
       - KUBE_SERVER=https://kube-api-prod.prod.acp.homeoffice.gov.uk
     secrets:
       - hocs_search_cs_prod
@@ -162,13 +157,12 @@ pipeline:
       - ./deploy.sh
     when:
       event: deployment
-      environment: prod
+      environment: cs-prod
 
   deploy-to-wcs-prod:
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     environment:
-      - KUBE_NAMESPACE=wcs-prod
-      - ENVIRONMENT=prod
+      - ENVIRONMENT=wcs-prod
       - KUBE_SERVER=https://kube-api-prod.prod.acp.homeoffice.gov.uk
     secrets:
       - hocs_search_wcs_prod
@@ -177,4 +171,4 @@ pipeline:
       - ./deploy.sh
     when:
       event: deployment
-      environment: prod
+      environment: wcs-prod
