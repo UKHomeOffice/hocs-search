@@ -11,4 +11,4 @@ spec:
     apiVersion: extensions/v1beta1
     kind: Deployment
     name: hocs-search
-  targetCPUUtilizationPercentage: 70
+  targetCPUUtilizationPercentage: 10
