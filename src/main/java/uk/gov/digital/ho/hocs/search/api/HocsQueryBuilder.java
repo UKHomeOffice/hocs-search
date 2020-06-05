@@ -156,7 +156,7 @@ class HocsQueryBuilder {
     HocsQueryBuilder activeOnlyFlag(Boolean activeOnly) {
         if (activeOnly != null && activeOnly) {
             log.debug("activeOnly is true size, adding to query");
-            QueryBuilder activeQb = QueryBuilders.matchQuery("completed", false).operator(Operator.AND);
+            QueryBuilder activeQb = QueryBuilders.boolQuery().mustNot(QueryBuilders.matchQuery("completed", true));
             mqb.must(activeQb);
             hasClause = true;
         } else {
