@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.search.client.elasticsearchclient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import net.logstash.logback.encoder.org.apache.commons.lang.BooleanUtils;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -37,6 +38,8 @@ public class ElasticSearchClient {
     private final RestHighLevelClient client;
 
     private final String index;
+
+    private static final String COMPLETED = "completed";
 
     @Autowired
     public ElasticSearchClient(ObjectMapper objectMapper, RestHighLevelClient client, @Value("${elastic.index.prefix}") String prefix) {
@@ -142,6 +145,10 @@ public class ElasticSearchClient {
 
         Map<String, Object> result = new HashMap<>(map);
         result.values().removeAll(Arrays.asList("", null));
+
+        if(result.containsKey(COMPLETED) && !((boolean ) result.get(COMPLETED))){
+            result.remove(COMPLETED);
+        }
 
         return result;
     }
