@@ -5,16 +5,12 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.CorrespondentDetailsDto;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
 
-import java.beans.Transient;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @NoArgsConstructor
 @Getter
@@ -87,8 +83,8 @@ public class CaseData {
         this.completed = true;
     }
 
-    public void addCorrespondent(CreateCorrespondentRequest createCorrespondentRequest) {
-        Correspondent correspondent = Correspondent.from(createCorrespondentRequest);
+    public void addCorrespondent(CorrespondentDetailsDto correspondentDetailsDto) {
+        Correspondent correspondent = Correspondent.from(correspondentDetailsDto);
         this.currentCorrespondents.add(correspondent);
         this.allCorrespondents.add(correspondent);
     }
@@ -96,6 +92,20 @@ public class CaseData {
     public void removeCorrespondent(UUID correspondentUUID) {
         this.currentCorrespondents.removeIf(c -> c.getUuid().equals(correspondentUUID));
     }
+
+    public void updateCorrespondent(CorrespondentDetailsDto correspondentDetailsDto) {
+        Correspondent updatedCorrespondent = Correspondent.from(correspondentDetailsDto);
+        List<Correspondent> toRemove = new ArrayList<>();
+        for(Correspondent correspondent : currentCorrespondents){
+            if(correspondent.getUuid().equals(updatedCorrespondent.getUuid())){
+                toRemove.add(correspondent);
+            }
+        }
+        this.currentCorrespondents.removeAll(toRemove);
+        this.currentCorrespondents.add(updatedCorrespondent);
+        this.allCorrespondents.add(updatedCorrespondent);
+    }
+
 
     public void addTopic(Topic topic) {
         this.currentTopics.add(topic);

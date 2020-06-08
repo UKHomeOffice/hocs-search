@@ -98,7 +98,7 @@ public class SearchConsumerTest extends CamelTestSupport {
         CreateAuditDto auditDto = new CreateAuditDto(caseUUID, data, EventType.CORRESPONDENT_CREATED.toString());
         String json = mapper.writeValueAsString(auditDto);
         template.sendBody(searchQueue, json);
-        verify(mockDataService, times(1)).createCorrespondent(eq(caseUUID), any(CreateCorrespondentRequest.class));
+        verify(mockDataService, times(1)).createCorrespondent(eq(caseUUID), any(CorrespondentDetailsDto.class));
         verifyNoMoreInteractions(mockDataService);
     }
 
@@ -108,7 +108,17 @@ public class SearchConsumerTest extends CamelTestSupport {
         CreateAuditDto auditDto = new CreateAuditDto(caseUUID, data, EventType.CORRESPONDENT_DELETED.toString());
         String json = mapper.writeValueAsString(auditDto);
         template.sendBody(searchQueue, json);
-        verify(mockDataService, times(1)).deleteCorrespondent(eq(caseUUID), any(CreateCorrespondentRequest.class));
+        verify(mockDataService, times(1)).deleteCorrespondent(eq(caseUUID), any(CorrespondentDetailsDto.class));
+        verifyNoMoreInteractions(mockDataService);
+    }
+
+    @Test
+    public void shouldCallUpdateCorrespondent() throws JsonProcessingException {
+
+        CreateAuditDto auditDto = new CreateAuditDto(caseUUID, data, EventType.CORRESPONDENT_UPDATED.toString());
+        String json = mapper.writeValueAsString(auditDto);
+        template.sendBody(searchQueue, json);
+        verify(mockDataService).updateCorrespondent(eq(caseUUID), any(CorrespondentDetailsDto.class));
         verifyNoMoreInteractions(mockDataService);
     }
 

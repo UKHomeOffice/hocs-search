@@ -22,6 +22,7 @@ public class SearchConsumer extends RouteBuilder {
     private static final String COMPLETE_CASE_QUEUE = "direct:completeCaseQueue";
     private static final String CREATE_CORRESPONDENT_QUEUE = "direct:createCorrespondentQueue";
     private static final String DELETE_CORRESPONDENT_QUEUE = "direct:deleteCorrespondentQueue";
+    private static final String UPDATE_CORRESPONDENT_QUEUE = "direct:updateCorrespondentQueue";
     private static final String CREATE_TOPIC_QUEUE = "direct:createTopicQueue";
     private static final String DELETE_TOPIC_QUEUE = "direct:deleteTopicQueue";
     private final CaseDataService caseDataService;
@@ -91,6 +92,9 @@ public class SearchConsumer extends RouteBuilder {
                 .when(simple("${property.type} == '" + EventType.CORRESPONDENT_DELETED + "'"))
                 .to(DELETE_CORRESPONDENT_QUEUE)
                 .endChoice()
+                .when(simple("${property.type} == '" + EventType.CORRESPONDENT_UPDATED + "'"))
+                .to(UPDATE_CORRESPONDENT_QUEUE)
+                .endChoice()
                 .when(simple("${property.type} == '" + EventType.CASE_TOPIC_CREATED + "'"))
                 .to(CREATE_TOPIC_QUEUE)
                 .endChoice()
@@ -129,14 +133,20 @@ public class SearchConsumer extends RouteBuilder {
 
         from(CREATE_CORRESPONDENT_QUEUE)
                 .log(LoggingLevel.DEBUG, CREATE_CORRESPONDENT_QUEUE)
-                .unmarshal().json(JsonLibrary.Jackson, CreateCorrespondentRequest.class)
+                .unmarshal().json(JsonLibrary.Jackson, CorrespondentDetailsDto.class)
                 .bean(caseDataService, "createCorrespondent(${property.caseUUID}, ${body})")
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
 
         from(DELETE_CORRESPONDENT_QUEUE)
                 .log(LoggingLevel.DEBUG, DELETE_CORRESPONDENT_QUEUE)
-                .unmarshal().json(JsonLibrary.Jackson, CreateCorrespondentRequest.class)
+                .unmarshal().json(JsonLibrary.Jackson, CorrespondentDetailsDto.class)
                 .bean(caseDataService, "deleteCorrespondent(${property.caseUUID}, ${body})")
+                .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
+
+        from(UPDATE_CORRESPONDENT_QUEUE)
+                .log(LoggingLevel.DEBUG, UPDATE_CORRESPONDENT_QUEUE)
+                .unmarshal().json(JsonLibrary.Jackson, CorrespondentDetailsDto.class)
+                .bean(caseDataService, "updateCorrespondent(${property.caseUUID}, ${body})")
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
 
         from(CREATE_TOPIC_QUEUE)
