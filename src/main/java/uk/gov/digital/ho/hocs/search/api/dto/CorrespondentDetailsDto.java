@@ -11,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class CreateCorrespondentRequest {
+public class CorrespondentDetailsDto {
 
     @JsonProperty("uuid")
     private UUID uuid;
