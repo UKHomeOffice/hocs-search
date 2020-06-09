@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.search.client.elasticsearchclient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import net.logstash.logback.encoder.org.apache.commons.lang.BooleanUtils;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -141,12 +140,12 @@ public class ElasticSearchClient {
         }
     }
 
-    private Map<String, Object> removeRedundantMappings(Map<String, Object> map){
+    private Map<String, Object> removeRedundantMappings(Map<String, Object> map) {
 
         Map<String, Object> result = new HashMap<>(map);
         result.values().removeAll(Arrays.asList("", null));
 
-        if(result.containsKey(COMPLETED) && !((boolean ) result.get(COMPLETED))){
+        if (result.containsKey(COMPLETED) && !((boolean) result.get(COMPLETED))) {
             result.remove(COMPLETED);
         }
 

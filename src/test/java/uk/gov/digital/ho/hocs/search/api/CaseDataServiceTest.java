@@ -30,7 +30,7 @@ public class CaseDataServiceTest {
     private UUID caseUUID = UUID.randomUUID();
     private CreateCaseRequest validCreateCaseRequest = new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), new HashMap());
     private UpdateCaseRequest validUpdateCaseRequest = new UpdateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", UUID.randomUUID(), UUID.randomUUID(), LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), new HashMap());
-    private CreateCorrespondentRequest validCreateCorrespondentRequest = new CreateCorrespondentRequest(UUID.randomUUID(), LocalDateTime.now(), "LAW", "FULLNAME", null, "0", "e", "REF", "ExtKey");
+    private CorrespondentDetailsDto validCorrespondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(), LocalDateTime.now(), "LAW", "FULLNAME", null, "0", "e", "REF", "ExtKey");
     private CreateTopicRequest validCreateTopicRequest = new CreateTopicRequest(UUID.randomUUID(), "Test Topic");
 
     @Before
@@ -184,12 +184,12 @@ public class CaseDataServiceTest {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
 
-        caseDataService.createCorrespondent(caseUUID, validCreateCorrespondentRequest);
+        caseDataService.createCorrespondent(caseUUID, validCorrespondentDetailsDto);
 
         verify(elasticSearchClient).findById(caseUUID);
         verify(elasticSearchClient).update(caseData);
 
-        verify(caseData).addCorrespondent(validCreateCorrespondentRequest);
+        verify(caseData).addCorrespondent(validCorrespondentDetailsDto);
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
@@ -200,7 +200,7 @@ public class CaseDataServiceTest {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
-        caseDataService.createCorrespondent(caseUUID, validCreateCorrespondentRequest);
+        caseDataService.createCorrespondent(caseUUID, validCorrespondentDetailsDto);
 
         verify(elasticSearchClient).findById(caseUUID);
         verify(elasticSearchClient).update(any(CaseData.class));
@@ -213,23 +213,39 @@ public class CaseDataServiceTest {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
 
-        caseDataService.deleteCorrespondent(caseUUID, validCreateCorrespondentRequest);
+        caseDataService.deleteCorrespondent(caseUUID, validCorrespondentDetailsDto);
 
         verify(elasticSearchClient).findById(caseUUID);
         verify(elasticSearchClient).update(caseData);
 
-        verify(caseData).removeCorrespondent(validCreateCorrespondentRequest.getUuid());
+        verify(caseData).removeCorrespondent(validCorrespondentDetailsDto.getUuid());
 
         verifyNoMoreInteractions(elasticSearchClient);
         verifyNoMoreInteractions(caseData);
     }
 
     @Test
+    public void shouldCallUpdateCorrespondent() {
+
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
+
+        caseDataService.updateCorrespondent(caseUUID, validCorrespondentDetailsDto);
+
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).update(caseData);
+
+        verify(caseData).updateCorrespondent(validCorrespondentDetailsDto);
+
+        verifyNoMoreInteractions(elasticSearchClient, caseData);
+    }
+
+
+    @Test
     public void shouldCreateNewIfNotFoundDeleteCorrespondent() {
 
         when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
-        caseDataService.deleteCorrespondent(caseUUID, validCreateCorrespondentRequest);
+        caseDataService.deleteCorrespondent(caseUUID, validCorrespondentDetailsDto);
 
         verify(elasticSearchClient).findById(caseUUID);
         verify(elasticSearchClient).update(any(CaseData.class));
