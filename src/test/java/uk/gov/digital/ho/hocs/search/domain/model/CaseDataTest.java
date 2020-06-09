@@ -2,7 +2,7 @@ package uk.gov.digital.ho.hocs.search.domain.model;
 
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.search.api.dto.CreateCorrespondentRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.CorrespondentDetailsDto;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateTopicRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
 
@@ -18,7 +18,7 @@ public class CaseDataTest {
     private UUID caseUUID = UUID.randomUUID();
     private CreateCaseRequest validCreateCaseRequest = new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), new HashMap());
     private UpdateCaseRequest validUpdateCaseRequest = new UpdateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", UUID.randomUUID(), UUID.randomUUID(), LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), new HashMap());
-    private CreateCorrespondentRequest validCreateCorrespondentRequest = new CreateCorrespondentRequest(UUID.randomUUID(), LocalDateTime.now(), "LAW", "FULLNAME", null, "0", "e", "REF", "ExtKey");
+    private CorrespondentDetailsDto validCorrespondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(), LocalDateTime.now(), "LAW", "FULLNAME", null, "0", "e", "REF", "ExtKey");
     private Topic validTopic = Topic.from(new CreateTopicRequest(UUID.randomUUID(), "VALUE"));
 
     @Test
@@ -126,7 +126,7 @@ public class CaseDataTest {
         assertThat(caseData.getCurrentCorrespondents()).isEmpty();
         assertThat(caseData.getAllCorrespondents()).isEmpty();
 
-        caseData.addCorrespondent(validCreateCorrespondentRequest);
+        caseData.addCorrespondent(validCorrespondentDetailsDto);
 
         assertThat(caseData.getCurrentCorrespondents()).hasSize(1);
         assertThat(caseData.getAllCorrespondents()).hasSize(1);
@@ -140,12 +140,36 @@ public class CaseDataTest {
         assertThat(caseData.getCurrentCorrespondents()).isEmpty();
         assertThat(caseData.getAllCorrespondents()).isEmpty();
 
-        caseData.addCorrespondent(validCreateCorrespondentRequest);
+        caseData.addCorrespondent(validCorrespondentDetailsDto);
 
-        caseData.removeCorrespondent(validCreateCorrespondentRequest.getUuid());
+        caseData.removeCorrespondent(validCorrespondentDetailsDto.getUuid());
 
         assertThat(caseData.getCurrentCorrespondents()).hasSize(0);
         assertThat(caseData.getAllCorrespondents()).hasSize(1);
+    }
+
+    @Test
+    public void shouldUpdateCorrespondent() {
+        CaseData caseData = new CaseData(caseUUID);
+
+        assertThat(caseData.getCurrentCorrespondents()).isEmpty();
+        assertThat(caseData.getAllCorrespondents()).isEmpty();
+
+        caseData.addCorrespondent(validCorrespondentDetailsDto);
+
+        CorrespondentDetailsDto updatedCorrespondentDetailsDto = new CorrespondentDetailsDto(validCorrespondentDetailsDto.getUuid(), LocalDateTime.now(), "LAW2", "FULLNAME2", null, "2", "e2", "REF2", "ExtKey2");
+
+
+        caseData.updateCorrespondent(updatedCorrespondentDetailsDto);
+
+        assertThat(caseData.getCurrentCorrespondents()).hasSize(1);
+        assertThat(caseData.getAllCorrespondents()).hasSize(2);
+
+        Correspondent activeCorrespondent = caseData.getCurrentCorrespondents().iterator().next();
+        assertThat(activeCorrespondent.getUuid()).isEqualTo(validCorrespondentDetailsDto.getUuid());
+        assertThat(activeCorrespondent.getType()).isEqualTo("LAW2");
+        assertThat(activeCorrespondent.getFullname()).isEqualTo("FULLNAME2");
+        assertThat(activeCorrespondent.getExternalKey()).isEqualTo("ExtKey2");
     }
 
     @Test

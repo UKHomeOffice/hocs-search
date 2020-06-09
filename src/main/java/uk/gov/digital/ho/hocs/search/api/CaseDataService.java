@@ -74,20 +74,28 @@ public class CaseDataService {
         log.info("Compeleted case {}", caseUUID, value(EVENT, SEARCH_CASE_DELETED));
     }
 
-    public void createCorrespondent(UUID caseUUID, CreateCorrespondentRequest createCorrespondentRequest) {
-        log.debug("Adding correspondent {} to case {}", createCorrespondentRequest.getUuid(), caseUUID);
+    public void createCorrespondent(UUID caseUUID, CorrespondentDetailsDto correspondentDetailsDto) {
+        log.debug("Adding correspondent {} to case {}", correspondentDetailsDto.getUuid(), caseUUID);
         CaseData caseData = getCaseData(caseUUID);
-        caseData.addCorrespondent(createCorrespondentRequest);
+        caseData.addCorrespondent(correspondentDetailsDto);
         elasticSearchClient.update(caseData);
-        log.info("Added correspondent {} to case {}", createCorrespondentRequest.getUuid(), caseUUID, value(EVENT, SEARCH_CORRESPONDENT_ADDED));
+        log.info("Added correspondent {} to case {}", correspondentDetailsDto.getUuid(), caseUUID, value(EVENT, SEARCH_CORRESPONDENT_ADDED));
     }
 
-    public void deleteCorrespondent(UUID caseUUID, CreateCorrespondentRequest createCorrespondentRequest) {
-        log.debug("Deleting correspondent {} from case {}", createCorrespondentRequest.getUuid(), caseUUID);
+    public void deleteCorrespondent(UUID caseUUID, CorrespondentDetailsDto correspondentDetailsDto) {
+        log.debug("Deleting correspondent {} from case {}", correspondentDetailsDto.getUuid(), caseUUID);
         CaseData caseData = getCaseData(caseUUID);
-        caseData.removeCorrespondent(createCorrespondentRequest.getUuid());
+        caseData.removeCorrespondent(correspondentDetailsDto.getUuid());
         elasticSearchClient.update(caseData);
-        log.info("Deleted correspondent {} from case {}", createCorrespondentRequest.getUuid(), caseUUID, value(EVENT, SEARCH_CORRESPONDENT_DELETED));
+        log.info("Deleted correspondent {} from case {}", correspondentDetailsDto.getUuid(), caseUUID, value(EVENT, SEARCH_CORRESPONDENT_DELETED));
+    }
+
+    public void updateCorrespondent(UUID caseUUID, CorrespondentDetailsDto correspondentDetailsDto) {
+        log.debug("Updating correspondent {} from case {}", correspondentDetailsDto.getUuid(), caseUUID);
+        CaseData caseData = getCaseData(caseUUID);
+        caseData.updateCorrespondent(correspondentDetailsDto);
+        elasticSearchClient.update(caseData);
+        log.info("Updating correspondent {} for case {}", correspondentDetailsDto.getUuid(), caseUUID, value(EVENT, SEARCH_CORRESPONDENT_DELETED));
     }
 
     public void createTopic(UUID caseUUID, CreateTopicRequest createTopicRequest) {
