@@ -33,10 +33,15 @@ class HocsQueryBuilder {
         return this;
     }
 
-    HocsQueryBuilder reference(String reference) {
+    HocsQueryBuilder reference(String reference, List<String> caseTypes) {
         if (reference != null && !reference.isEmpty()) {
             log.debug("reference {} , adding to query", reference);
-            QueryBuilder typeQb = QueryBuilders.matchQuery("reference", reference);
+            QueryBuilder typeQb;
+            if (caseTypes != null && caseTypes.size() == 1) {
+                typeQb = QueryBuilders.wildcardQuery("reference", String.format("%s/*%s*", caseTypes.get(0), reference));
+            } else {
+                typeQb = QueryBuilders.wildcardQuery("reference", String.format("*%s*", reference));
+            }
             mqb.must(typeQb);
             hasClause = true;
         } else {
