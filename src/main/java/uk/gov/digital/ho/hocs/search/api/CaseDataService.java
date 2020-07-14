@@ -118,7 +118,7 @@ public class CaseDataService {
         log.info("Searching for case {}", request.toString(), value(EVENT, SEARCH_REQUEST));
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(QueryBuilders.boolQuery());
         hocsQueryBuilder.deleted(false);
-        hocsQueryBuilder.reference(request.getReference());
+        hocsQueryBuilder.reference(request.getReference(), request.getCaseTypes());
         hocsQueryBuilder.caseTypes(request.getCaseTypes());
         hocsQueryBuilder.dateRange(request.getDateReceived());
         hocsQueryBuilder.correspondentName(request.getCorrespondentName());
