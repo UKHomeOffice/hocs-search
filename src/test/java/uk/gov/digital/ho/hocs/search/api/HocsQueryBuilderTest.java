@@ -40,7 +40,21 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
-    public void shouldAddReferenceWithSingleCaseType() {
+    public void shouldAddNumericReferenceWithSingleCaseType() {
+        String reference = "123";
+        List<String> caseTypes = Arrays.asList("TYPE");
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.reference(reference, caseTypes);
+
+        Mockito.verify(bqb).must(any(QueryBuilder.class));
+        Mockito.verifyNoMoreInteractions(bqb);
+
+        assertThat(bqb.toString()).contains("TYPE/*123*");
+    }
+
+    @Test
+    public void shouldAddNonNumericReferenceWithSingleCaseType() {
         String reference = "reference123";
         List<String> caseTypes = Arrays.asList("TYPE");
 
@@ -50,7 +64,8 @@ public class HocsQueryBuilderTest {
         Mockito.verify(bqb).must(any(QueryBuilder.class));
         Mockito.verifyNoMoreInteractions(bqb);
 
-        assertThat(bqb.toString()).contains("TYPE/*reference123*");
+        assertThat(bqb.toString()).contains("*reference123*");
+        assertThat(bqb.toString()).doesNotContain("TYPE/*reference123*");
     }
 
     @Test
@@ -65,6 +80,7 @@ public class HocsQueryBuilderTest {
         Mockito.verifyNoMoreInteractions(bqb);
 
         assertThat(bqb.toString()).contains("*reference123*");
+        assertThat(bqb.toString()).doesNotContain("TYPE/*reference123*");
     }
 
     @Test

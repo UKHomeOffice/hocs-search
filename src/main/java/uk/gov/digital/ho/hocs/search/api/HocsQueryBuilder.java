@@ -9,10 +9,13 @@ import uk.gov.digital.ho.hocs.search.api.dto.DateRangeDto;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
 class HocsQueryBuilder {
+
+    public static final Pattern isInteger = Pattern.compile("^\\d+$");
 
     private final BoolQueryBuilder mqb;
 
@@ -37,7 +40,8 @@ class HocsQueryBuilder {
         if (reference != null && !reference.isEmpty()) {
             log.debug("reference {} , adding to query", reference);
             QueryBuilder typeQb;
-            if (caseTypes != null && caseTypes.size() == 1) {
+            // optimise wildcard search when user enters only digits by prefixing with case type
+            if (caseTypes != null && caseTypes.size() == 1 && isInteger.matcher(reference).matches()) {
                 typeQb = QueryBuilders.wildcardQuery("reference", String.format("%s/*%s*", caseTypes.get(0), reference));
             } else {
                 typeQb = QueryBuilders.wildcardQuery("reference", String.format("*%s*", reference));
