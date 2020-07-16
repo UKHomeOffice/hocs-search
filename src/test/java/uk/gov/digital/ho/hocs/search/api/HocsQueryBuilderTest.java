@@ -10,10 +10,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.search.api.dto.DateRangeDto;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,7 +31,7 @@ public class HocsQueryBuilderTest {
         String reference = "reference123";
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
-        hocsQueryBuilder.reference(reference);
+        hocsQueryBuilder.reference(reference, null);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
         Mockito.verifyNoMoreInteractions(bqb);
@@ -43,11 +40,55 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
+    public void shouldAddNumericReferenceWithSingleCaseType() {
+        String reference = "123";
+        List<String> caseTypes = Arrays.asList("TYPE");
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.reference(reference, caseTypes);
+
+        Mockito.verify(bqb).must(any(QueryBuilder.class));
+        Mockito.verifyNoMoreInteractions(bqb);
+
+        assertThat(bqb.toString()).contains("TYPE/*123*");
+    }
+
+    @Test
+    public void shouldAddNonNumericReferenceWithSingleCaseType() {
+        String reference = "reference123";
+        List<String> caseTypes = Arrays.asList("TYPE");
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.reference(reference, caseTypes);
+
+        Mockito.verify(bqb).must(any(QueryBuilder.class));
+        Mockito.verifyNoMoreInteractions(bqb);
+
+        assertThat(bqb.toString()).contains("*reference123*");
+        assertThat(bqb.toString()).doesNotContain("TYPE/*reference123*");
+    }
+
+    @Test
+    public void shouldAddReferenceWithMultipleCaseTypes() {
+        String reference = "reference123";
+        List<String> caseTypes = Arrays.asList("TYPE", "TYPE2");
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.reference(reference, caseTypes);
+
+        Mockito.verify(bqb).must(any(QueryBuilder.class));
+        Mockito.verifyNoMoreInteractions(bqb);
+
+        assertThat(bqb.toString()).contains("*reference123*");
+        assertThat(bqb.toString()).doesNotContain("TYPE/*reference123*");
+    }
+
+    @Test
     public void shouldNotAddBlankReference() {
         String reference = "";
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
-        hocsQueryBuilder.reference(reference);
+        hocsQueryBuilder.reference(reference, null);
 
         Mockito.verifyNoMoreInteractions(bqb);
     }
@@ -55,7 +96,7 @@ public class HocsQueryBuilderTest {
     @Test
     public void shouldNotAddNullReference() {
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
-        hocsQueryBuilder.reference(null);
+        hocsQueryBuilder.reference(null, null);
 
         Mockito.verifyNoMoreInteractions(bqb);
     }
