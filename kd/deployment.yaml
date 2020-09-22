@@ -203,8 +203,8 @@ spec:
                   key: secret_access_key
           resources:
             limits:
-              cpu: 900m
-              memory: 1536Mi
+              cpu: 1200m
+              memory: 2048Mi
             requests:
               cpu: 200m
               memory: 512Mi
