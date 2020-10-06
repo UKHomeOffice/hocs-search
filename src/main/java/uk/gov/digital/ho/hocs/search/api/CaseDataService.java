@@ -122,6 +122,7 @@ public class CaseDataService {
         hocsQueryBuilder.caseTypes(request.getCaseTypes());
         hocsQueryBuilder.dateRange(request.getDateReceived());
         hocsQueryBuilder.correspondentName(request.getCorrespondentName());
+        hocsQueryBuilder.correspondentNameNotMP(request.getCorrespondentNameNotMP());
         hocsQueryBuilder.correspondentReference(request.getCorrespondentReference());
         hocsQueryBuilder.correspondentExternalKey(request.getCorrespondentExternalKey());
         hocsQueryBuilder.topic(request.getTopic());
