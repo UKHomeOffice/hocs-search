@@ -106,10 +106,10 @@ class HocsQueryBuilder {
         return this;
     }
 
-    HocsQueryBuilder correspondentNameNotMP(String correspondentNameNotMP) {
-        if (StringUtils.hasText(correspondentNameNotMP)) {
-            log.debug("CorrespondentNameNotMP {}, adding to query", correspondentNameNotMP);
-            QueryBuilder fullnameQb = QueryBuilders.matchQuery("currentCorrespondents.fullname", correspondentNameNotMP).operator(Operator.AND);
+    HocsQueryBuilder correspondentNameNotMember(String correspondentNameNotMember) {
+        if (StringUtils.hasText(correspondentNameNotMember)) {
+            log.debug("CorrespondentNameNotMember {}, adding to query", correspondentNameNotMember);
+            QueryBuilder fullnameQb = QueryBuilders.matchQuery("currentCorrespondents.fullname", correspondentNameNotMember).operator(Operator.AND);
             QueryBuilder typeQb = QueryBuilders.matchQuery("currentCorrespondents.type", "MEMBER").operator(Operator.AND);
 
             BoolQueryBuilder correspondentBqb = new BoolQueryBuilder();
@@ -120,7 +120,7 @@ class HocsQueryBuilder {
             mqb.must(correspondentQb);
             hasClause = true;
         } else {
-            log.debug("CorrespondentNameNotMP was null or empty");
+            log.debug("CorrespondentNameNotMember was null or empty");
         }
 
         return this;
