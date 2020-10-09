@@ -27,6 +27,9 @@ public class SearchRequest {
     @JsonProperty("correspondentName")
     private String correspondentName;
 
+    @JsonProperty("correspondentNameNotMember")
+    private String correspondentNameNotMember;
+
     @JsonProperty("correspondentReference")
     private String correspondentReference;
 

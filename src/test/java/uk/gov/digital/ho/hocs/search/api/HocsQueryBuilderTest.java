@@ -165,6 +165,18 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
+    public void shouldAddCorrespondentNameNotMember(){
+        String correspondentNameNotMember = "BOB";
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb).correspondentNameNotMember(correspondentNameNotMember);
+
+        Mockito.verify(bqb).must(any(QueryBuilder.class));
+        assertThat(bqb.toString()).contains("BOB");
+        assertThat(bqb.toString()).contains("must_not");
+        assertThat(bqb.toString()).contains("MEMBER");
+    }
+
+    @Test
     public void shouldAddCorrespondentReference() {
         String correspondentReference = "MYReference";
 
