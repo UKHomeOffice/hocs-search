@@ -106,6 +106,26 @@ class HocsQueryBuilder {
         return this;
     }
 
+    HocsQueryBuilder correspondentNameNotMember(String correspondentNameNotMember) {
+        if (StringUtils.hasText(correspondentNameNotMember)) {
+            log.debug("CorrespondentNameNotMember {}, adding to query", correspondentNameNotMember);
+            QueryBuilder fullnameQb = QueryBuilders.matchQuery("currentCorrespondents.fullname", correspondentNameNotMember).operator(Operator.AND);
+            QueryBuilder typeQb = QueryBuilders.matchQuery("currentCorrespondents.type", "MEMBER").operator(Operator.AND);
+
+            BoolQueryBuilder correspondentBqb = new BoolQueryBuilder();
+            correspondentBqb.must(fullnameQb);
+            correspondentBqb.mustNot(typeQb);
+
+            QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", correspondentBqb, ScoreMode.None);
+            mqb.must(correspondentQb);
+            hasClause = true;
+        } else {
+            log.debug("CorrespondentNameNotMember was null or empty");
+        }
+
+        return this;
+    }
+
     HocsQueryBuilder correspondentReference(String correspondentReference) {
         if (StringUtils.hasText(correspondentReference)) {
             log.debug("correspondentReference {}, adding to query", correspondentReference);
