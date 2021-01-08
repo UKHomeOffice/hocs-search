@@ -44,6 +44,8 @@ public class CaseData {
     private Set<Topic> currentTopics = new HashSet<>();
 
     private Set<Topic> allTopics = new HashSet<>();
+    
+    private Set<SomuItem> allSomuItems = new HashSet<>();
 
     private Map data;
 
@@ -114,6 +116,19 @@ public class CaseData {
 
     public void removeTopic(UUID topicUUID) {
         this.currentTopics.removeIf(c -> c.getUuid().equals(topicUUID));
+    }
+
+    public void addSomuItem(SomuItem somuItem) {
+        this.allSomuItems.add(somuItem);
+    }
+    
+    public void updateSomuItem(SomuItem somuItem) {
+        this.allSomuItems.removeIf(x -> x.getUuid().equals(somuItem.getUuid()));
+        this.allSomuItems.add(somuItem);
+    }
+
+    public void removeSomuItem(UUID somuItemUuid) {
+        this.allSomuItems.removeIf(c -> c.getUuid().equals(somuItemUuid));
     }
 
 }

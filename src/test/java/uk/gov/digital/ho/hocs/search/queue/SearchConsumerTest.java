@@ -131,7 +131,7 @@ public class SearchConsumerTest extends CamelTestSupport {
         verify(mockDataService, times(1)).createTopic(eq(caseUUID), any(CreateTopicRequest.class));
         verifyNoMoreInteractions(mockDataService);
     }
-
+    
     @Test
     public void shouldCallDeleteTopic() throws JsonProcessingException {
 
@@ -142,6 +142,33 @@ public class SearchConsumerTest extends CamelTestSupport {
         verifyNoMoreInteractions(mockDataService);
     }
 
+    @Test
+    public void shouldCallCreateSomuItem() throws JsonProcessingException {
+        CreateAuditDto auditDto = new CreateAuditDto(caseUUID, data, EventType.SOMU_ITEM_CREATED.toString());
+        String json = mapper.writeValueAsString(auditDto);
+        template.sendBody(searchQueue, json);
+        verify(mockDataService, times(1)).createSomuItem(eq(caseUUID), any(SomuItemDto.class));
+        verifyNoMoreInteractions(mockDataService);
+    }
+
+    @Test
+    public void shouldCallUpdateSomuItem() throws JsonProcessingException {
+        CreateAuditDto auditDto = new CreateAuditDto(caseUUID, "{ \"uuid\": \"11111111-2222-2222-2222-333333333333\" }", EventType.SOMU_ITEM_UPDATED.toString());
+        String json = mapper.writeValueAsString(auditDto);
+        template.sendBody(searchQueue, json);
+        verify(mockDataService, times(1)).updateSomuItem(eq(caseUUID), any(SomuItemDto.class));
+        verifyNoMoreInteractions(mockDataService);
+    }
+
+    @Test
+    public void shouldCallDeleteSomuItem() throws JsonProcessingException {
+        CreateAuditDto auditDto = new CreateAuditDto(caseUUID, "{ \"uuid\": \"11111111-2222-2222-2222-333333333333\" }", EventType.SOMU_ITEM_DELETED.toString());
+        String json = mapper.writeValueAsString(auditDto);
+        template.sendBody(searchQueue, json);
+        verify(mockDataService, times(1)).deleteSomuItem(eq(caseUUID), any(SomuItemDto.class));
+        verifyNoMoreInteractions(mockDataService);
+    }
+    
     @Test
     public void shouldNotProcessMessgeWhenMarshellingFails() throws JsonProcessingException, InterruptedException {
         getMockEndpoint(dlq).setExpectedCount(1);

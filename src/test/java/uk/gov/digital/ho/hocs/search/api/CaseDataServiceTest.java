@@ -32,6 +32,7 @@ public class CaseDataServiceTest {
     private UpdateCaseRequest validUpdateCaseRequest = new UpdateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", UUID.randomUUID(), UUID.randomUUID(), LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), new HashMap());
     private CorrespondentDetailsDto validCorrespondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(), LocalDateTime.now(), "LAW", "FULLNAME", null, "0", "e", "REF", "ExtKey");
     private CreateTopicRequest validCreateTopicRequest = new CreateTopicRequest(UUID.randomUUID(), "Test Topic");
+    private SomuItemDto validSomuItemDto = new SomuItemDto(UUID.randomUUID(),UUID.randomUUID(), "{\"Test\": 1}");
 
     @Before
     public void setup() {
@@ -306,6 +307,42 @@ public class CaseDataServiceTest {
         when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
 
         caseDataService.deleteTopic(caseUUID, validCreateTopicRequest.getUuid().toString());
+
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).update(any(CaseData.class));
+
+        verifyNoMoreInteractions(elasticSearchClient);
+    }
+
+    @Test
+    public void shouldCreateSomuItemIfNotExists() {
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
+
+        caseDataService.createSomuItem(caseUUID, validSomuItemDto);
+
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).update(any(CaseData.class));
+
+        verifyNoMoreInteractions(elasticSearchClient);
+    }
+
+    @Test
+    public void shouldDeleteSomuItemIfExists() {
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
+
+        caseDataService.deleteSomuItem(caseUUID, validSomuItemDto);
+
+        verify(elasticSearchClient).findById(caseUUID);
+        verify(elasticSearchClient).update(any(CaseData.class));
+
+        verifyNoMoreInteractions(elasticSearchClient);
+    }
+
+    @Test
+    public void shouldUpdateSomuItemIfExists() {
+        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
+
+        caseDataService.updateSomuItem(caseUUID, validSomuItemDto);
 
         verify(elasticSearchClient).findById(caseUUID);
         verify(elasticSearchClient).update(any(CaseData.class));
