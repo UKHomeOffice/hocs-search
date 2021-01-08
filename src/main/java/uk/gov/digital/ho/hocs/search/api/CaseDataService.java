@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.search.api.dto.*;
 import uk.gov.digital.ho.hocs.search.client.elasticsearchclient.ElasticSearchClient;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.search.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.search.domain.model.Topic;
 
 import java.util.HashSet;
@@ -112,6 +113,30 @@ public class CaseDataService {
         caseData.removeTopic(UUID.fromString(topicUUID));
         elasticSearchClient.update(caseData);
         log.info("Deleted topic {} from case {}", topicUUID, caseUUID, value(EVENT, SEARCH_TOPIC_DELETED));
+    }
+
+    public void createSomuItem(UUID caseUUID, SomuItemDto somuItemDto) {
+        log.debug("Adding somu item {} to case {}", somuItemDto.getUuid(), caseUUID);
+        CaseData caseData = getCaseData(caseUUID);
+        caseData.addSomuItem(SomuItem.from(somuItemDto));
+        elasticSearchClient.update(caseData);
+        log.info("Added somu item {} to case {}. Event {}", somuItemDto.getUuid(), caseUUID, value(EVENT, SOMU_ITEM_CREATED));
+    }
+
+    public void deleteSomuItem(UUID caseUUID, SomuItemDto somuItem) {
+        log.debug("Deleting somu item {} from case {}",somuItem.getUuid(), caseUUID);
+        CaseData caseData = getCaseData(caseUUID);
+        caseData.removeSomuItem(somuItem.getUuid());
+        elasticSearchClient.update(caseData);
+        log.info("Deleted somu item {} from case {}. Event {}", somuItem.getUuid(), caseUUID, value(EVENT, SOMU_ITEM_DELETED));
+    }
+
+    public void updateSomuItem(UUID caseUUID, SomuItemDto somuItemDto) {
+        log.debug("Updating somu item {} from case {}", somuItemDto.getUuid(), caseUUID);
+        CaseData caseData = getCaseData(caseUUID);
+        caseData.updateSomuItem(SomuItem.from(somuItemDto));
+        elasticSearchClient.update(caseData);
+        log.info("Updated somu item {} from case {}. Event {}", somuItemDto.getUuid(), caseUUID, value(EVENT, SOMU_ITEM_UPDATED));
     }
 
     Set<UUID> search(SearchRequest request) {

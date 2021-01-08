@@ -12,6 +12,10 @@ public enum LogEvent {
     SEARCH_TOPIC_ADDED,
     SEARCH_TOPIC_DELETED,
     SEARCH_REQUEST,
-    SEARCH_RESPONSE;
+    SEARCH_RESPONSE,
+    SOMU_ITEM_CREATED,
+    SOMU_ITEM_UPDATED,
+    SOMU_ITEM_DELETED;
+    
     public static final String EVENT = "event_id";
 }

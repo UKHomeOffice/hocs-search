@@ -25,6 +25,10 @@ public class SearchConsumer extends RouteBuilder {
     private static final String UPDATE_CORRESPONDENT_QUEUE = "direct:updateCorrespondentQueue";
     private static final String CREATE_TOPIC_QUEUE = "direct:createTopicQueue";
     private static final String DELETE_TOPIC_QUEUE = "direct:deleteTopicQueue";
+    private static final String CREATE_SOMU_ITEM_QUEUE = "direct:createSomuItemQueue";
+    private static final String DELETE_SOMU_ITEM_QUEUE = "direct:deleteSomuItemQueue";
+    private static final String UPDATE_SOMU_ITEM_QUEUE = "direct:updateSomuItemQueue";
+    
     private final CaseDataService caseDataService;
     private final String searchQueue;
     private final String dlq;
@@ -101,6 +105,15 @@ public class SearchConsumer extends RouteBuilder {
                 .when(simple("${property.type} == '" + EventType.CASE_TOPIC_DELETED + "'"))
                 .to(DELETE_TOPIC_QUEUE)
                 .endChoice()
+                .when(simple("${property.type} == '" + EventType.SOMU_ITEM_CREATED + "'"))
+                .to(CREATE_SOMU_ITEM_QUEUE)
+                .endChoice()
+                .when(simple("${property.type} == '" + EventType.SOMU_ITEM_DELETED + "'"))
+                .to(DELETE_SOMU_ITEM_QUEUE)
+                .endChoice()
+                .when(simple("${property.type} == '" + EventType.SOMU_ITEM_UPDATED + "'"))
+                .to(UPDATE_SOMU_ITEM_QUEUE)
+                .endChoice()
                 .otherwise()
                 .log(LoggingLevel.DEBUG, "Ignoring Message ${property.type}")
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE))
@@ -158,6 +171,25 @@ public class SearchConsumer extends RouteBuilder {
         from(DELETE_TOPIC_QUEUE)
                 .log(LoggingLevel.DEBUG, DELETE_TOPIC_QUEUE)
                 .bean(caseDataService, "deleteTopic(${property.caseUUID}, ${body})")
+                .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
+
+        from(CREATE_SOMU_ITEM_QUEUE)
+                .log(LoggingLevel.DEBUG, CREATE_SOMU_ITEM_QUEUE)
+                .unmarshal().json(JsonLibrary.Jackson, SomuItemDto.class)
+                .log(LoggingLevel.DEBUG, "${body}")
+                .bean(caseDataService, "createSomuItem(${property.caseUUID}, ${body})")
+                .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
+
+        from(DELETE_SOMU_ITEM_QUEUE)
+                .log(LoggingLevel.DEBUG, DELETE_SOMU_ITEM_QUEUE)
+                .unmarshal().json(JsonLibrary.Jackson, SomuItemDto.class)
+                .bean(caseDataService, "deleteSomuItem(${property.caseUUID}, ${body})")
+                .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
+
+        from(UPDATE_SOMU_ITEM_QUEUE)
+                .log(LoggingLevel.DEBUG, UPDATE_SOMU_ITEM_QUEUE)
+                .unmarshal().json(JsonLibrary.Jackson, SomuItemDto.class)
+                .bean(caseDataService, "updateSomuItem(${property.caseUUID}, ${body})")
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
     }
 
