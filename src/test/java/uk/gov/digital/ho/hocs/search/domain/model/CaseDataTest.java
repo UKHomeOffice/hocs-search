@@ -1,10 +1,7 @@
 package uk.gov.digital.ho.hocs.search.domain.model;
 
 import org.junit.Test;
-import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.search.api.dto.CorrespondentDetailsDto;
-import uk.gov.digital.ho.hocs.search.api.dto.CreateTopicRequest;
-import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,6 +17,7 @@ public class CaseDataTest {
     private UpdateCaseRequest validUpdateCaseRequest = new UpdateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", UUID.randomUUID(), UUID.randomUUID(), LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), new HashMap());
     private CorrespondentDetailsDto validCorrespondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(), LocalDateTime.now(), "LAW", "FULLNAME", null, "0", "e", "REF", "ExtKey");
     private Topic validTopic = Topic.from(new CreateTopicRequest(UUID.randomUUID(), "VALUE"));
+    private final SomuItem validSomuItem = SomuItem.from(new SomuItemDto(UUID.randomUUID(), UUID.randomUUID(), "{}"));
 
     @Test
     public void shouldCreateCaseDataConstructor() {
@@ -199,5 +197,53 @@ public class CaseDataTest {
 
         assertThat(caseData.getCurrentTopics()).hasSize(0);
         assertThat(caseData.getAllTopics()).hasSize(1);
+    }
+
+    @Test
+    public void shouldAddSomuItem() {
+        CaseData caseData = new CaseData(caseUUID);
+
+        assertThat(caseData.getAllSomuItems()).isEmpty();
+
+        caseData.addSomuItem(validSomuItem);
+
+        assertThat(caseData.getAllSomuItems()).hasSize(1);
+    }
+
+    @Test
+    public void shouldRemoveSomuItem() {
+        CaseData caseData = new CaseData(caseUUID);
+
+        assertThat(caseData.getAllSomuItems()).isEmpty();
+
+        caseData.addSomuItem(validSomuItem);
+
+        assertThat(caseData.getAllSomuItems()).hasSize(1);
+
+        caseData.removeSomuItem(validSomuItem.getUuid());
+
+        assertThat(caseData.getAllSomuItems()).hasSize(0);
+    }
+
+    @Test
+    public void shouldUpdateSomuItem() {
+        CaseData caseData = new CaseData(caseUUID);
+
+        assertThat(caseData.getAllSomuItems()).isEmpty();
+
+        caseData.addSomuItem(validSomuItem);
+
+        assertThat(caseData.getAllSomuItems()).hasSize(1);
+
+        SomuItem updatedSomuItem = SomuItem.from(new SomuItemDto(validSomuItem.getUuid(), validSomuItem.getSomuUuid(), "TEST"));
+        
+        caseData.updateSomuItem(updatedSomuItem);
+
+        assertThat(caseData.getAllSomuItems()).hasSize(1);
+        
+        SomuItem caseDataSomuItem = (SomuItem)caseData.getAllSomuItems().toArray()[0];
+        assertThat(caseDataSomuItem.getUuid()).isEqualTo(validSomuItem.getUuid());
+        assertThat(caseDataSomuItem.getSomuUuid()).isEqualTo(validSomuItem.getSomuUuid());
+        assertThat(caseDataSomuItem.getData()).isEqualTo("TEST");
     }
 }
