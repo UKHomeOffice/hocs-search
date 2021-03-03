@@ -40,6 +40,9 @@ elif [[ ${KUBE_NAMESPACE} == "cs-dev" ]] ; then
 elif [[ ${KUBE_NAMESPACE} == "wcs-dev" ]] ; then
     echo "deploy ${VERSION} to DEV namespace, using HOCS_SEARCH_WCS_DEV drone secret"
     export KUBE_TOKEN=${HOCS_SEARCH_WCS_DEV}
+elif [[ ${KUBE_NAMESPACE} == "hocs-qax" ]] ; then
+    echo "deploy ${VERSION} to qax namespace, using HOCS_SEARCH_QAX drone secret"
+    export KUBE_TOKEN=${HOCS_SEARCH_QAX}
 else
     echo "Unable to find environment: ${ENVIRONMENT}"
 fi
