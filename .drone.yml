@@ -37,8 +37,20 @@ pipeline:
     commands:
       - docker login -u="ukhomeofficedigital+hocs" -p=$${DOCKER_PASSWORD} quay.io
       - docker tag hocs-search quay.io/ukhomeofficedigital/hocs-search:build-$${DRONE_BUILD_NUMBER}
-      - docker tag hocs-search quay.io/ukhomeofficedigital/hocs-search:latest
       - docker push quay.io/ukhomeofficedigital/hocs-search:build-$${DRONE_BUILD_NUMBER}
+    when:
+      branch: [master, epic/*, hotfix/*]
+      event: push
+
+  install-docker-image-latest:
+    image: docker:17.09.1
+    environment:
+      - DOCKER_HOST=tcp://172.17.0.1:2375
+    secrets:
+      - docker_password
+    commands:
+      - docker login -u="ukhomeofficedigital+hocs" -p=$${DOCKER_PASSWORD} quay.io
+      - docker tag hocs-search quay.io/ukhomeofficedigital/hocs-search:latest
       - docker push quay.io/ukhomeofficedigital/hocs-search:latest
     when:
       branch: [master]
