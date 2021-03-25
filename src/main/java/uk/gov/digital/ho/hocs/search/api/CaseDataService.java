@@ -151,6 +151,7 @@ public class CaseDataService {
         hocsQueryBuilder.correspondentReference(request.getCorrespondentReference());
         hocsQueryBuilder.correspondentExternalKey(request.getCorrespondentExternalKey());
         hocsQueryBuilder.topic(request.getTopic());
+        hocsQueryBuilder.privateOfficeTeam(request.getPrivateOfficeTeamUuid());
         hocsQueryBuilder.dataFields(request.getData());
         hocsQueryBuilder.activeOnlyFlag(request.getActiveOnly());
 

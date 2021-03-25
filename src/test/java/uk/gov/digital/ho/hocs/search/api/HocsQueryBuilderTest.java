@@ -402,4 +402,34 @@ public class HocsQueryBuilderTest {
 
         Mockito.verifyNoMoreInteractions(bqb);
     }
+
+    @Test
+    public void shouldAddPrivateOfficeTeam() {
+        String privateOfficeTeamUuid = UUID.randomUUID().toString();
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.privateOfficeTeam(privateOfficeTeamUuid);
+
+        Mockito.verify(bqb).must(any(QueryBuilder.class));
+
+        assertThat(bqb.toString()).contains(privateOfficeTeamUuid);
+    }
+
+    @Test
+    public void shouldNotAddEmptyPrivateOfficeTeam() {
+        String privateOfficeTeamUuid = "";
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.privateOfficeTeam(privateOfficeTeamUuid);
+
+        Mockito.verifyNoMoreInteractions(bqb);
+    }
+
+    @Test
+    public void shouldNotAddNullPrivateOfficeTeam() {
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.privateOfficeTeam(null);
+
+        Mockito.verifyNoMoreInteractions(bqb);
+    }
 }

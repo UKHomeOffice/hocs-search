@@ -167,6 +167,34 @@ class HocsQueryBuilder {
         return this;
     }
 
+    HocsQueryBuilder privateOfficeTeam(String privateOfficeTeam) {
+        if (privateOfficeTeam != null && !privateOfficeTeam.isEmpty()) {
+            log.debug("Private office team {}, adding to query", privateOfficeTeam);
+
+            BoolQueryBuilder isOverridePoTeamQB = QueryBuilders.boolQuery()
+                    .must(QueryBuilders.matchQuery("data.OverridePOTeamUUID", privateOfficeTeam).operator(Operator.AND));
+
+            BoolQueryBuilder emptyOverrideIsPoTeamQB = QueryBuilders.boolQuery()
+                    .mustNot(QueryBuilders.wildcardQuery("data.OverridePOTeamUUID", "*"))
+                    .must(QueryBuilders.matchQuery("data.POTeamUUID", privateOfficeTeam).operator(Operator.AND));
+
+            BoolQueryBuilder noOverrideIsPoTeamQB = QueryBuilders.boolQuery()
+                    .mustNot(QueryBuilders.existsQuery("data.OverridePOTeamUUID"))
+                    .must(QueryBuilders.matchQuery("data.POTeamUUID", privateOfficeTeam).operator(Operator.AND));
+
+            BoolQueryBuilder privateOfficeFilter = new BoolQueryBuilder()
+                    .should(isOverridePoTeamQB)
+                    .should(emptyOverrideIsPoTeamQB)
+                    .should(noOverrideIsPoTeamQB);
+
+            mqb.must(privateOfficeFilter);
+            hasClause = true;
+        } else {
+            log.debug("Private office team was null or empty");
+        }
+        return this;
+    }
+
     HocsQueryBuilder dataFields(Map<String, String> data) {
         if (data != null && !data.isEmpty()) {
             log.debug("data size {}, adding to query", data.size());
