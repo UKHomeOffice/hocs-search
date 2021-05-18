@@ -134,6 +134,68 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
+    public void shouldAddCorrespondentAddress1() {
+        String correspondentAddress1 = "Address1";
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.correspondentAddress1(correspondentAddress1);
+
+        Mockito.verify(bqb).must(any(QueryBuilder.class));
+
+        assertThat(bqb.toString()).contains("Address1");
+    }
+
+    @Test
+    public void shouldNotAddNoCorrespondentAddress1() {
+        String correspondentAddress1 = "";
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.correspondentAddress1(correspondentAddress1);
+
+        Mockito.verifyNoMoreInteractions(bqb);
+    }
+
+    @Test
+    public void shouldNotAddNullCorrespondentAddress1() {
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.correspondentAddress1(null);
+
+        Mockito.verifyNoMoreInteractions(bqb);
+    }
+
+    @Test
+    public void shouldAddCorrespondentEmail() {
+        String correspondentEmail = "EMAIL";
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.correspondentEmail(correspondentEmail);
+
+        Mockito.verify(bqb).must(any(QueryBuilder.class));
+
+        assertThat(bqb.toString()).contains("EMAIL");
+    }
+
+    @Test
+    public void shouldNotAddNoCorrespondentEmail() {
+        String correspondentEmail = "";
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.correspondentEmail(correspondentEmail);
+
+        Mockito.verifyNoMoreInteractions(bqb);
+    }
+
+    @Test
+    public void shouldNotAddNullCorrespondentEmail() {
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.correspondentEmail(null);
+
+        Mockito.verifyNoMoreInteractions(bqb);
+    }
+
+    @Test
     public void shouldAddCorrespondentName() {
         String correspondentName = "MYNAME";
 
@@ -174,6 +236,37 @@ public class HocsQueryBuilderTest {
         assertThat(bqb.toString()).contains("BOB");
         assertThat(bqb.toString()).contains("must_not");
         assertThat(bqb.toString()).contains("MEMBER");
+    }
+
+    @Test
+    public void shouldAddCorrespondentPostcode() {
+        String correspondentPostcode = "Postcode";
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.correspondentPostcode(correspondentPostcode);
+
+        Mockito.verify(bqb).must(any(QueryBuilder.class));
+
+        assertThat(bqb.toString()).contains("Postcode");
+    }
+
+    @Test
+    public void shouldNotAddNoCorrespondentPostcode() {
+        String correspondentPostcode = "";
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.correspondentPostcode(correspondentPostcode);
+
+        Mockito.verifyNoMoreInteractions(bqb);
+    }
+
+    @Test
+    public void shouldNotAddNullCorrespondentPostcode() {
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.correspondentPostcode(null);
+
+        Mockito.verifyNoMoreInteractions(bqb);
     }
 
     @Test
