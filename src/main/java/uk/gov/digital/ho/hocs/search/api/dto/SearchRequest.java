@@ -24,11 +24,20 @@ public class SearchRequest {
     @JsonProperty("dateReceived")
     private DateRangeDto dateReceived;
 
+    @JsonProperty("correspondentAddress1")
+    private String correspondentAddress1;
+
+    @JsonProperty("correspondentEmail")
+    private String correspondentEmail;
+
     @JsonProperty("correspondentName")
     private String correspondentName;
 
     @JsonProperty("correspondentNameNotMember")
     private String correspondentNameNotMember;
+
+    @JsonProperty("correspondentPostcode")
+    private String correspondentPostcode;
 
     @JsonProperty("correspondentReference")
     private String correspondentReference;
