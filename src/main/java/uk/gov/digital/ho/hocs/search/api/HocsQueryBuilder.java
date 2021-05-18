@@ -92,6 +92,34 @@ class HocsQueryBuilder {
         return this;
     }
 
+    HocsQueryBuilder correspondentAddress1(String correspondentAddress1) {
+        if (StringUtils.hasText(correspondentAddress1)) {
+            log.debug("CorrespondentAddress {}, adding to query", correspondentAddress1);
+            QueryBuilder addressQb = QueryBuilders.matchQuery("currentCorrespondents.address1", correspondentAddress1).operator(Operator.AND);
+            QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", addressQb, ScoreMode.None);
+            mqb.must(correspondentQb);
+            hasClause = true;
+        } else {
+            log.debug("CorrespondentAddress was null or empty");
+        }
+
+        return this;
+    }
+
+    HocsQueryBuilder correspondentEmail(String correspondentEmail) {
+        if (StringUtils.hasText(correspondentEmail)) {
+            log.debug("CorrespondentEmail {}, adding to query", correspondentEmail);
+            QueryBuilder emailQb = QueryBuilders.matchQuery("currentCorrespondents.email", correspondentEmail).operator(Operator.AND);
+            QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", emailQb, ScoreMode.None);
+            mqb.must(correspondentQb);
+            hasClause = true;
+        } else {
+            log.debug("CorrespondentEmail was null or empty");
+        }
+
+        return this;
+    }
+
     HocsQueryBuilder correspondentName(String correspondentName) {
         if (StringUtils.hasText(correspondentName)) {
             log.debug("CorrespondentName {}, adding to query", correspondentName);
@@ -121,6 +149,20 @@ class HocsQueryBuilder {
             hasClause = true;
         } else {
             log.debug("CorrespondentNameNotMember was null or empty");
+        }
+
+        return this;
+    }
+
+    HocsQueryBuilder correspondentPostcode(String correspondentPostcode) {
+        if (StringUtils.hasText(correspondentPostcode)) {
+            log.debug("CorrespondentPostcode {}, adding to query", correspondentPostcode);
+            QueryBuilder postcodeQb = QueryBuilders.matchQuery("currentCorrespondents.postcode", correspondentPostcode).operator(Operator.AND);
+            QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", postcodeQb, ScoreMode.None);
+            mqb.must(correspondentQb);
+            hasClause = true;
+        } else {
+            log.debug("CorrespondentPostcode was null or empty");
         }
 
         return this;
