@@ -14,8 +14,8 @@ import java.util.UUID;
 public class SomuItem {
 
     private UUID uuid;
-    
-    private UUID somuUuid;
+
+    private UUID somuTypeUuid;
 
     private Object data;
     
