@@ -235,7 +235,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getAllSomuItems()).hasSize(1);
 
-        SomuItem updatedSomuItem = SomuItem.from(new SomuItemDto(validSomuItem.getUuid(), validSomuItem.getSomuUuid(), "TEST"));
+        SomuItem updatedSomuItem = SomuItem.from(new SomuItemDto(validSomuItem.getUuid(), validSomuItem.getSomuTypeUuid(), "TEST"));
         
         caseData.updateSomuItem(updatedSomuItem);
 
@@ -243,7 +243,7 @@ public class CaseDataTest {
         
         SomuItem caseDataSomuItem = (SomuItem)caseData.getAllSomuItems().toArray()[0];
         assertThat(caseDataSomuItem.getUuid()).isEqualTo(validSomuItem.getUuid());
-        assertThat(caseDataSomuItem.getSomuUuid()).isEqualTo(validSomuItem.getSomuUuid());
+        assertThat(caseDataSomuItem.getSomuTypeUuid()).isEqualTo(validSomuItem.getSomuTypeUuid());
         assertThat(caseDataSomuItem.getData()).isEqualTo("TEST");
     }
 }

@@ -14,12 +14,12 @@ import java.util.UUID;
 public class SomuItem {
 
     private UUID uuid;
-    
-    private UUID somuUuid;
+
+    private UUID somuTypeUuid;
 
     private Object data;
     
     public static SomuItem from(SomuItemDto somuItemDto) {
-        return new SomuItem(somuItemDto.getUuid(), somuItemDto.getSomuUuid(), somuItemDto.getData());
+        return new SomuItem(somuItemDto.getUuid(), somuItemDto.getSomuTypeUuid(), somuItemDto.getData());
     }
 }
