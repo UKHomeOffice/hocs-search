@@ -17,8 +17,8 @@ public class SomuItemDto {
     @JsonProperty("uuid")
     private UUID uuid;
 
-    @JsonProperty("somuUuid")
-    private UUID somuUuid;
+    @JsonProperty("somuTypeUuid")
+    private UUID somuTypeUuid;
 
     @JsonProperty("data")
     private Object data;
