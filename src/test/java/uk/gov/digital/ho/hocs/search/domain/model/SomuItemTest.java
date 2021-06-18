@@ -18,7 +18,7 @@ public class SomuItemTest {
         SomuItem somuItem = SomuItem.from(validSomuItemDto);
 
         assertThat(somuItem.getUuid()).isEqualTo(somuItemUUID);
-        assertThat(somuItem.getSomuUuid()).isEqualTo(somuTypeUUID);
+        assertThat(somuItem.getSomuTypeUuid()).isEqualTo(somuTypeUUID);
         assertThat(somuItem.getData()).isEqualTo("{}");
     }
 }
