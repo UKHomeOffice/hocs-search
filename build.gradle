@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.1.5.RELEASE'
+    id 'org.springframework.boot' version '2.2.0.RELEASE'
     id 'java'
 }
 
@@ -24,7 +24,7 @@ task copyLombok(type: Copy) {
 	outputs.upToDateWhen { false }
 	into "${buildDir}/libs"
 	include "lombok*.jar"
-	from configurations.compileOnly
+	from configurations.compileClasspath
 }
 
 build.dependsOn(copyLombok)
@@ -46,12 +46,12 @@ dependencies {
     implementation('org.springframework.retry:spring-retry')
     implementation('org.springframework:spring-aspects')
 
-    compile group: 'org.apache.camel', name: 'camel-spring-boot', version: '2.24.0'
-    compile group: 'org.apache.camel', name: 'camel-jackson', version: '2.24.0'
-    compile group: 'org.apache.camel', name: 'camel-aws', version: '2.24.0'
-    compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.6'
-    compile group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.11.553'
-    compile 'javax.xml.bind:jaxb-api:2.3.0'
+    implementation('org.apache.camel:camel-spring-boot:2.24.0')
+    implementation('org.apache.camel:camel-jackson:2.24.0')
+    implementation('org.apache.camel:camel-aws:2.24.0')
+    implementation('org.apache.httpcomponents:httpmime:4.5.6')
+    implementation('com.amazonaws:aws-java-sdk:1.11.553')
+    implementation('javax.xml.bind:jaxb-api:2.3.0')
 
     implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client:6.6.2')
     implementation 'com.github.awslabs:aws-request-signing-apache-interceptor:b3772780da'
