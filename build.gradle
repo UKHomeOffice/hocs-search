@@ -53,7 +53,7 @@ dependencies {
     implementation('com.amazonaws:aws-java-sdk:1.11.553')
     implementation('javax.xml.bind:jaxb-api:2.3.0')
 
-    implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client:7.6.2')
+    implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client:6.6.2')
     implementation 'com.github.awslabs:aws-request-signing-apache-interceptor:b3772780da'
 
     compileOnly 'org.projectlombok:lombok'
