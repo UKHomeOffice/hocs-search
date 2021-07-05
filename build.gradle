@@ -46,6 +46,16 @@ dependencies {
     implementation('org.springframework.retry:spring-retry')
     implementation('org.springframework:spring-aspects')
 
+
+    // Override the default version of elasticSearch, we're still using V6
+    def elasticSearchVersion = '6.8.3'
+    implementation('org.elasticsearch:elasticsearch:' + elasticSearchVersion)
+    implementation('org.elasticsearch.client:elasticsearch-rest-client:' + elasticSearchVersion)
+    implementation('org.elasticsearch:elasticsearch-x-content:' + elasticSearchVersion)
+    implementation('org.elasticsearch:elasticsearch-cli:' + elasticSearchVersion)
+    implementation('org.elasticsearch:elasticsearch-core:' + elasticSearchVersion)
+    implementation('org.elasticsearch:elasticsearch-secure-sm:' + elasticSearchVersion)
+
     implementation('org.apache.camel:camel-spring-boot:2.24.0')
     implementation('org.apache.camel:camel-jackson:2.24.0')
     implementation('org.apache.camel:camel-aws:2.24.0')
