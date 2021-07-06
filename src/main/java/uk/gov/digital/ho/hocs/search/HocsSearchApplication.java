@@ -18,7 +18,7 @@ public class HocsSearchApplication {
 
     @PreDestroy
     public void stop() {
-        log.info("hocs-search stopping gracefully");
+        log.info("Stopping gracefully");
     }
 
 }

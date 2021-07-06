@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.3.0.RELEASE'
+    id 'org.springframework.boot' version '2.5.1'
     id 'java'
 }
 
@@ -72,4 +72,8 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation("org.apache.camel:camel-test-spring:2.24.0")
     testImplementation('org.assertj:assertj-core')
+}
+
+jar {
+    enabled = false
 }
