@@ -72,6 +72,7 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation("org.apache.camel:camel-test-spring:2.24.0")
     testImplementation('org.assertj:assertj-core')
+    testImplementation('net.javacrumbs.json-unit:json-unit-assertj:2.27.0')
 }
 
 jar {

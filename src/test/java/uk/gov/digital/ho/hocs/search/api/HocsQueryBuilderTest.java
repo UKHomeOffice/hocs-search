@@ -13,6 +13,7 @@ import uk.gov.digital.ho.hocs.search.api.dto.DateRangeDto;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.mockito.ArgumentMatchers.any;
 
 
@@ -498,14 +499,50 @@ public class HocsQueryBuilderTest {
 
     @Test
     public void shouldAddPrivateOfficeTeam() {
-        String privateOfficeTeamUuid = UUID.randomUUID().toString();
+        final String privateOfficeTeamUuid = UUID.randomUUID().toString();
+        final List<Map<String, String>> privateOfficeJsonPaths =
+                List.of(
+                        Map.of("$['bool']['must'][0]['match']['data.PrivateOfficeOverridePOTeamUUID']['query']", privateOfficeTeamUuid),
+                        Map.of("$['bool']['must'][0]['match']['data.OverridePOTeamUUID']['query']", privateOfficeTeamUuid,
+                                "$['bool']['must_not'][0]['exists']['field']", "data.PrivateOfficeOverridePOTeamUUID"),
+                        Map.of("$['bool']['must'][0]['match']['data.OverridePOTeamUUID']['query']", privateOfficeTeamUuid,
+                                "$['bool']['must_not'][0]['wildcard']['data.PrivateOfficeOverridePOTeamUUID']['wildcard']", "*"),
+                        Map.of("$['bool']['must'][0]['match']['data.POTeamUUID']['query']", privateOfficeTeamUuid,
+                                "$['bool']['must_not'][0]['exists']['field']", "data.PrivateOfficeOverridePOTeamUUID",
+                                "$['bool']['must_not'][1]['exists']['field']", "data.OverridePOTeamUUID"),
+                        Map.of("$['bool']['must'][0]['match']['data.POTeamUUID']['query']", privateOfficeTeamUuid,
+                                "$['bool']['must_not'][0]['exists']['field']", "data.PrivateOfficeOverridePOTeamUUID",
+                                "$['bool']['must_not'][1]['wildcard']['data.OverridePOTeamUUID']['wildcard']", "*"),
+                        Map.of("$['bool']['must'][0]['match']['data.POTeamUUID']['query']", privateOfficeTeamUuid,
+                                "$['bool']['must_not'][0]['wildcard']['data.PrivateOfficeOverridePOTeamUUID']['wildcard']", "*",
+                                "$['bool']['must_not'][1]['exists']['field']", "data.OverridePOTeamUUID"),
+                        Map.of("$['bool']['must'][0]['match']['data.POTeamUUID']['query']", privateOfficeTeamUuid,
+                                "$['bool']['must_not'][0]['wildcard']['data.PrivateOfficeOverridePOTeamUUID']['wildcard']", "*",
+                                "$['bool']['must_not'][1]['wildcard']['data.OverridePOTeamUUID']['wildcard']", "*")
+                );
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
         hocsQueryBuilder.privateOfficeTeam(privateOfficeTeamUuid);
 
+        // Retrieve the overarching core must query
         Mockito.verify(bqb).must(any(QueryBuilder.class));
+        assertThat(bqb.must().size()).isEqualTo(1);
+        BoolQueryBuilder boolQueryBuilder = (BoolQueryBuilder) bqb.must().get(0);
 
-        assertThat(bqb.toString()).contains(privateOfficeTeamUuid);
+        // Private office has 7 underlying should queries
+        assertThat(boolQueryBuilder.should().size()).isEqualTo(7);
+        for(int i = 0; i < boolQueryBuilder.should().size(); i++) {
+            BoolQueryBuilder shouldQuery = (BoolQueryBuilder)boolQueryBuilder.should().get(i);
+
+            Map<String, String> jsonPaths = privateOfficeJsonPaths.get(i);
+
+            for (Map.Entry<String, String> entry : jsonPaths.entrySet()) {
+                assertThatJson(shouldQuery.toString())
+                        .inPath(entry.getKey())
+                        .isString()
+                        .isEqualTo(entry.getValue());
+            }
+        }
     }
 
     @Test
