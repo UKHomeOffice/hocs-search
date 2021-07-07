@@ -66,6 +66,7 @@ public class SearchConsumer extends RouteBuilder {
                 .logRetryStackTrace(true));
 
         from(searchQueue).routeId("searchCommandRoute")
+                .noDelayer()
                 .setProperty(SqsConstants.RECEIPT_HANDLE, header(SqsConstants.RECEIPT_HANDLE))
                 .process(transferHeadersToMDC())
                 .log(LoggingLevel.INFO, "Audit message received")
