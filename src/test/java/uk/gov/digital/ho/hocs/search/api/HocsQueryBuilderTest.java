@@ -43,7 +43,7 @@ public class HocsQueryBuilderTest {
     @Test
     public void shouldAddNumericReferenceWithSingleCaseType() {
         String reference = "123";
-        List<String> caseTypes = Arrays.asList("TYPE");
+        List<String> caseTypes = Collections.singletonList("TYPE");
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
         hocsQueryBuilder.reference(reference, caseTypes);
@@ -57,7 +57,7 @@ public class HocsQueryBuilderTest {
     @Test
     public void shouldAddNonNumericReferenceWithSingleCaseType() {
         String reference = "reference123";
-        List<String> caseTypes = Arrays.asList("TYPE");
+        List<String> caseTypes = Collections.singletonList("TYPE");
 
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
         hocsQueryBuilder.reference(reference, caseTypes);
@@ -231,7 +231,8 @@ public class HocsQueryBuilderTest {
     public void shouldAddCorrespondentNameNotMember(){
         String correspondentNameNotMember = "BOB";
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb).correspondentNameNotMember(correspondentNameNotMember);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        hocsQueryBuilder.correspondentNameNotMember(correspondentNameNotMember);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
         assertThat(bqb.toString()).contains("BOB");
@@ -398,29 +399,22 @@ public class HocsQueryBuilderTest {
 
     @Test
     public void shouldAddActiveFalse() {
-        Boolean activeOnly = false;
-
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
-        hocsQueryBuilder.activeOnlyFlag(activeOnly);
+        hocsQueryBuilder.activeOnlyFlag(false);
 
         Mockito.verifyNoMoreInteractions(bqb);
-
     }
 
     @Test
     public void shouldAddActiveTrue() {
-        Boolean activeOnly = true;
-
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
-        hocsQueryBuilder.activeOnlyFlag(activeOnly);
+        hocsQueryBuilder.activeOnlyFlag(true);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
-
     }
 
     @Test
     public void shouldNotAddActive() {
-
         HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
         hocsQueryBuilder.dataFields(null);
 
