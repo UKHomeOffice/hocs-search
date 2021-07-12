@@ -6,11 +6,15 @@ import org.elasticsearch.index.query.*;
 import org.springframework.util.StringUtils;
 import uk.gov.digital.ho.hocs.search.api.dto.DateRangeDto;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static uk.gov.digital.ho.hocs.search.api.QueryBuilderHelpers.fieldExists;
+import static uk.gov.digital.ho.hocs.search.api.QueryBuilderHelpers.nonEmptyField;
 
 @Slf4j
 class HocsQueryBuilder {
@@ -213,21 +217,42 @@ class HocsQueryBuilder {
         if (privateOfficeTeam != null && !privateOfficeTeam.isEmpty()) {
             log.debug("Private office team {}, adding to query", privateOfficeTeam);
 
-            BoolQueryBuilder isOverridePoTeamQB = QueryBuilders.boolQuery()
-                    .must(QueryBuilders.matchQuery("data.OverridePOTeamUUID", privateOfficeTeam).operator(Operator.AND));
+            BoolQueryBuilder[] privateOfficeQueries = {
+                    QueryBuilders.boolQuery()
+                            .must(QueryBuilders.matchQuery("data.PrivateOfficeOverridePOTeamUUID", privateOfficeTeam)
+                            .operator(Operator.AND)),
+                    QueryBuilders.boolQuery()
+                            .mustNot(fieldExists("data.PrivateOfficeOverridePOTeamUUID"))
+                            .must(QueryBuilders.matchQuery("data.OverridePOTeamUUID", privateOfficeTeam)
+                            .operator(Operator.AND)),
+                    QueryBuilders.boolQuery()
+                            .mustNot(nonEmptyField("data.PrivateOfficeOverridePOTeamUUID"))
+                            .must(QueryBuilders.matchQuery("data.OverridePOTeamUUID", privateOfficeTeam)
+                            .operator(Operator.AND)),
+                    QueryBuilders.boolQuery()
+                            .mustNot(fieldExists("data.PrivateOfficeOverridePOTeamUUID"))
+                            .mustNot(fieldExists("data.OverridePOTeamUUID"))
+                            .must(QueryBuilders.matchQuery("data.POTeamUUID", privateOfficeTeam)
+                            .operator(Operator.AND)),
+                    QueryBuilders.boolQuery()
+                            .mustNot(fieldExists("data.PrivateOfficeOverridePOTeamUUID"))
+                            .mustNot(nonEmptyField("data.OverridePOTeamUUID"))
+                            .must(QueryBuilders.matchQuery("data.POTeamUUID", privateOfficeTeam)
+                            .operator(Operator.AND)),
+                    QueryBuilders.boolQuery()
+                            .mustNot(nonEmptyField("data.PrivateOfficeOverridePOTeamUUID"))
+                            .mustNot(fieldExists("data.OverridePOTeamUUID"))
+                            .must(QueryBuilders.matchQuery("data.POTeamUUID", privateOfficeTeam)
+                            .operator(Operator.AND)),
+                    QueryBuilders.boolQuery()
+                            .mustNot(nonEmptyField("data.PrivateOfficeOverridePOTeamUUID"))
+                            .mustNot(nonEmptyField("data.OverridePOTeamUUID"))
+                            .must(QueryBuilders.matchQuery("data.POTeamUUID", privateOfficeTeam)
+                            .operator(Operator.AND))
+            };
 
-            BoolQueryBuilder emptyOverrideIsPoTeamQB = QueryBuilders.boolQuery()
-                    .mustNot(QueryBuilders.wildcardQuery("data.OverridePOTeamUUID", "*"))
-                    .must(QueryBuilders.matchQuery("data.POTeamUUID", privateOfficeTeam).operator(Operator.AND));
-
-            BoolQueryBuilder noOverrideIsPoTeamQB = QueryBuilders.boolQuery()
-                    .mustNot(QueryBuilders.existsQuery("data.OverridePOTeamUUID"))
-                    .must(QueryBuilders.matchQuery("data.POTeamUUID", privateOfficeTeam).operator(Operator.AND));
-
-            BoolQueryBuilder privateOfficeFilter = new BoolQueryBuilder()
-                    .should(isOverridePoTeamQB)
-                    .should(emptyOverrideIsPoTeamQB)
-                    .should(noOverrideIsPoTeamQB);
+            BoolQueryBuilder privateOfficeFilter = new BoolQueryBuilder();
+            Arrays.stream(privateOfficeQueries).forEach(privateOfficeFilter::should);
 
             mqb.must(privateOfficeFilter);
             hasClause = true;
