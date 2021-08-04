@@ -135,10 +135,10 @@ public class SearchConsumerTest extends CamelTestSupport {
     @Test
     public void shouldCallDeleteTopic() throws JsonProcessingException {
 
-        CreateAuditDto auditDto = new CreateAuditDto(caseUUID, "\"11111111-2222-2222-2222-333333333333\"", EventType.CASE_TOPIC_DELETED.toString());
+        CreateAuditDto auditDto = new CreateAuditDto(caseUUID, data, EventType.CASE_TOPIC_DELETED.toString());
         String json = mapper.writeValueAsString(auditDto);
         template.sendBody(searchQueue, json);
-        verify(mockDataService, times(1)).deleteTopic(eq(caseUUID), eq("11111111-2222-2222-2222-333333333333"));
+        verify(mockDataService, times(1)).deleteTopic(eq(caseUUID), any(DeleteTopicRequest.class));
         verifyNoMoreInteractions(mockDataService);
     }
 
