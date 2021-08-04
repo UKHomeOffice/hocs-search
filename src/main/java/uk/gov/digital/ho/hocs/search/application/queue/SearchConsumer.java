@@ -170,6 +170,7 @@ public class SearchConsumer extends RouteBuilder {
 
         from(DELETE_TOPIC_QUEUE)
                 .log(LoggingLevel.DEBUG, DELETE_TOPIC_QUEUE)
+                .unmarshal().json(JsonLibrary.Jackson, DeleteTopicRequest.class)
                 .bean(caseDataService, "deleteTopic(${property.caseUUID}, ${body})")
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
 
