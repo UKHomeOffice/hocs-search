@@ -107,12 +107,12 @@ public class CaseDataService {
         log.info("Added topic {} to case {}", createTopicRequest.getUuid(), caseUUID, value(EVENT, SEARCH_TOPIC_ADDED));
     }
 
-    public void deleteTopic(UUID caseUUID, String topicUUID) {
-        log.debug("Deleting topic {} from case {}", topicUUID, caseUUID);
+    public void deleteTopic(UUID caseUUID, DeleteTopicRequest deleteTopicRequest) {
+        log.debug("Deleting topic {} from case {}", deleteTopicRequest.getUuid(), caseUUID);
         CaseData caseData = getCaseData(caseUUID);
-        caseData.removeTopic(UUID.fromString(topicUUID));
+        caseData.removeTopic(deleteTopicRequest.getUuid());
         elasticSearchClient.update(caseData);
-        log.info("Deleted topic {} from case {}", topicUUID, caseUUID, value(EVENT, SEARCH_TOPIC_DELETED));
+        log.info("Deleted topic {} from case {}. Event {}", deleteTopicRequest.getUuid(), caseUUID, value(EVENT, SEARCH_TOPIC_DELETED));
     }
 
     public void createSomuItem(UUID caseUUID, SomuItemDto somuItemDto) {
