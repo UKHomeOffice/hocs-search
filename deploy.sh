@@ -9,7 +9,7 @@ export VERSION=${VERSION}
 if [[ ${KUBE_NAMESPACE} == *prod ]]
 then
     export MIN_REPLICAS="2"
-    export MAX_REPLICAS="6"
+    export MAX_REPLICAS="3"
 
     export UPTIME_PERIOD="Mon-Sun 05:00-23:00 Europe/London"
 else
