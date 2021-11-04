@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+
+  localstack:
+    image: localstack/localstack:0.11.1
+    ports:
+      - "4571:4571"
+    networks:
+      - hocs-network
+    environment:
+      HOSTNAME_EXTERNAL: localstack
+      DEFAULT_REGION: eu-west-2
+      SERVICES: es, sqs
+    volumes:
+      - ./config/localstack:/docker-entrypoint-initaws.d
+
+networks:
+  hocs-network:

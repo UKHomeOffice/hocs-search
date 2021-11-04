@@ -3,11 +3,27 @@ kind: pipeline
 type: kubernetes
 name: build
 
+services:
+  - name: localstack
+    image: quay.io/ukhomeofficedigital/localstack
+    environment:
+      SERVICES: es, sqs
+      DEFAULT_REGION: eu-west-2
+
 steps:
+  - name: setup localstack
+    image: quay.io/ukhomeofficedigital/localstack # need curl which is not in alpine
+    commands:
+      - ./config/localstack/setup-aws.sh
+    depends_on:
+      - clone
+
   - name: build project
     image: quay.io/ukhomeofficedigital/openjdk11:v11.0.5_10
     commands:
       - ./gradlew assemble --no-daemon
+    depends_on:
+      - clone
 
   - name: test project
     image: quay.io/ukhomeofficedigital/openjdk11:v11.0.5_10
@@ -21,10 +37,20 @@ steps:
     commands:
       - ./gradlew check --no-daemon
     depends_on:
+      - setup localstack
       - build project
 
   - name: sonar scanner
     image: quay.io/ukhomeofficedigital/sonar-scanner:v3.0.3
+    depends_on:
+      - build project
+
+  - name: json lint
+    image: registry.gitlab.com/pipeline-components/jsonlint:0.12.0
+    commands:
+      - |
+        find . -not -path './.git/*' -name '*.json' -type f -print0 |
+        parallel --will-cite -k -0 -n1 jsonlint -q
     depends_on:
       - build project
 
@@ -36,11 +62,15 @@ steps:
       tags:
         - build_${DRONE_BUILD_NUMBER}
         - ${DRONE_COMMIT_SHA}
-        - branch-${DRONE_COMMIT_BRANCH/\//_}
+        - branch_${DRONE_COMMIT_BRANCH/\//_}
     environment:
       DOCKER_PASSWORD:
         from_secret: QUAY_ROBOT_TOKEN
       DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
+    when:
+      branch:
+        exclude:
+          - main
     depends_on:
       - test project
 
@@ -50,6 +80,8 @@ steps:
       registry: quay.io
       repo: quay.io/ukhomeofficedigital/hocs-search
       tags:
+        - build_${DRONE_BUILD_NUMBER}
+        - ${DRONE_COMMIT_SHA}
         - latest
     environment:
       DOCKER_PASSWORD:
