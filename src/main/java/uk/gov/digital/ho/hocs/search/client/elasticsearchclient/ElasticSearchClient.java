@@ -16,8 +16,6 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.search.domain.exceptions.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
@@ -41,14 +39,13 @@ public class ElasticSearchClient {
     private static final String COMPLETED = "completed";
 
     @Autowired
-    public ElasticSearchClient(ObjectMapper objectMapper, RestHighLevelClient client, @Value("${elastic.index.prefix}") String prefix) {
+    public ElasticSearchClient(ObjectMapper objectMapper, RestHighLevelClient client, @Value("${aws.es.index-prefix}") String prefix) {
         this.objectMapper = objectMapper;
         this.client = client;
         this.index = String.format("%s-%s", prefix, "case");
         log.info("Using index {}", index);
     }
 
-    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     public CaseData findById(UUID uuid) {
 
         GetRequest getRequest = new GetRequest(index, "caseData", uuid.toString());
@@ -57,7 +54,7 @@ public class ElasticSearchClient {
         try {
             getResponse = client.get(getRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Unable to find Case: %s. %s", uuid, e.toString()), CASE_NOT_FOUND);
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Unable to find Case: %s. %s", uuid, e), CASE_NOT_FOUND);
         }
         Map<String, Object> resultMap = getResponse.getSource();
 
@@ -70,7 +67,6 @@ public class ElasticSearchClient {
         }
     }
 
-    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     public void save(CaseData caseData) {
 
         Map<String, Object> documentMapper = removeRedundantMappings(objectMapper.convertValue(caseData, Map.class));
@@ -80,11 +76,10 @@ public class ElasticSearchClient {
         try {
             client.index(indexRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            throw new ApplicationExceptions.ResourceServerException(String.format("Unable to find Case: %s. %s", caseData.getCaseUUID(), e.toString()), CASE_SAVE_FAILED);
+            throw new ApplicationExceptions.ResourceServerException(String.format("Unable to find Case: %s. %s", caseData.getCaseUUID(), e), CASE_SAVE_FAILED);
         }
     }
 
-    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     public void update(CaseData caseData) {
 
         CaseData resultDocument = findById(caseData.getCaseUUID());
@@ -98,11 +93,10 @@ public class ElasticSearchClient {
         try {
             client.update(updateRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            throw new ApplicationExceptions.ResourceServerException(String.format("Unable to update Case: %s. %s", caseData.getCaseUUID(), e.toString()), CASE_UPDATE_FAILED);
+            throw new ApplicationExceptions.ResourceServerException(String.format("Unable to update Case: %s. %s", caseData.getCaseUUID(), e), CASE_UPDATE_FAILED);
         }
     }
 
-    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     public Set<UUID> search(BoolQueryBuilder query, int resultsLimit) {
 
         SearchRequest searchRequest = new SearchRequest(this.index);

@@ -15,6 +15,7 @@ import uk.gov.digital.ho.hocs.search.application.queue.DataChangeType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -45,7 +46,7 @@ public class CreateSearchTest extends BaseAwsSqsIntegrationTest {
                 "MIN12345",
                 LocalDate.now(),
                 LocalDate.now(),
-                new HashMap());
+                Collections.EMPTY_MAP);
 
         String data = objectMapper.writeValueAsString(createCaseRequest);
         IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data, DataChangeType.CASE_CREATED.value);
@@ -70,7 +71,7 @@ public class CreateSearchTest extends BaseAwsSqsIntegrationTest {
                 "MIN12345",
                 LocalDate.now(),
                 LocalDate.now(),
-                new HashMap());
+                Collections.EMPTY_MAP);
 
         String data = objectMapper.writeValueAsString(createCaseRequest);
         IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data, DataChangeType.CASE_CREATED.value);
