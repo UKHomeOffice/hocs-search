@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false">
 
-    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
     <springProperty scope="context" name="appName" source="info.app.name"/>
     <springProperty scope="context" name="appVersion" source="info.app.version"/>
@@ -13,9 +13,6 @@
             </layout>
         </appender>
         <logger name="uk.gov" additivity="false" level="DEBUG">
-            <appender-ref ref="consoleAppender"/>
-        </logger>
-        <logger name="searchCommandRoute" additivity="false" level="DEBUG">
             <appender-ref ref="consoleAppender"/>
         </logger>
     </springProfile>
@@ -40,24 +37,13 @@
         <logger name="uk.gov" additivity="false" level="INFO">
             <appender-ref ref="consoleAppender"/>
         </logger>
-        <logger name="searchCommandRoute" additivity="false" level="INFO">
-            <appender-ref ref="consoleAppender"/>
-        </logger>
     </springProfile>
 
     <logger name="org.elasticsearch" additivity="false" level="WARN">
         <appender-ref ref="consoleAppender"/>
     </logger>
 
-    <logger name="org.apache.camel" additivity="false" level="WARN">
-        <appender-ref ref="consoleAppender"/>
-    </logger>
-
     <logger name="com.amazonaws" additivity="false" level="WARN">
-        <appender-ref ref="consoleAppender"/>
-    </logger>
-
-    <logger name="org.camunda" additivity="false" level="WARN">
         <appender-ref ref="consoleAppender"/>
     </logger>
 
@@ -66,18 +52,6 @@
     </logger>
 
     <logger name="org.springframework" additivity="false" level="WARN">
-        <appender-ref ref="consoleAppender"/>
-    </logger>
-
-    <logger name="org.flywaydb" additivity="false" level="WARN">
-        <appender-ref ref="consoleAppender"/>
-    </logger>
-
-    <logger name="org.hibernate" additivity="false" level="WARN">
-        <appender-ref ref="consoleAppender"/>
-    </logger>
-
-    <logger name="com.zaxxer" additivity="false" level="WARN">
         <appender-ref ref="consoleAppender"/>
     </logger>
 
