@@ -28,12 +28,7 @@ steps:
   - name: test project
     image: quay.io/ukhomeofficedigital/openjdk11:v11.0.5_10
     environment:
-      SPRING_PROFILES_ACTIVE: "development, local"
-      SERVER_PORT: "8080"
-      SEARCH_QUEUE_NAME: "search-queue"
-      SEARCH_QUEUE_DLQ_NAME: "search-queue-dlq"
-      DB_HOST: "postgres"
-      AWS_LOCAL_HOST: "localstack"
+      LOCALSTACK_HOST: "localstack"
     commands:
       - ./gradlew check --no-daemon
     depends_on:
@@ -89,7 +84,8 @@ steps:
       DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
     when:
       branch:
-        - main
+        include:
+          - main
     depends_on:
       - test project
 
