@@ -30,12 +30,17 @@ public interface ApplicationExceptions {
         }
     }
 
-    class ResourceNotFoundException extends ResourceException {
+    class InvalidEventTypeException extends RuntimeException {
+        private final LogEvent event;
 
-        public ResourceNotFoundException(String msg, LogEvent event, Object... args) {
-            super(msg, event, args);
+        public InvalidEventTypeException(String msg, LogEvent event, Object... args) {
+            super(String.format(msg, args));
+            this.event = event;
         }
 
+        public LogEvent getEvent() {
+            return event;
+        }
     }
 
     class ResourceServerException extends ResourceException {

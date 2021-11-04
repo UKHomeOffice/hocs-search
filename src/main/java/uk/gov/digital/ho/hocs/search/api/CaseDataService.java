@@ -16,7 +16,21 @@ import java.util.Set;
 import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.search.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.search.application.LogEvent.EVENT;
+import static uk.gov.digital.ho.hocs.search.application.LogEvent.SEARCH_CASE_COMPLETED;
+import static uk.gov.digital.ho.hocs.search.application.LogEvent.SEARCH_CASE_CREATED;
+import static uk.gov.digital.ho.hocs.search.application.LogEvent.SEARCH_CASE_DELETED;
+import static uk.gov.digital.ho.hocs.search.application.LogEvent.SEARCH_CASE_UPDATED;
+import static uk.gov.digital.ho.hocs.search.application.LogEvent.SEARCH_CORRESPONDENT_CREATED;
+import static uk.gov.digital.ho.hocs.search.application.LogEvent.SEARCH_CORRESPONDENT_DELETED;
+import static uk.gov.digital.ho.hocs.search.application.LogEvent.SEARCH_CORRESPONDENT_UPDATED;
+import static uk.gov.digital.ho.hocs.search.application.LogEvent.SEARCH_REQUEST;
+import static uk.gov.digital.ho.hocs.search.application.LogEvent.SEARCH_RESPONSE;
+import static uk.gov.digital.ho.hocs.search.application.LogEvent.SEARCH_TOPIC_CREATED;
+import static uk.gov.digital.ho.hocs.search.application.LogEvent.SEARCH_TOPIC_DELETED;
+import static uk.gov.digital.ho.hocs.search.application.LogEvent.SOMU_ITEM_CREATED;
+import static uk.gov.digital.ho.hocs.search.application.LogEvent.SOMU_ITEM_DELETED;
+import static uk.gov.digital.ho.hocs.search.application.LogEvent.SOMU_ITEM_UPDATED;
 
 @Service
 @Slf4j
@@ -27,7 +41,7 @@ public class CaseDataService {
     private final int resultsLimit;
 
     @Autowired
-    public CaseDataService(ElasticSearchClient elasticSearchClient, @Value("${elastic.results.limit}") int resultsLimit) {
+    public CaseDataService(ElasticSearchClient elasticSearchClient, @Value("${aws.es.results-limit}") int resultsLimit) {
         this.elasticSearchClient = elasticSearchClient;
         this.resultsLimit = resultsLimit;
     }
@@ -38,7 +52,7 @@ public class CaseDataService {
         caseData.create(createCaseRequest);
         if(caseData.isNewCaseData()){
             elasticSearchClient.save(caseData);
-        }else{
+        } else{
             log.warn("Updating case {} as already exists in elastic search", caseUUID);
             elasticSearchClient.update(caseData);
         }
@@ -53,7 +67,7 @@ public class CaseDataService {
         if(caseData.isNewCaseData()){
             log.warn("Creating case {} as does not exists in elastic search", caseUUID);
             elasticSearchClient.save(caseData);
-        }else{
+        } else{
             elasticSearchClient.update(caseData);
         }
         log.info("Updated case {}", caseUUID, value(EVENT, SEARCH_CASE_UPDATED));
@@ -72,7 +86,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.complete();
         elasticSearchClient.update(caseData);
-        log.info("Compeleted case {}", caseUUID, value(EVENT, SEARCH_CASE_DELETED));
+        log.info("Compeleted case {}", caseUUID, value(EVENT, SEARCH_CASE_COMPLETED));
     }
 
     public void createCorrespondent(UUID caseUUID, CorrespondentDetailsDto correspondentDetailsDto) {
@@ -80,7 +94,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.addCorrespondent(correspondentDetailsDto);
         elasticSearchClient.update(caseData);
-        log.info("Added correspondent {} to case {}", correspondentDetailsDto.getUuid(), caseUUID, value(EVENT, SEARCH_CORRESPONDENT_ADDED));
+        log.info("Added correspondent {} to case {}", correspondentDetailsDto.getUuid(), caseUUID, value(EVENT, SEARCH_CORRESPONDENT_CREATED));
     }
 
     public void deleteCorrespondent(UUID caseUUID, CorrespondentDetailsDto correspondentDetailsDto) {
@@ -96,7 +110,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.updateCorrespondent(correspondentDetailsDto);
         elasticSearchClient.update(caseData);
-        log.info("Updating correspondent {} for case {}", correspondentDetailsDto.getUuid(), caseUUID, value(EVENT, SEARCH_CORRESPONDENT_DELETED));
+        log.info("Updating correspondent {} for case {}", correspondentDetailsDto.getUuid(), caseUUID, value(EVENT, SEARCH_CORRESPONDENT_UPDATED));
     }
 
     public void createTopic(UUID caseUUID, CreateTopicRequest createTopicRequest) {
@@ -104,7 +118,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.addTopic(Topic.from(createTopicRequest));
         elasticSearchClient.update(caseData);
-        log.info("Added topic {} to case {}", createTopicRequest.getUuid(), caseUUID, value(EVENT, SEARCH_TOPIC_ADDED));
+        log.info("Added topic {} to case {}", createTopicRequest.getUuid(), caseUUID, value(EVENT, SEARCH_TOPIC_CREATED));
     }
 
     public void deleteTopic(UUID caseUUID, DeleteTopicRequest deleteTopicRequest) {

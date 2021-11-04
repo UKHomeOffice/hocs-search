@@ -6,6 +6,7 @@ services:
     image: localstack/localstack:0.11.1
     ports:
       - "4571:4571"
+      - "4566:4566"
     networks:
       - hocs-network
     environment:

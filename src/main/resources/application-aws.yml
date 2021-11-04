@@ -1,0 +1,14 @@
+aws:
+  region: eu-west-2
+  sqs:
+    search:
+      access-key: ${search.sqs.access.key}
+      secret-key: ${search.sqs.secret.key}
+      name: ${search.sqs.queue.name}
+  es:
+    access-key: ${elasticsearch.access.key}
+    secret-key: ${elasticsearhc.secret.key}
+    host: ${elasticsearch.host}
+    serviceName: es
+    results-limit: 500
+    index-prefix: ${elasticsearch.index.prefix}
