@@ -1,10 +1,12 @@
 package uk.gov.digital.ho.hocs.search.application;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,7 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class RequestDataTest {
     @Mock
     private HttpServletRequest mockHttpServletRequest;
@@ -23,7 +26,7 @@ public class RequestDataTest {
 
     private RequestData requestData;
 
-    @Before
+    @BeforeEach
     public void setup() {
         requestData = new RequestData();
     }
