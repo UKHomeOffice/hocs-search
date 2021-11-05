@@ -184,6 +184,11 @@ spec:
                   key: secret_access_key
             - name: SEARCH_SQS_QUEUE_NAME
               value: {{.KUBE_NAMESPACE}}-search-sqs
+            - name: SEARCH_SQS_QUEUE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{.KUBE_NAMESPACE}}-search-sqs
+                  key: sqs_queue_url
             - name: SEARCH_SQS_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
