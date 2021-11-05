@@ -15,7 +15,10 @@ spring:
     banner-mode: off
 
 management:
+  endpoints:
+    enabled-by-default: false
   endpoint:
     health:
+      enabled: true
       probes:
         enabled: true
