@@ -1,83 +1,65 @@
 plugins {
-    id 'org.springframework.boot' version '2.5.1'
     id 'java'
+    id 'org.springframework.boot' version '2.5.6'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
-
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'jacoco'
 
 group = 'uk.gov.digital.ho.hocs'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
-
 repositories {
     mavenCentral()
-}
-
-task copyLombok(type: Copy) {
-	outputs.upToDateWhen { false }
-	into "${buildDir}/libs"
-	include "lombok*.jar"
-	from configurations.compileClasspath
-}
-
-build.dependsOn(copyLombok)
-
-repositories {
-	mavenCentral()
     maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.5'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.12.5'
-    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.12.5'
-
-    implementation('org.springframework.boot:spring-boot-starter-web') {
+    implementation('org.springframework.boot:spring-boot-starter-web:2.5.6') {
         exclude(module: 'spring-boot-starter-tomcat')
     }
-    implementation('org.springframework.boot:spring-boot-starter-undertow')
-    implementation('net.logstash.logback:logstash-logback-encoder:5.3')
-    implementation('org.springframework.boot:spring-boot-starter-json')
-    implementation('org.springframework.boot:spring-boot-starter-actuator')
-    implementation('org.springframework.retry:spring-retry')
-    implementation('org.springframework:spring-aspects')
 
+    implementation 'org.springframework.boot:spring-boot-starter-undertow:2.5.6'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator:2.5.6'
+    implementation 'org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE'
+
+    implementation 'org.springframework.retry:spring-retry'
+    implementation 'org.springframework:spring-aspects'
+
+    implementation 'net.logstash.logback:logstash-logback-encoder:6.6'
 
     // Override the default version of elasticSearch, we're still using V6
-    def elasticSearchVersion = '6.8.3'
-    implementation("org.elasticsearch:elasticsearch:${elasticSearchVersion}")
-    implementation("org.elasticsearch.client:elasticsearch-rest-client:${elasticSearchVersion}")
-    implementation("org.elasticsearch:elasticsearch-x-content:${elasticSearchVersion}")
-    implementation("org.elasticsearch:elasticsearch-cli:${elasticSearchVersion}")
-    implementation("org.elasticsearch:elasticsearch-core:${elasticSearchVersion}")
-    implementation("org.elasticsearch:elasticsearch-secure-sm:${elasticSearchVersion}")
+    implementation 'org.elasticsearch:elasticsearch:6.8.20'
+    implementation 'org.elasticsearch.client:elasticsearch-rest-client:6.8.20'
+    implementation 'org.elasticsearch:elasticsearch-core:6.8.20'
+    implementation 'org.elasticsearch:elasticsearch-secure-sm:6.8.20'
 
-    implementation('org.apache.camel:camel-spring-boot:2.24.0')
-    implementation('org.apache.camel:camel-jackson:2.24.0')
-    implementation('org.apache.camel:camel-aws:2.24.0')
-    implementation('org.apache.httpcomponents:httpmime:4.5.6')
-    implementation('com.amazonaws:aws-java-sdk:1.11.553')
-    implementation('javax.xml.bind:jaxb-api:2.3.0')
-
-    implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client:6.6.2')
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.8.20'
     implementation 'com.github.awslabs:aws-request-signing-apache-interceptor:b3772780da'
 
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+    compileOnly 'org.projectlombok:lombok:1.18.22'
 
-    testImplementation('org.springframework.boot:spring-boot-starter-test')
-    testImplementation("org.apache.camel:camel-test-spring:2.24.0")
-    testImplementation('org.assertj:assertj-core')
-    testImplementation('net.javacrumbs.json-unit:json-unit-assertj:2.27.0')
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor:2.5.6'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.6'
+    testImplementation 'org.awaitility:awaitility:4.1.1'
+    testImplementation 'net.javacrumbs.json-unit:json-unit-assertj:2.28.0'
+
+    testImplementation 'org.junit.vintage:junit-vintage-engine:5.8.1'
+
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2020.0.4"
+    }
 }
 
 jar {
     enabled = false
 }
+
+test {
+    useJUnitPlatform()
+}
+
