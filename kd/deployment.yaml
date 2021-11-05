@@ -211,9 +211,9 @@ spec:
               httpHeaders:
                 - name: X-probe
                   value: kubelet
-            initialDelaySeconds: 20
-            periodSeconds: 5
-            failureThreshold: 6
+            initialDelaySeconds: 10
+            periodSeconds: 2
+            failureThreshold: 20
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
