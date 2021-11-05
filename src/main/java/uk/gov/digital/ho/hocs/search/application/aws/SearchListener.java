@@ -30,7 +30,7 @@ public class SearchListener {
         this.caseDataService = caseDataService;
     }
 
-    @SqsListener(value = "${aws.sqs.search.queue}", deletionPolicy = SqsMessageDeletionPolicy.ON_SUCCESS)
+    @SqsListener(value = "${aws.sqs.search.url}", deletionPolicy = SqsMessageDeletionPolicy.ON_SUCCESS)
     public void onDataChange(String message) throws JsonProcessingException {
         IndexDataChangeRequest request = objectMapper.readValue(message, IndexDataChangeRequest.class);
 
