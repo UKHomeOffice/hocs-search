@@ -5,9 +5,10 @@ aws:
       access-key: ${search.sqs.access.key}
       secret-key: ${search.sqs.secret.key}
       name: ${search.sqs.queue.name}
+      url: ${search.sqs.queue.url}
   es:
     access-key: ${elasticsearch.access.key}
-    secret-key: ${elasticsearhc.secret.key}
+    secret-key: ${elasticsearch.secret.key}
     host: ${elasticsearch.host}
     serviceName: es
     results-limit: 500

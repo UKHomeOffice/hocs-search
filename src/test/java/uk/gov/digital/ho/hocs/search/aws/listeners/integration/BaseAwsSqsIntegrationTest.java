@@ -19,7 +19,7 @@ public class BaseAwsSqsIntegrationTest {
     @Autowired
     public AmazonSQSAsync amazonSQSAsync;
 
-    @Value("${aws.sqs.search.queue}")
+    @Value("${aws.sqs.search.url}")
     public String searchQueue;
 
     @BeforeEach
