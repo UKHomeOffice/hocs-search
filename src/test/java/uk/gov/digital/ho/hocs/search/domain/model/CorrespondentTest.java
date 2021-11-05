@@ -1,6 +1,6 @@
 package uk.gov.digital.ho.hocs.search.domain.model;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.digital.ho.hocs.search.api.dto.AddressDto;
 import uk.gov.digital.ho.hocs.search.api.dto.CorrespondentDetailsDto;
 
