@@ -2,6 +2,7 @@ management:
 health:
   elasticsearch:
     enabled: false
+
 aws:
   region: eu-west-2
   sqs:
@@ -9,9 +10,7 @@ aws:
       access-key: test
       secret-key: test
       name: search-queue
-      host: ${localstack.host:localhost}
-      url: http://${aws.sqs.search.host}:4566
-      queue: ${aws.sqs.search.url}/queue/${aws.sqs.search.name}
+      url: http://${localstack.host:localhost}:4566/queue/${aws.sqs.search.name}
 
   es:
     host: localhost
