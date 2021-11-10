@@ -1,7 +1,7 @@
 management:
-health:
-  elasticsearch:
-    enabled: false
+  health:
+    elasticsearch:
+      enabled: false
 
 aws:
   region: eu-west-2
