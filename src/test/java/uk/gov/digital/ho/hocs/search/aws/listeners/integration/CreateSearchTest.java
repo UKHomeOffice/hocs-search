@@ -16,7 +16,6 @@ import uk.gov.digital.ho.hocs.search.application.queue.DataChangeType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.UUID;
 
 import static org.awaitility.Awaitility.await;

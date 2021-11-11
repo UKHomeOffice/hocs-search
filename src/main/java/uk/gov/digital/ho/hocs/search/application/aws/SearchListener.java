@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.search.application.aws;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.aws.messaging.listener.SqsMessageDeletionPolicy;
 import org.springframework.cloud.aws.messaging.listener.annotation.SqsListener;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import uk.gov.digital.ho.hocs.search.application.queue.IndexDataChangeRequest;
 import uk.gov.digital.ho.hocs.search.application.queue.DataChangeType;
 import uk.gov.digital.ho.hocs.search.domain.exceptions.ApplicationExceptions;
 
+@Slf4j
 @Service
 public class SearchListener {
 
@@ -86,10 +88,10 @@ public class SearchListener {
                     caseDataService.deleteSomuItem(request.getCaseUUID(), deleteSomuItem);
                     break;
                 default:
-                    throw new ApplicationExceptions.InvalidEventTypeException(String.format("Unexpected value: %s", request.getType()), LogEvent.UNKNOWN_SEARCH_MESSAGE_TYPE);
+                    throw new ApplicationExceptions.InvalidEventTypeException(String.format("Missing Case statement: %s", request.getType()), LogEvent.UNKNOWN_SEARCH_MESSAGE_TYPE);
             }
         } else {
-            throw new ApplicationExceptions.InvalidEventTypeException("Unexpected value: Type was null", LogEvent.NULL_SEARCH_MESSAGE_TYPE);
+            log.debug("Skipping message, message Type: {}", request.getType(), LogEvent.NULL_SEARCH_MESSAGE_TYPE);
         }
     }
 }

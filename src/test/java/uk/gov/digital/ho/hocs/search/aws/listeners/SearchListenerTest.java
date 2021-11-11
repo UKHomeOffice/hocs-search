@@ -286,6 +286,26 @@ public class SearchListenerTest {
     }
 
     @Test
+    public void callsAuditServiceWithValidTypeButNotInterested() throws JsonProcessingException {
+        String incorrectMessage =  "{\"caseUUID\":\"11111111-1111-1111-1111-111111111111\", \"type\":\"ANY_OTHER_MESSAGE_TYPE\"}";
+
+        SearchListener searchListener = new SearchListener(objectMapper, caseDataService);
+        searchListener.onDataChange(incorrectMessage);
+
+        verifyNoMoreInteractions(caseDataService);
+    }
+
+    @Test
+    public void callsAuditServiceWithMissingType() throws JsonProcessingException {
+        String incorrectMessage =  "{\"caseUUID\":\"11111111-1111-1111-1111-111111111111\"}";
+
+        SearchListener searchListener = new SearchListener(objectMapper, caseDataService);
+        searchListener.onDataChange(incorrectMessage);
+
+        verifyNoMoreInteractions(caseDataService);
+    }
+
+    @Test
     public void callsAuditServiceWithNullData() {
         String incorrectMessage = "{\"caseUUID\":\"11111111-1111-1111-1111-111111111111\", \"type\":\"CASE_CREATED\"}";
         SearchListener searchListener = new SearchListener(objectMapper, caseDataService);
@@ -298,14 +318,6 @@ public class SearchListenerTest {
         SearchListener searchListener = new SearchListener(objectMapper, caseDataService);
 
         assertThrows(IllegalArgumentException.class, () -> searchListener.onDataChange(null));
-    }
-
-    @Test
-    public void callsAuditServiceWithNullType() {
-        String incorrectMessage = "{caseUUID:11111111-1111-1111-1111-111111111111, data:{}}";
-        SearchListener searchListener = new SearchListener(objectMapper, caseDataService);
-
-        assertThrows(JsonParseException.class, () -> searchListener.onDataChange(incorrectMessage));
     }
 
 
