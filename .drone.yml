@@ -14,7 +14,10 @@ steps:
   - name: setup localstack
     image: quay.io/ukhomeofficedigital/localstack # need curl which is not in alpine
     commands:
-      - ./config/localstack/setup-aws.sh
+      - cd config/localstack
+      - ./1-setup-queue.sh
+      - ./2-setup-elastic.sh
+      - ./3-setup-index.sh
     depends_on:
       - clone
 
