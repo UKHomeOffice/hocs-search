@@ -33,7 +33,9 @@ dependencies {
     implementation 'org.elasticsearch:elasticsearch-core:6.8.20'
     implementation 'org.elasticsearch:elasticsearch-secure-sm:6.8.20'
 
-    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.8.20'
+    // Cannot update yet due to running old instances in environments
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.6.2'
+
     implementation 'com.github.awslabs:aws-request-signing-apache-interceptor:b3772780da'
 
     compileOnly 'org.projectlombok:lombok:1.18.22'
@@ -61,4 +63,3 @@ jar {
 test {
     useJUnitPlatform()
 }
-
