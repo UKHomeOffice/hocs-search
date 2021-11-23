@@ -1,0 +1,24 @@
+info:
+  app:
+    fullname: Hocs Search Service
+    name: ${name:hocs-search-service}
+    version: ${version:0.0.1}
+
+server:
+  http2:
+    enabled: true
+  port: 8088
+  shutdown: graceful
+
+spring:
+  main:
+    banner-mode: off
+
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    health:
+      enabled: true
+      probes:
+        enabled: true
