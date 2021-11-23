@@ -14,7 +14,6 @@ services:
       HOSTNAME_EXTERNAL: localstack
       DEFAULT_REGION: eu-west-2
       SERVICES: es, sqs
-      ELASTIC_MAPPING_PATH: "@/docker-entrypoint-initaws.d/elastic_mapping.json"
     volumes:
       - ./config/localstack:/docker-entrypoint-initaws.d
 
