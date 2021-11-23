@@ -1,0 +1,19 @@
+management:
+health:
+  elasticsearch:
+    enabled: false
+
+aws:
+  region: eu-west-2
+  sqs:
+    search:
+      access-key: test
+      secret-key: test
+      name: search-queue
+      url: http://${localstack.host:localhost}:4566/queue/${aws.sqs.search.name}
+
+  es:
+    host: localhost
+    port: 4571
+    results-limit: 500
+    index-prefix: local
