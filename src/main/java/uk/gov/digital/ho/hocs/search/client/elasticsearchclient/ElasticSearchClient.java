@@ -85,6 +85,7 @@ public class ElasticSearchClient {
         CaseData resultDocument = findById(caseData.getCaseUUID());
 
         UpdateRequest updateRequest = new UpdateRequest(index, "caseData", resultDocument.getCaseUUID().toString());
+        updateRequest.retryOnConflict(3);
 
         Map<String, Object> documentMapper = removeRedundantMappings(objectMapper.convertValue(caseData, Map.class));
 
