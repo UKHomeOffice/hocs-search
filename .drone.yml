@@ -41,7 +41,7 @@ steps:
   - name: sonar scanner
     image: quay.io/ukhomeofficedigital/sonar-scanner:v3.0.3
     depends_on:
-      - build project
+      - test project
 
   - name: json lint
     image: registry.gitlab.com/pipeline-components/jsonlint:0.12.0
