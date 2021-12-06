@@ -158,7 +158,7 @@ spec:
                 name: hocs-queue-config
           env:
             - name: JAVA_OPTS
-              value: '-Xms512m -Xmx512m -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks -Dhttps.proxyHost=hocs-outbound-proxy.{{.KUBE_NAMESPACE}}.svc.cluster.local -Dhttps.proxyPort=31290 -Dhttp.nonProxyHosts=*.{{.KUBE_NAMESPACE}}.svc.cluster.local'
+              value: '-Xms768m -Xmx768m -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks -Dhttps.proxyHost=hocs-outbound-proxy.{{.KUBE_NAMESPACE}}.svc.cluster.local -Dhttps.proxyPort=31290 -Dhttp.nonProxyHosts=*.{{.KUBE_NAMESPACE}}.svc.cluster.local'
             - name: JDK_TRUST_FILE
               value: '/etc/keystore/truststore.jks'
             - name: SERVER_PORT
@@ -202,10 +202,10 @@ spec:
           resources:
             limits:
               cpu: 1600m
-              memory: 768Mi
+              memory: 1344Mi
             requests:
               cpu: 350m
-              memory: 768Mi
+              memory: 1344Mi
           ports:
             - name: http
               containerPort: 8080
