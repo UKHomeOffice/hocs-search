@@ -36,7 +36,7 @@ public class SqsConfiguration {
         SimpleMessageListenerContainerFactory factory = new SimpleMessageListenerContainerFactory();
 
         factory.setAmazonSqs(amazonSqs);
-        factory.setMaxNumberOfMessages(10);
+        factory.setMaxNumberOfMessages(1);
 
         return factory;
     }
