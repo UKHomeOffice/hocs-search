@@ -47,7 +47,7 @@ dependencies {
     implementation 'org.springframework.retry:spring-retry'
     implementation 'org.springframework:spring-aspects'
 
-    implementation 'net.logstash.logback:logstash-logback-encoder:6.6'
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.0.1'
 
     // Override the default version of elasticSearch, we're still using V6
     implementation "org.elasticsearch:elasticsearch:${elasticVersion}"
