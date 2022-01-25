@@ -1,5 +1,7 @@
 # hocs-search
 
+[![CodeQL](https://github.com/UKHomeOffice/hocs-search/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/UKHomeOffice/hocs-search/actions/workflows/codeql-analysis.yml)
+
 This is the Home Office Correspondence Systems (HOCS) search service. The service serves the search functionality within HOCS through the use of `elasticsearch`. 
 
 ## Getting Started
