@@ -8,7 +8,6 @@ plugins {
 def elasticVersion = '6.8.20'
 
 group = 'uk.gov.digital.ho.hocs'
-version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
