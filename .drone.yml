@@ -61,7 +61,6 @@ steps:
       repo: quay.io/ukhomeofficedigital/hocs-search
       tags:
         - ${DRONE_COMMIT_SHA}
-        - branch_${DRONE_COMMIT_BRANCH/\//_}
     environment:
       DOCKER_PASSWORD:
         from_secret: QUAY_ROBOT_TOKEN
