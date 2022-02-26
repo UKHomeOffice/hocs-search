@@ -24,7 +24,7 @@ steps:
   - name: build project
     image: quay.io/ukhomeofficedigital/hocs-base-image-build
     commands:
-      - ./gradlew clean assemble --no-daemon
+      - ./gradlew clean assemble
     depends_on:
       - clone
 
@@ -33,7 +33,7 @@ steps:
     environment:
       LOCALSTACK_HOST: "localstack"
     commands:
-      - ./gradlew check --no-daemon
+      - ./gradlew check
     depends_on:
       - setup localstack
       - build project
