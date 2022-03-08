@@ -21,22 +21,14 @@ steps:
     depends_on:
       - clone
 
-  - name: build project
-    image: quay.io/ukhomeofficedigital/hocs-base-image-build
-    commands:
-      - ./gradlew clean assemble
-    depends_on:
-      - clone
-
   - name: test project
     image: quay.io/ukhomeofficedigital/hocs-base-image-build
     environment:
       LOCALSTACK_HOST: "localstack"
     commands:
-      - ./gradlew check
+      - ./gradlew clean build --no-daemon
     depends_on:
       - setup localstack
-      - build project
 
   - name: sonar scanner
     image: quay.io/ukhomeofficedigital/sonar-scanner
@@ -52,7 +44,7 @@ steps:
         find . -not -path './.git/*' -name '*.json' -type f -print0 |
         parallel --will-cite -k -0 -n1 jsonlint -q
     depends_on:
-      - build project
+      - test project
 
   - name: build & push
     image: plugins/docker
