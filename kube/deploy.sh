@@ -6,6 +6,11 @@ export KUBE_SERVER=${KUBE_SERVER}
 export KUBE_TOKEN=${KUBE_TOKEN}
 export VERSION=${VERSION}
 
+echo
+echo "Deploying hocs-search to ${ENVIRONMENT}"
+echo "Service version: ${VERSION}"
+echo
+
 export MIN_REPLICAS="1"
 export MAX_REPLICAS="1"
 
