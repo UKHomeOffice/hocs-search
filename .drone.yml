@@ -169,6 +169,8 @@ steps:
 
   - name: test project
     image: quay.io/ukhomeofficedigital/hocs-base-image-build
+    environment:
+      LOCALSTACK_HOST: "localstack"
     commands:
       - ./gradlew clean build --no-daemon
     depends_on:
