@@ -35,7 +35,16 @@ steps:
       - ./gradlew clean build --no-daemon
     depends_on:
       - setup localstack
-
+  
+  - name: json lint
+    image: registry.gitlab.com/pipeline-components/jsonlint:0.12.0
+    commands:
+      - |
+        find . -not -path './.git/*' -name '*.json' -type f -print0 |
+        parallel --will-cite -k -0 -n1 jsonlint -q
+    depends_on:
+      - clone
+      
   - name: sonar scanner
     image: quay.io/ukhomeofficedigital/sonar-scanner
     commands:
@@ -175,22 +184,6 @@ steps:
       - ./gradlew clean build --no-daemon
     depends_on:
       - setup localstack
-
-  - name: sonar scanner
-    image: quay.io/ukhomeofficedigital/sonar-scanner
-    commands:
-      - sonar-scanner -Dsonar.projectVersion="$(git rev-parse --abbrev-ref HEAD)"
-    depends_on:
-      - test project
-
-  - name: json lint
-    image: registry.gitlab.com/pipeline-components/jsonlint:0.12.0
-    commands:
-      - |
-        find . -not -path './.git/*' -name '*.json' -type f -print0 |
-        parallel --will-cite -k -0 -n1 jsonlint -q
-    depends_on:
-      - clone
 
   - name: build & push
     image: plugins/docker
