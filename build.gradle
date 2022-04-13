@@ -65,7 +65,7 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.awaitility:awaitility:4.2.0'
-    testImplementation 'net.javacrumbs.json-unit:json-unit-assertj:2.33.0'
+    testImplementation 'net.javacrumbs.json-unit:json-unit-assertj:2.34.0'
 
 }
 
