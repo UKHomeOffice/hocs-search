@@ -57,7 +57,7 @@ dependencies {
 
     implementation 'com.github.awslabs:aws-request-signing-apache-interceptor:b3772780da'
 
-    compileOnly 'org.projectlombok:lombok:1.18.22'
+    compileOnly 'org.projectlombok:lombok:1.18.24'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
