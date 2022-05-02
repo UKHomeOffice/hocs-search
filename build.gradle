@@ -1,3 +1,5 @@
+import org.gradle.api.JavaVersion
+
 plugins {
     id 'java'
     id 'jacoco'
@@ -8,7 +10,7 @@ plugins {
 def elasticVersion = '6.8.20'
 
 group = 'uk.gov.digital.ho.hocs'
-sourceCompatibility = '11'
+sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
