@@ -7,7 +7,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
 
-def elasticVersion = '6.8.20'
+def elasticVersion = '6.8.23'
 
 group = 'uk.gov.digital.ho.hocs'
 sourceCompatibility = JavaVersion.VERSION_17
@@ -53,9 +53,7 @@ dependencies {
     implementation "org.elasticsearch.client:elasticsearch-rest-client:${elasticVersion}"
     implementation "org.elasticsearch:elasticsearch-core:${elasticVersion}"
     implementation "org.elasticsearch:elasticsearch-secure-sm:${elasticVersion}"
-
-    // Cannot update yet due to running old instances in environments
-    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.6.2'
+    implementation "org.elasticsearch.client:elasticsearch-rest-high-level-client:${elasticVersion}"
 
     implementation 'com.github.awslabs:aws-request-signing-apache-interceptor:b3772780da'
 
