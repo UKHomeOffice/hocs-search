@@ -11,4 +11,4 @@ until curl http://localstack:4566/health --silent | grep -q "running"; do
    echo "Waiting for LocalStack to be ready..."
 done
 
-aws --endpoint-url=http://localstack:4578 es create-elasticsearch-domain --domain-name decs --elasticsearch-version 6.7
+aws --endpoint-url=http://localstack:4578 es create-elasticsearch-domain --domain-name decs
