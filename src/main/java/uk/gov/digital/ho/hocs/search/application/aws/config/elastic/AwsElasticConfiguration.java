@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.search.application.aws.config;
+package uk.gov.digital.ho.hocs.search.application.aws.config.elastic;
 
 import com.amazonaws.auth.AWS4Signer;
 import com.amazonaws.auth.AWSCredentialsProvider;
@@ -16,8 +16,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile({"aws"})
-public class ElasticSearchConfiguration {
+@Profile("aws")
+public class AwsElasticConfiguration {
 
     @Bean(destroyMethod = "close")
     public RestHighLevelClient client(
