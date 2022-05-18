@@ -14,41 +14,45 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.search.domain.exceptions.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static uk.gov.digital.ho.hocs.search.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.search.application.LogEvent.CASE_NOT_FOUND;
+import static uk.gov.digital.ho.hocs.search.application.LogEvent.CASE_SAVE_FAILED;
+import static uk.gov.digital.ho.hocs.search.application.LogEvent.CASE_UPDATE_FAILED;
 
 @Slf4j
-@Component
 public class ElasticSearchClient {
 
     private final ObjectMapper objectMapper;
-
     private final RestHighLevelClient client;
-
     private final String index;
+    private final String typeName;
 
     private static final String COMPLETED = "completed";
 
-    @Autowired
-    public ElasticSearchClient(ObjectMapper objectMapper, RestHighLevelClient client, @Value("${aws.es.index-prefix}") String prefix) {
+    public ElasticSearchClient(ObjectMapper objectMapper,
+                               RestHighLevelClient client,
+                               String prefix,
+                               String typeName) {
         this.objectMapper = objectMapper;
         this.client = client;
         this.index = String.format("%s-%s", prefix, "case");
+        this.typeName = typeName;
         log.info("Using index {}", index);
     }
 
     public CaseData findById(UUID uuid) {
-
-        GetRequest getRequest = new GetRequest(index, "caseData", uuid.toString());
+        GetRequest getRequest = new GetRequest(index, typeName, uuid.toString());
 
         GetResponse getResponse = null;
         try {
@@ -68,10 +72,9 @@ public class ElasticSearchClient {
     }
 
     public void save(CaseData caseData) {
-
         Map<String, Object> documentMapper = removeRedundantMappings(objectMapper.convertValue(caseData, Map.class));
 
-        IndexRequest indexRequest = new IndexRequest(index, "caseData", caseData.getCaseUUID().toString()).source(documentMapper);
+        IndexRequest indexRequest = new IndexRequest(index, typeName, caseData.getCaseUUID().toString()).source(documentMapper);
 
         try {
             client.index(indexRequest, RequestOptions.DEFAULT);
@@ -81,10 +84,9 @@ public class ElasticSearchClient {
     }
 
     public void update(CaseData caseData) {
-
         CaseData resultDocument = findById(caseData.getCaseUUID());
 
-        UpdateRequest updateRequest = new UpdateRequest(index, "caseData", resultDocument.getCaseUUID().toString());
+        UpdateRequest updateRequest = new UpdateRequest(index, typeName, resultDocument.getCaseUUID().toString());
 
         Map<String, Object> documentMapper = removeRedundantMappings(objectMapper.convertValue(caseData, Map.class));
 
@@ -98,7 +100,6 @@ public class ElasticSearchClient {
     }
 
     public Set<UUID> search(BoolQueryBuilder query, int resultsLimit) {
-
         SearchRequest searchRequest = new SearchRequest(this.index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(query);
@@ -114,7 +115,6 @@ public class ElasticSearchClient {
         }
 
         return getSearchResult(searchResponse);
-
     }
 
     private Set<UUID> getSearchResult(SearchResponse response) {
@@ -135,7 +135,6 @@ public class ElasticSearchClient {
     }
 
     private Map<String, Object> removeRedundantMappings(Map<String, Object> map) {
-
         Map<String, Object> result = new HashMap<>(map);
         result.values().removeAll(Arrays.asList("", null));
 
