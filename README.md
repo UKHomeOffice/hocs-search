@@ -30,7 +30,7 @@ This configuration folder contains 3 shell scripts that each handle a seperate p
 1. [1-setup-queues.sh](config/localstack/1-setup-queue.sh)  
 This creates both the `search-queue` and `search-queue-dlq` used within the service and adds the required association between them. The dead-letter queue currently specified a `maxReceiveCount` of 2 that mimics the production values.
 2. [2-setup-elastic.sh](config/localstack/2-setup-elastic.sh)  
-Since [Localstack 0.11.1](https://newreleases.io/project/github/localstack/localstack/release/v0.11.1) non main-line elasticsearch indexes are lazily loaded. As we are currently running `6.X.X` we have to create a elasticsearch domain with that version. This handles this.
+Since [Localstack 0.11.1](https://newreleases.io/project/github/localstack/localstack/release/v0.11.1) non main-line elasticsearch indexes are lazily loaded, this handles the creation.
 3. [3-setup-index.sh](config/localstack/3-setup-index.sh)  
 This creates the index from the associated [elastic index mapping](/config/localstack/elastic_mapping.json). This script requires that the elasticsearch domain exists. If you are receiving an error when running this, please run script 2 first.
 
@@ -43,13 +43,13 @@ docker-compose down
 ```
 
 ## Using the Service
-###Versioning
+### Versioning
 
 For versioning this project uses SemVer.
-###Authors
+### Authors
 
 This project is authored by the Home Office.
-###License
+### License
 
 This project is licensed under the MIT license. For details please see License
 
