@@ -14,20 +14,11 @@ import org.springframework.context.annotation.Configuration;
 public class ElasticSearchClientConfiguration {
 
     @Bean(value = "elasticSearchClient")
-    @ConditionalOnProperty(prefix = "aws.es", name = "version", havingValue = "6")
-    @Deprecated(forRemoval = true)
-    public ElasticSearchClient elasticSearch6Client(ObjectMapper objectMapper,
-                                                    RestHighLevelClient client,
-                                                    @Value("${aws.es.index-prefix}") String prefix) {
-        return new ElasticSearchClient(objectMapper, client, prefix, "caseData");
-    }
-
-    @Bean(value = "elasticSearchClient")
     @ConditionalOnProperty(prefix = "aws.es", name = "version", havingValue = "7")
     public ElasticSearchClient elasticSearch7Client(ObjectMapper objectMapper,
                                                     RestHighLevelClient client,
                                                     @Value("${aws.es.index-prefix}") String prefix) {
-        return new ElasticSearchClient(objectMapper, client, prefix, "_doc");
+        return new ElasticSearchClient(objectMapper, client, prefix);
     }
 
 }

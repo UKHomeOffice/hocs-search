@@ -9,7 +9,7 @@ This is the Home Office Correspondence Systems (HOCS) search service. The servic
 
 ### Prerequisites
 
-* ```Java 11```
+* ```Java 17```
 * ```Docker```
 * ```LocalStack```
 
@@ -34,7 +34,7 @@ Since [Localstack 0.11.1](https://newreleases.io/project/github/localstack/local
 3. [3-setup-index.sh](config/localstack/3-setup-index.sh)  
 This creates the index from the associated [elastic index mapping](/config/localstack/elastic_mapping.json). This script requires that the elasticsearch domain exists. If you are receiving an error when running this, please run script 2 first.
 
-At present our elastic index mapping only supports version `6.X.X` of elasticsearch, and is not forwards compatible with `7.X.X`.
+At present our elastic index mapping only supports version `7.X.X` of elasticsearch.
 
 To stop the running containers, run the following:
 

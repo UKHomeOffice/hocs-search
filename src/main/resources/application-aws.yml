@@ -13,4 +13,3 @@ aws:
     serviceName: es
     results-limit: 500
     index-prefix: ${elasticsearch.index.prefix}
-    version: 6

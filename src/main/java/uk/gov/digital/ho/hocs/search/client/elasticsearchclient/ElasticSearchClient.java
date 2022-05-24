@@ -36,23 +36,20 @@ public class ElasticSearchClient {
     private final ObjectMapper objectMapper;
     private final RestHighLevelClient client;
     private final String index;
-    private final String typeName;
 
     private static final String COMPLETED = "completed";
 
     public ElasticSearchClient(ObjectMapper objectMapper,
                                RestHighLevelClient client,
-                               String prefix,
-                               String typeName) {
+                               String prefix) {
         this.objectMapper = objectMapper;
         this.client = client;
         this.index = String.format("%s-%s", prefix, "case");
-        this.typeName = typeName;
         log.info("Using index {}", index);
     }
 
     public CaseData findById(UUID uuid) {
-        GetRequest getRequest = new GetRequest(index, typeName, uuid.toString());
+        GetRequest getRequest = new GetRequest(index, uuid.toString());
 
         GetResponse getResponse = null;
         try {
@@ -74,7 +71,7 @@ public class ElasticSearchClient {
     public void save(CaseData caseData) {
         Map<String, Object> documentMapper = removeRedundantMappings(objectMapper.convertValue(caseData, Map.class));
 
-        IndexRequest indexRequest = new IndexRequest(index, typeName, caseData.getCaseUUID().toString()).source(documentMapper);
+        IndexRequest indexRequest = new IndexRequest(index).id(caseData.getCaseUUID().toString()).source(documentMapper);
 
         try {
             client.index(indexRequest, RequestOptions.DEFAULT);
@@ -86,7 +83,7 @@ public class ElasticSearchClient {
     public void update(CaseData caseData) {
         CaseData resultDocument = findById(caseData.getCaseUUID());
 
-        UpdateRequest updateRequest = new UpdateRequest(index, typeName, resultDocument.getCaseUUID().toString());
+        UpdateRequest updateRequest = new UpdateRequest(index, resultDocument.getCaseUUID().toString());
 
         Map<String, Object> documentMapper = removeRedundantMappings(objectMapper.convertValue(caseData, Map.class));
 
