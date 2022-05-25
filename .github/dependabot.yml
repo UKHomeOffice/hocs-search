@@ -23,6 +23,8 @@ updates:
       separator: "-"
     reviewers:
       - "UKHomeOffice/hocs-core"
+    ignore:
+      - dependency-name: "org.elasticsearch:*"
     labels:
       - "patch"
       - "dependencies"
