@@ -10,9 +10,9 @@ aws:
       access-key: test
       secret-key: test
       name: search-queue
-      url: http://${localstack.host:localhost}:4566/queue/${aws.sqs.search.name}
+      url: http://${localstack.host:localhost}:4566/000000000000/${aws.sqs.search.name}
   es:
-    host: localhost
-    port: 4571
+    host: localhost.localstack.cloud
+    port: 4566
     results-limit: 500
     index-prefix: local
