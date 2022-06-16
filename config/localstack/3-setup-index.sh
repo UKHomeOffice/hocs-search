@@ -5,7 +5,8 @@ export AWS_ACCESS_KEY_ID=UNSET
 export AWS_SECRET_ACCESS_KEY=UNSET
 export AWS_DEFAULT_REGION=eu-west-2
 
-SCRIPT_LOCATION=$(dirname "$0")
+SCRIPT_LOCATION=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
+echo $SCRIPT_LOCATION
 ELASTIC_MAPPING_PATH="${SCRIPT_LOCATION}/elastic_mapping.json"
 
 if ! [[ -f "${ELASTIC_MAPPING_PATH}" ]]
@@ -14,15 +15,9 @@ then
     exit 1
 fi
 
-## make sure that localstack is running in the pipeline
-until curl http://localstack:4566/health --silent | grep -q "running"; do
-   sleep 5
-   echo "Waiting for LocalStack to be ready..."
-done
-
-until curl http://localstack:4571 --silent | grep -q "elasticsearch"; do
-   sleep 10
+until curl localhost.localstack.cloud:4566/es/eu-west-2/decs --silent | grep -q "elasticsearch"; do
+   sleep 20
    echo "Waiting for ElasticSearch to be ready..."
 done
 
-curl -X PUT http://localstack:4571/local-case --silent -H "Content-Type: application/json" -d "@${ELASTIC_MAPPING_PATH}"
+curl -X PUT localhost.localstack.cloud:4566/es/eu-west-2/decs/local-case --silent -H "Content-Type: application/json" -d "@${ELASTIC_MAPPING_PATH}"

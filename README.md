@@ -33,6 +33,7 @@ This creates both the `search-queue` and `search-queue-dlq` used within the serv
 Since [Localstack 0.11.1](https://newreleases.io/project/github/localstack/localstack/release/v0.11.1) non main-line elasticsearch indexes are lazily loaded, this handles the creation.
 3. [3-setup-index.sh](config/localstack/3-setup-index.sh)  
 This creates the index from the associated [elastic index mapping](/config/localstack/elastic_mapping.json). This script requires that the elasticsearch domain exists. If you are receiving an error when running this, please run script 2 first.
+To run this on OSX `coreutils` is required which can be installed using brew `brew install coreutils`.
 
 At present our elastic index mapping only supports version `7.X.X` of elasticsearch.
 
