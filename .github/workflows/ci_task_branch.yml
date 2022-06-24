@@ -14,6 +14,6 @@ jobs:
           username: ${{ secrets.QUAY_ROBOT_USER_NAME }}
           password: ${{ secrets.QUAY_ROBOT_TOKEN }}
           registry: quay.io
-          repository: quay.io/ukhomeofficedigital/hocs-search
+          repository: ukhomeofficedigital/hocs-search
           tag_with_sha: true
 
