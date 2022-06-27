@@ -2,8 +2,8 @@ name: 'Task Branch pipeline'
 on:
   pull_request:
     types: [ opened, reopened, synchronize ]
-  release:
-    types: [ created ]
+  push:
+    tags:  [ * ]
 
 jobs:
   publish:
@@ -24,10 +24,3 @@ jobs:
           tags: |
             type=raw,value=${{ github.event.pull_request.head.sha }}
             type=semver,pattern={{version}}
-      - name: Build container
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
