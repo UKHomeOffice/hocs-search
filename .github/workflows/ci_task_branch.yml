@@ -2,6 +2,8 @@ name: 'Task Branch pipeline'
 on:
   pull_request:
     types: [ opened, reopened, synchronize ]
+  release:
+    types: [ created ]
 
 jobs:
   publish:
