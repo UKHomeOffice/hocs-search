@@ -16,7 +16,7 @@ then
 fi
 
 until curl localhost.localstack.cloud:4566/es/eu-west-2/decs --silent | grep -q "elasticsearch"; do
-   sleep 20
+   sleep 5
    echo "Waiting for ElasticSearch to be ready..."
 done
 
