@@ -8,6 +8,7 @@ plugins {
 }
 
 def elasticVersion = '7.10.2'
+def lombokVersion = '1.18.24'
 
 group = 'uk.gov.digital.ho.hocs'
 sourceCompatibility = JavaVersion.VERSION_17
@@ -57,9 +58,9 @@ dependencies {
 
     implementation 'com.github.awslabs:aws-request-signing-apache-interceptor:b3772780da'
 
-    compileOnly 'org.projectlombok:lombok:1.18.24'
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
 
-    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.springframework:spring-context-indexer:5.3.21'
 
