@@ -9,34 +9,7 @@ trigger:
     exclude:
       - main
 
-services:
-  - name: localstack
-    image: localstack/localstack:0.14.3
-    environment:
-      SERVICES: es, sqs
-      DEFAULT_REGION: eu-west-2
-      OPENSEARCH_ENDPOINT_STRATEGY: "path"
-      LOCALSTACK_HOSTNAME: "localhost.localstack.cloud"
-
 steps:
-  - name: setup localstack
-    image: localstack/localstack:0.14.3
-    commands:
-      - cd config/localstack
-      - ./1-setup-queue.sh
-      - ./2-setup-elastic.sh
-      - ./3-setup-index.sh
-    depends_on:
-      - clone
-
-  - name: test project
-    image: quay.io/ukhomeofficedigital/hocs-base-image-build:1.0.2
-    environment:
-      LOCALSTACK_HOST: "localstack"
-    commands:
-      - ./gradlew clean build --no-daemon
-    depends_on:
-      - setup localstack
 
   - name: build & push
     image: plugins/docker
@@ -50,7 +23,7 @@ steps:
         from_secret: QUAY_ROBOT_TOKEN
       DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
     depends_on:
-      - test project
+      - clone
 
 ---
 kind: pipeline
@@ -145,35 +118,7 @@ trigger:
     - main
     - support/*
 
-services:
-  - name: localstack
-    image: localstack/localstack:0.14.3
-    environment:
-      SERVICES: es, sqs
-      DEFAULT_REGION: eu-west-2
-      OPENSEARCH_ENDPOINT_STRATEGY: "path"
-      LOCALSTACK_HOSTNAME: "localhost.localstack.cloud"
-
 steps:
-  - name: setup localstack
-    image: localstack/localstack:0.14.3
-    commands:
-      - cd config/localstack
-      - cp elastic_mapping.json /docker-entrypoint-initaws.d/
-      - ./1-setup-queue.sh
-      - ./2-setup-elastic.sh
-      - ./3-setup-index.sh
-    depends_on:
-      - clone
-
-  - name: test project
-    image: quay.io/ukhomeofficedigital/hocs-base-image-build:1.0.2
-    environment:
-      LOCALSTACK_HOST: "localstack"
-    commands:
-      - ./gradlew clean build --no-daemon
-    depends_on:
-      - setup localstack
 
   - name: build & push tag main
     image: plugins/docker
@@ -189,7 +134,7 @@ steps:
         from_secret: QUAY_ROBOT_TOKEN
       DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
     depends_on:
-      - test project
+      - clone
     when:
       branch:
         - main
@@ -207,7 +152,7 @@ steps:
         from_secret: QUAY_ROBOT_TOKEN
       DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
     depends_on:
-      - test project
+      - clone
     when:
       branch:
         - support/*
