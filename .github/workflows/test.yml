@@ -5,6 +5,7 @@ on:
 
 jobs:
   test:
+    name: 'Unit and Integration Tests'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
