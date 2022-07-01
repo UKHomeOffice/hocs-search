@@ -51,7 +51,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: SemVer tag the commit
+      - name: Tag repository with SemVer
         uses: UKHomeOffice/semver-tag-action@v2
         with:
           increment: ${{ steps.label.outputs.matchedLabels }}
