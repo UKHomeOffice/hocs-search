@@ -18,7 +18,7 @@ services:
       LOCALSTACK_HOSTNAME: "localhost.localstack.cloud"
       SQS_PROVIDER: "elasticmq"
     volumes:
-      - ./config/localstack:/docker-entrypoint-initaws.d
+      - ./ci/localstack:/docker-entrypoint-initaws.d
 
 networks:
   hocs-network:
