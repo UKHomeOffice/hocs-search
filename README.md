@@ -23,16 +23,16 @@ To start LocalStack through Docker, run the following command from the root of t
 docker-compose up
 ```
 
-This brings up the LocalStack docker image and creates the necessary AWS resources to run the project. This is done through mounting the [localstack configuration folder](config/localstack) into the docker image.
+This brings up the LocalStack docker image and creates the necessary AWS resources to run the project. This is done through mounting the [localstack configuration folder](ci/localstack) into the docker image.
 
 This configuration folder contains 3 shell scripts that each handle a seperate part of the AWS creation.
 
-1. [1-setup-queues.sh](config/localstack/1-setup-queue.sh)  
+1. [1-setup-queues.sh](ci/localstack/1-setup-queue.sh)  
 This creates both the `search-queue` and `search-queue-dlq` used within the service and adds the required association between them. The dead-letter queue currently specified a `maxReceiveCount` of 2 that mimics the production values.
-2. [2-setup-elastic.sh](config/localstack/2-setup-elastic.sh)  
+2. [2-setup-elastic.sh](ci/localstack/2-setup-elastic.sh)  
 Since [Localstack 0.11.1](https://newreleases.io/project/github/localstack/localstack/release/v0.11.1) non main-line elasticsearch indexes are lazily loaded, this handles the creation.
-3. [3-setup-index.sh](config/localstack/3-setup-index.sh)  
-This creates the index from the associated [elastic index mapping](/config/localstack/elastic_mapping.json). This script requires that the elasticsearch domain exists. If you are receiving an error when running this, please run script 2 first.
+3. [3-setup-index.sh](ci/localstack/3-setup-index.sh)  
+This creates the index from the associated [elastic index mapping](/ci/localstack/elastic_mapping.json). This script requires that the elasticsearch domain exists. If you are receiving an error when running this, please run script 2 first.
 To run this on OSX `coreutils` is required which can be installed using brew `brew install coreutils`.
 
 At present our elastic index mapping only supports version `7.X.X` of elasticsearch.

@@ -21,7 +21,7 @@ jobs:
         run: docker-compose up -d localstack
 
       - name: Wait for infrastructure
-        run: ./config/wait-for-infrastructure.sh
+        run: ./ci/wait-for-infrastructure.sh
         shell: bash
 
       - name: Run tests
