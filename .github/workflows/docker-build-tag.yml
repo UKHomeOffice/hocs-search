@@ -44,7 +44,7 @@ jobs:
           images: quay.io/ukhomeofficedigital/hocs-search
           tags: |
             type=raw,value=${{steps.increment.outputs.version}}
-            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+            type=raw,value=latest,enable=${{ github.base_ref == 'main' }}
 
       - name: Build container
         uses: docker/build-push-action@v3
