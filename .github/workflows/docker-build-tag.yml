@@ -55,7 +55,7 @@ jobs:
       - name: Tag repository with SemVer
         uses: UKHomeOffice/semver-tag-action@v2
         with:
-          increment: ${{ steps.label.outputs.matchedLabels }}
+          tag: ${{steps.increment.outputs.version}}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           default_use_head_tag: ${{ github.base_ref == 'main' }}
 
