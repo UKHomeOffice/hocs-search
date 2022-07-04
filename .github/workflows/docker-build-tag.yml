@@ -42,7 +42,9 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: quay.io/ukhomeofficedigital/hocs-search
-          tags: type=raw,value=${{steps.increment.outputs.version}}
+          tags: |
+            type=raw,value=${{steps.increment.outputs.version}}
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
       - name: Build container
         uses: docker/build-push-action@v3
