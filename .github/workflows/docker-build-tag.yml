@@ -7,5 +7,5 @@ jobs:
   build:
     uses: UKHomeOffice/hocs-ci-infrastructure/.github/workflows/docker-build-tag.yml@v1
     with:
-      images: 'quay.io/ukhomeofficedigital/hocs-casework'
+      images: 'quay.io/ukhomeofficedigital/hocs-search'
     secrets: inherit
