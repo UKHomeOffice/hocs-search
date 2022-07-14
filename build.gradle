@@ -39,7 +39,7 @@ dependencies {
 
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.springframework:spring-context-indexer:5.3.21'
+    annotationProcessor 'org.springframework:spring-context-indexer:5.3.22'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.awaitility:awaitility:4.2.0'
