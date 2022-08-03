@@ -6,42 +6,47 @@ This is the Home Office Correspondence Systems (HOCS) search service. The servic
 
 ## Getting Started
 
-
 ### Prerequisites
 
 * ```Java 17```
 * ```Docker```
 * ```LocalStack```
 
+### Submodules
+
+This project contains a 'ci' submodule with a docker-compose and infrastructure scripts in it.
+Most modern IDEs will handle pulling this automatically for you, but if not
+
+```console
+$ git submodule update --init --recursive
+```
+
+## Docker Compose
+
+This repository contains a [Docker Compose](https://docs.docker.com/compose/)
+file.
+
+### Start localstack (sqs, sns, s3, es)
+From the project root run:
+```console
+$ docker-compose -f ./ci/docker-compose.yml -f ./ci/docker-compose.elastic.yml up -d localstack 
+```
+
+>With Docker using 4 GB of memory, this takes approximately 5 minutes to startup.
+
+### Stop the services
+From the project root run:
+```console
+$ docker-compose -f ./ci/docker-compose.yml stop
+```
+> This will retain data in the local database and other volumes.
+
 ### Preparation
 
-In order to run the service locally, LocalStack is required. We have provided an [docker-compose.yml](docker-compose.yml) file to support this. 
+In order to run the service locally, LocalStack is required. 
+We have provided a docker-compose file to support this. 
 
-To start LocalStack through Docker, run the following command from the root of the project:
-
-```shell
-docker-compose up
-```
-
-This brings up the LocalStack docker image and creates the necessary AWS resources to run the project. This is done through mounting the [localstack configuration folder](ci/localstack) into the docker image.
-
-This configuration folder contains 3 shell scripts that each handle a seperate part of the AWS creation.
-
-1. [1-setup-queues.sh](ci/localstack/1-setup-queue.sh)  
-This creates both the `search-queue` and `search-queue-dlq` used within the service and adds the required association between them. The dead-letter queue currently specified a `maxReceiveCount` of 2 that mimics the production values.
-2. [2-setup-elastic.sh](ci/localstack/2-setup-elastic.sh)  
-Since [Localstack 0.11.1](https://newreleases.io/project/github/localstack/localstack/release/v0.11.1) non main-line elasticsearch indexes are lazily loaded, this handles the creation.
-3. [3-setup-index.sh](ci/localstack/3-setup-index.sh)  
-This creates the index from the associated [elastic index mapping](/ci/localstack/elastic_mapping.json). This script requires that the elasticsearch domain exists. If you are receiving an error when running this, please run script 2 first.
-To run this on OSX `coreutils` is required which can be installed using brew `brew install coreutils`.
-
-At present our elastic index mapping only supports version `7.X.X` of elasticsearch.
-
-To stop the running containers, run the following:
-
-```shell
-docker-compose down
-```
+View the readme in [hocs repo](https://github.com/UKHomeOffice/hocs/blob/main/README.md) for more details.
 
 ## Using the Service
 
