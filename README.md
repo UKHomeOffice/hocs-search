@@ -2,7 +2,7 @@
 
 [![CodeQL](https://github.com/UKHomeOffice/hocs-search/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/UKHomeOffice/hocs-search/actions/workflows/codeql-analysis.yml)
 
-This is the Home Office Correspondence Systems (HOCS) search service. The service serves the search functionality within HOCS through the use of `elasticsearch`. 
+This is the Home Office Correspondence Systems (HOCS) search service. The service serves the search functionality within HOCS through the use of `elasticsearch`.
 
 ## Getting Started
 
@@ -32,7 +32,7 @@ From the project root run:
 $ docker-compose -f ./ci/docker-compose.yml -f ./ci/docker-compose.elastic.yml up -d localstack 
 ```
 
->With Docker using 4 GB of memory, this takes approximately 5 minutes to startup.
+> With Docker using 4 GB of memory, this takes approximately 5 minutes to startup.
 
 ### Stop the services
 From the project root run:
@@ -41,25 +41,22 @@ $ docker-compose -f ./ci/docker-compose.yml stop
 ```
 > This will retain data in the local database and other volumes.
 
-### Preparation
+## Running in an IDE
 
-In order to run the service locally, LocalStack is required. 
-We have provided a docker-compose file to support this. 
+If you are using an IDE, such as IntelliJ, this service can be started by running the ```HocsSearchApplication``` main class.
+The service can then be accessed at ```http://localhost:8088```.
 
-View the readme in [hocs repo](https://github.com/UKHomeOffice/hocs/blob/main/README.md) for more details.
+You need to specify appropriate Spring profiles.
+Paste `development,localstack` into the "Active profiles" box of your run configuration.
 
-## Using the Service
-
-### Versioning
+## Versioning
 
 For versioning this project uses SemVer.
 
-### Authors
+## Authors
 
 This project is authored by the Home Office.
 
-### License
+## License
 
-This project is licensed under the MIT license. For details please see License
-
-This project contains public sector information licensed under the Open Government Licence v3.0. (http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/)
+This project is licensed under the MIT license. For details please see [License](LICENSE) 
