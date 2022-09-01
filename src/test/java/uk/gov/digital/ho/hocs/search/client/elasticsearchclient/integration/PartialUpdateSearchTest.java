@@ -7,18 +7,13 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.digital.ho.hocs.search.api.dto.AddressDto;
-import uk.gov.digital.ho.hocs.search.api.dto.CorrespondentDetailsDto;
-import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.search.api.dto.CreateTopicRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.*;
 import uk.gov.digital.ho.hocs.search.aws.listeners.integration.BaseAwsSqsIntegrationTest;
 import uk.gov.digital.ho.hocs.search.client.elasticsearchclient.ElasticSearchClient;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.search.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.search.domain.model.Topic;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -46,13 +41,12 @@ public class PartialUpdateSearchTest extends BaseAwsSqsIntegrationTest {
 
     @Autowired
     private ElasticSearchClient elasticSearchClient;
-    private CreateCaseRequest createCaseRequest;
 
     @Test
     public void onlyUpdateCorrespondents() throws IOException {
         UUID caseUUID = UUID.randomUUID();
 
-        createCaseRequest = new CreateCaseRequest(
+        CreateCaseRequest createCaseRequest = new CreateCaseRequest(
                 caseUUID,
                 LocalDateTime.now(),
                 "MIN",
@@ -87,9 +81,75 @@ public class PartialUpdateSearchTest extends BaseAwsSqsIntegrationTest {
         //assert that only correspondents has changed
         CaseData caseDataResult = elasticSearchClient.findById(caseUUID);
         assertThat(caseDataResult.getAllCorrespondents()).hasSize(1);
+        assertThat(caseDataResult.getCurrentCorrespondents()).hasSize(1);
         assertThat(caseDataResult.getAllTopics()).hasSize(0);
         assertThat(caseDataResult.getData()).containsExactlyInAnyOrderEntriesOf(Map.of("field", "value", "field2", "value2"));
     }
 
+    @Test
+    public void onlyUpdateTopics() throws IOException {
+        UUID caseUUID = UUID.randomUUID();
 
+        CreateCaseRequest createCaseRequest = new CreateCaseRequest(
+                caseUUID,
+                LocalDateTime.now(),
+                "MIN",
+                "MIN12345",
+                LocalDate.now(),
+                LocalDate.now(),
+                Map.of("field", "value", "field2", "value2"));
+
+        CreateTopicRequest createTopicRequest = new CreateTopicRequest(UUID.randomUUID(), "TOPIC");
+
+        CaseData caseData = new CaseData(caseUUID);
+        caseData.create(createCaseRequest);
+        elasticSearchClient.save(caseData);
+        await().until(() -> elasticSearchClient.findById(caseUUID) != null);
+
+        // update request including topic and other new data
+        CaseData updatedCaseData = new CaseData(caseUUID);
+        updatedCaseData.setData(Map.of("newField", "newValue", "field2", "updatedValue"));
+        updatedCaseData.addTopic(Topic.from(createTopicRequest));
+        elasticSearchClient.update(Set.of("allTopics", "currentTopics"), updatedCaseData);
+        await().until(() -> elasticSearchClient.findById(caseUUID) != null);
+
+        //assert that only topics has changed
+        CaseData caseDataResult = elasticSearchClient.findById(caseUUID);
+        assertThat(caseDataResult.getAllTopics()).hasSize(1);
+        assertThat(caseDataResult.getCurrentTopics()).hasSize(1);
+        assertThat(caseDataResult.getData()).containsExactlyInAnyOrderEntriesOf(Map.of("field", "value", "field2", "value2"));
+    }
+
+    @Test
+    public void onlyUpdateSoumu() throws IOException {
+        UUID caseUUID = UUID.randomUUID();
+
+        CreateCaseRequest createCaseRequest = new CreateCaseRequest(
+                caseUUID,
+                LocalDateTime.now(),
+                "MIN",
+                "MIN12345",
+                LocalDate.now(),
+                LocalDate.now(),
+                Map.of("field", "value", "field2", "value2"));
+
+        SomuItemDto somuItemDto = new SomuItemDto(UUID.randomUUID(), UUID.randomUUID(), Map.of("field", "value"));
+
+        CaseData caseData = new CaseData(caseUUID);
+        caseData.create(createCaseRequest);
+        elasticSearchClient.save(caseData);
+        await().until(() -> elasticSearchClient.findById(caseUUID) != null);
+
+        // update request including somu and other new data
+        CaseData updatedCaseData = new CaseData(caseUUID);
+        updatedCaseData.setData(Map.of("newField", "newValue", "field2", "updatedValue"));
+        updatedCaseData.addSomuItem(SomuItem.from(somuItemDto));
+        elasticSearchClient.update(Set.of("allSomuItems"), updatedCaseData);
+        await().until(() -> elasticSearchClient.findById(caseUUID) != null);
+
+        //assert that only somu has changed
+        CaseData caseDataResult = elasticSearchClient.findById(caseUUID);
+        assertThat(caseDataResult.getAllSomuItems()).hasSize(1);
+        assertThat(caseDataResult.getData()).containsExactlyInAnyOrderEntriesOf(Map.of("field", "value", "field2", "value2"));
+    }
 }

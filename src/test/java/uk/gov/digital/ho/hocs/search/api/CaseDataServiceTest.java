@@ -37,6 +37,8 @@ public class CaseDataServiceTest {
     private SomuItemDto validSomuItemDto = new SomuItemDto(UUID.randomUUID(),UUID.randomUUID(), "{\"Test\": 1}");
 
     private final Set<String> correspondentFields = Set.of("allCorrespondents", "currentCorrespondents");
+    private final Set<String> topicFields = Set.of("allTopics", "currentTopics");
+    private final Set<String> somuFields = Set.of("allSomuItems");
 
     @BeforeEach
     public void setup() {
@@ -266,7 +268,7 @@ public class CaseDataServiceTest {
         caseDataService.createTopic(caseUUID, validCreateTopicRequest);
 
         verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(caseData);
+        verify(elasticSearchClient).update(topicFields, caseData);
 
 
         verify(caseData).addTopic(any(Topic.class));
@@ -283,7 +285,7 @@ public class CaseDataServiceTest {
         caseDataService.createTopic(caseUUID, validCreateTopicRequest);
 
         verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(any(CaseData.class));
+        verify(elasticSearchClient).update(eq(topicFields), any(CaseData.class));
 
 
         verifyNoMoreInteractions(elasticSearchClient);
@@ -297,7 +299,7 @@ public class CaseDataServiceTest {
         caseDataService.deleteTopic(caseUUID, validDeleteTopicRequest);
 
         verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(caseData);
+        verify(elasticSearchClient).update(topicFields, caseData);
 
         verify(caseData).removeTopic(validDeleteTopicRequest.getUuid());
 
@@ -313,7 +315,7 @@ public class CaseDataServiceTest {
         caseDataService.deleteTopic(caseUUID, validDeleteTopicRequest);
 
         verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(any(CaseData.class));
+        verify(elasticSearchClient).update(eq(topicFields), any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
     }
@@ -325,7 +327,7 @@ public class CaseDataServiceTest {
         caseDataService.createSomuItem(caseUUID, validSomuItemDto);
 
         verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(any(CaseData.class));
+        verify(elasticSearchClient).update(eq(somuFields), any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
     }
@@ -337,7 +339,7 @@ public class CaseDataServiceTest {
         caseDataService.deleteSomuItem(caseUUID, validSomuItemDto);
 
         verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(any(CaseData.class));
+        verify(elasticSearchClient).update(eq(somuFields), any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
     }
@@ -349,7 +351,7 @@ public class CaseDataServiceTest {
         caseDataService.updateSomuItem(caseUUID, validSomuItemDto);
 
         verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(any(CaseData.class));
+        verify(elasticSearchClient).update(eq(somuFields), any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
     }

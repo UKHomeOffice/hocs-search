@@ -41,6 +41,8 @@ public class CaseDataService {
     private final int resultsLimit;
 
     private final Set<String> correspondentFields = Set.of("allCorrespondents", "currentCorrespondents");
+    private final Set<String> topicFields = Set.of("allTopics", "currentTopics");
+    private final Set<String> somuFields = Set.of("allSomuItems");
 
     @Autowired
     public CaseDataService(ElasticSearchClient elasticSearchClient, @Value("${aws.es.results-limit}") int resultsLimit) {
@@ -119,7 +121,7 @@ public class CaseDataService {
         log.debug("Adding topic {} to case {}", createTopicRequest.getUuid(), caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.addTopic(Topic.from(createTopicRequest));
-        elasticSearchClient.update(caseData);
+        elasticSearchClient.update(topicFields, caseData);
         log.info("Added topic {} to case {}", createTopicRequest.getUuid(), caseUUID, value(EVENT, SEARCH_TOPIC_CREATED));
     }
 
@@ -127,7 +129,7 @@ public class CaseDataService {
         log.debug("Deleting topic {} from case {}", deleteTopicRequest.getUuid(), caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.removeTopic(deleteTopicRequest.getUuid());
-        elasticSearchClient.update(caseData);
+        elasticSearchClient.update(topicFields, caseData);
         log.info("Deleted topic {} from case {}. Event {}", deleteTopicRequest.getUuid(), caseUUID, value(EVENT, SEARCH_TOPIC_DELETED));
     }
 
@@ -135,7 +137,7 @@ public class CaseDataService {
         log.debug("Adding somu item {} to case {}", somuItemDto.getUuid(), caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.addSomuItem(SomuItem.from(somuItemDto));
-        elasticSearchClient.update(caseData);
+        elasticSearchClient.update(somuFields,caseData);
         log.info("Added somu item {} to case {}. Event {}", somuItemDto.getUuid(), caseUUID, value(EVENT, SOMU_ITEM_CREATED));
     }
 
@@ -143,7 +145,7 @@ public class CaseDataService {
         log.debug("Deleting somu item {} from case {}",somuItem.getUuid(), caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.removeSomuItem(somuItem.getUuid());
-        elasticSearchClient.update(caseData);
+        elasticSearchClient.update(somuFields, caseData);
         log.info("Deleted somu item {} from case {}. Event {}", somuItem.getUuid(), caseUUID, value(EVENT, SOMU_ITEM_DELETED));
     }
 
@@ -151,7 +153,7 @@ public class CaseDataService {
         log.debug("Updating somu item {} from case {}", somuItemDto.getUuid(), caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.updateSomuItem(SomuItem.from(somuItemDto));
-        elasticSearchClient.update(caseData);
+        elasticSearchClient.update(somuFields, caseData);
         log.info("Updated somu item {} from case {}. Event {}", somuItemDto.getUuid(), caseUUID, value(EVENT, SOMU_ITEM_UPDATED));
     }
 
