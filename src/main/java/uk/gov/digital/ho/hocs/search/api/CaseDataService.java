@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.search.api.dto.*;
 import uk.gov.digital.ho.hocs.search.client.elasticsearchclient.ElasticSearchClient;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.search.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.search.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.search.domain.model.Topic;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.search.application.LogEvent.EVENT;
@@ -39,6 +39,8 @@ public class CaseDataService {
     private final ElasticSearchClient elasticSearchClient;
 
     private final int resultsLimit;
+
+    private final Set<String> correspondentFields = Set.of("allCorrespondents", "currentCorrespondents");
 
     @Autowired
     public CaseDataService(ElasticSearchClient elasticSearchClient, @Value("${aws.es.results-limit}") int resultsLimit) {
@@ -93,7 +95,7 @@ public class CaseDataService {
         log.debug("Adding correspondent {} to case {}", correspondentDetailsDto.getUuid(), caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.addCorrespondent(correspondentDetailsDto);
-        elasticSearchClient.update(caseData);
+        elasticSearchClient.update(correspondentFields, caseData);
         log.info("Added correspondent {} to case {}", correspondentDetailsDto.getUuid(), caseUUID, value(EVENT, SEARCH_CORRESPONDENT_CREATED));
     }
 
@@ -101,7 +103,7 @@ public class CaseDataService {
         log.debug("Deleting correspondent {} from case {}", correspondentDetailsDto.getUuid(), caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.removeCorrespondent(correspondentDetailsDto.getUuid());
-        elasticSearchClient.update(caseData);
+        elasticSearchClient.update(correspondentFields, caseData);
         log.info("Deleted correspondent {} from case {}", correspondentDetailsDto.getUuid(), caseUUID, value(EVENT, SEARCH_CORRESPONDENT_DELETED));
     }
 
@@ -109,7 +111,7 @@ public class CaseDataService {
         log.debug("Updating correspondent {} from case {}", correspondentDetailsDto.getUuid(), caseUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.updateCorrespondent(correspondentDetailsDto);
-        elasticSearchClient.update(caseData);
+        elasticSearchClient.update(correspondentFields, caseData);
         log.info("Updating correspondent {} for case {}", correspondentDetailsDto.getUuid(), caseUUID, value(EVENT, SEARCH_CORRESPONDENT_UPDATED));
     }
 
