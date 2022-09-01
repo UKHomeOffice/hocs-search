@@ -12,6 +12,7 @@ import uk.gov.digital.ho.hocs.search.api.dto.*;
 import uk.gov.digital.ho.hocs.search.aws.listeners.integration.BaseAwsSqsIntegrationTest;
 import uk.gov.digital.ho.hocs.search.client.elasticsearchclient.ElasticSearchClient;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.search.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.search.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.search.domain.model.Topic;
 import java.io.IOException;
@@ -84,6 +85,24 @@ public class PartialUpdateSearchTest extends BaseAwsSqsIntegrationTest {
         assertThat(caseDataResult.getCurrentCorrespondents()).hasSize(1);
         assertThat(caseDataResult.getAllTopics()).hasSize(0);
         assertThat(caseDataResult.getData()).containsExactlyInAnyOrderEntriesOf(Map.of("field", "value", "field2", "value2"));
+
+        //assert that the correspondent has been updated
+        Correspondent currentCorrespondent =  caseDataResult.getCurrentCorrespondents().stream().findFirst().get();
+        Correspondent allCorrespondent =  caseDataResult.getCurrentCorrespondents().stream().findFirst().get();
+        assertThat(currentCorrespondent).isEqualTo(allCorrespondent);
+        assertThat(currentCorrespondent.getUuid()).isEqualTo(correspondentDetailsDto.getUuid());
+        assertThat(currentCorrespondent.getCreated()).isEqualTo(correspondentDetailsDto.getCreated());
+        assertThat(currentCorrespondent.getType()).isEqualTo(correspondentDetailsDto.getType());
+        assertThat(currentCorrespondent.getEmail()).isEqualTo(correspondentDetailsDto.getEmail());
+        assertThat(currentCorrespondent.getTelephone()).isEqualTo(correspondentDetailsDto.getTelephone());
+        assertThat(currentCorrespondent.getReference()).isEqualTo(correspondentDetailsDto.getReference());
+        assertThat(currentCorrespondent.getExternalKey()).isEqualTo(correspondentDetailsDto.getExternalKey());
+        assertThat(currentCorrespondent.getFullname()).isEqualTo(correspondentDetailsDto.getFullname());
+        assertThat(currentCorrespondent.getAddress1()).isEqualTo(correspondentDetailsDto.getAddress().getAddress1());
+        assertThat(currentCorrespondent.getAddress2()).isEqualTo(correspondentDetailsDto.getAddress().getAddress2());
+        assertThat(currentCorrespondent.getAddress3()).isEqualTo(correspondentDetailsDto.getAddress().getAddress3());
+        assertThat(currentCorrespondent.getPostcode()).isEqualTo(correspondentDetailsDto.getAddress().getPostcode());
+        assertThat(currentCorrespondent.getCountry()).isEqualTo(correspondentDetailsDto.getAddress().getCountry());
     }
 
     @Test
@@ -118,6 +137,12 @@ public class PartialUpdateSearchTest extends BaseAwsSqsIntegrationTest {
         assertThat(caseDataResult.getAllTopics()).hasSize(1);
         assertThat(caseDataResult.getCurrentTopics()).hasSize(1);
         assertThat(caseDataResult.getData()).containsExactlyInAnyOrderEntriesOf(Map.of("field", "value", "field2", "value2"));
+
+        //assert that the topic has been updated
+        Topic topic = caseDataResult.getCurrentTopics().stream().findFirst().get();
+        assertThat(topic.getUuid()).isEqualTo(createTopicRequest.getUuid());
+        assertThat(topic.getText()).isEqualTo(createTopicRequest.getTopicName());
+
     }
 
     @Test
@@ -151,5 +176,10 @@ public class PartialUpdateSearchTest extends BaseAwsSqsIntegrationTest {
         CaseData caseDataResult = elasticSearchClient.findById(caseUUID);
         assertThat(caseDataResult.getAllSomuItems()).hasSize(1);
         assertThat(caseDataResult.getData()).containsExactlyInAnyOrderEntriesOf(Map.of("field", "value", "field2", "value2"));
+
+        SomuItem somuItem = caseDataResult.getAllSomuItems().stream().findFirst().get();
+        assertThat(somuItem.getUuid()).isEqualTo(somuItemDto.getUuid());
+        assertThat(somuItem.getData()).isEqualTo(somuItemDto.getData());
+
     }
 }
