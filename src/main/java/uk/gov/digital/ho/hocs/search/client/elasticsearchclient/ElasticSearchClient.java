@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.search.client.elasticsearchclient;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.get.GetRequest;
@@ -16,16 +15,9 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import uk.gov.digital.ho.hocs.search.domain.exceptions.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
-
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
-
 import static uk.gov.digital.ho.hocs.search.application.LogEvent.CASE_NOT_FOUND;
 import static uk.gov.digital.ho.hocs.search.application.LogEvent.CASE_SAVE_FAILED;
 import static uk.gov.digital.ho.hocs.search.application.LogEvent.CASE_UPDATE_FAILED;
@@ -49,7 +41,7 @@ public class ElasticSearchClient {
     }
 
     public CaseData findById(UUID uuid) {
-        GetRequest getRequest = new GetRequest(index, uuid.toString());
+       GetRequest getRequest = new GetRequest(index, uuid.toString());
 
         GetResponse getResponse = null;
         try {
@@ -93,6 +85,18 @@ public class ElasticSearchClient {
             client.update(updateRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
             throw new ApplicationExceptions.ResourceServerException(String.format("Unable to update Case: %s. %s", caseData.getCaseUUID(), e), CASE_UPDATE_FAILED);
+        }
+    }
+
+    public void update(Set<String> keys, CaseData caseData) {
+        UpdateRequest updateRequest = new UpdateRequest(index, caseData.getCaseUUID().toString());
+        Map<String, Object> documentMapper = objectMapper.convertValue(caseData, Map.class);
+        documentMapper.entrySet().removeIf(entry -> !keys.contains(entry.getKey()));
+        updateRequest.doc(documentMapper);
+        try {
+            client.update(updateRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            throw new ApplicationExceptions.ResourceServerException(String.format("Unable to update partial Case: %s. %s", caseData.getCaseUUID(), e), CASE_UPDATE_FAILED);
         }
     }
 

@@ -13,6 +13,7 @@ import uk.gov.digital.ho.hocs.search.domain.model.Topic;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
@@ -34,6 +35,8 @@ public class CaseDataServiceTest {
     private CreateTopicRequest validCreateTopicRequest = new CreateTopicRequest(UUID.randomUUID(), "Test Topic");
     private DeleteTopicRequest validDeleteTopicRequest = new DeleteTopicRequest(UUID.randomUUID(), "Test Topic");
     private SomuItemDto validSomuItemDto = new SomuItemDto(UUID.randomUUID(),UUID.randomUUID(), "{\"Test\": 1}");
+
+    private final Set<String> correspondentFields = Set.of("allCorrespondents", "currentCorrespondents");
 
     @BeforeEach
     public void setup() {
@@ -189,7 +192,7 @@ public class CaseDataServiceTest {
         caseDataService.createCorrespondent(caseUUID, validCorrespondentDetailsDto);
 
         verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(caseData);
+        verify(elasticSearchClient).update(correspondentFields, caseData);
 
         verify(caseData).addCorrespondent(validCorrespondentDetailsDto);
 
@@ -205,7 +208,7 @@ public class CaseDataServiceTest {
         caseDataService.createCorrespondent(caseUUID, validCorrespondentDetailsDto);
 
         verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(any(CaseData.class));
+        verify(elasticSearchClient).update(eq(correspondentFields), any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
     }
@@ -218,7 +221,7 @@ public class CaseDataServiceTest {
         caseDataService.deleteCorrespondent(caseUUID, validCorrespondentDetailsDto);
 
         verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(caseData);
+        verify(elasticSearchClient).update(correspondentFields, caseData);
 
         verify(caseData).removeCorrespondent(validCorrespondentDetailsDto.getUuid());
 
@@ -234,7 +237,7 @@ public class CaseDataServiceTest {
         caseDataService.updateCorrespondent(caseUUID, validCorrespondentDetailsDto);
 
         verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(caseData);
+        verify(elasticSearchClient).update(correspondentFields, caseData);
 
         verify(caseData).updateCorrespondent(validCorrespondentDetailsDto);
 
@@ -250,7 +253,7 @@ public class CaseDataServiceTest {
         caseDataService.deleteCorrespondent(caseUUID, validCorrespondentDetailsDto);
 
         verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(any(CaseData.class));
+        verify(elasticSearchClient).update(eq(correspondentFields), any(CaseData.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
     }

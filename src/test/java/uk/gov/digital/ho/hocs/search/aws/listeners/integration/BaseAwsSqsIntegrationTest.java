@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.search.aws.listeners.integration;
 
-import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.amazonaws.services.sqs.model.PurgeQueueRequest;
 import org.junit.jupiter.api.AfterEach;
