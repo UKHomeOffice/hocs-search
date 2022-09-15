@@ -16,7 +16,7 @@ public enum DataChangeType {
 
     public String value;
 
-    DataChangeType(final String value){
+    DataChangeType(final String value) {
         this.value = value;
     }
 

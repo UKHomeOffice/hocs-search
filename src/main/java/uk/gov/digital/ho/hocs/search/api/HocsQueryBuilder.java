@@ -46,7 +46,8 @@ class HocsQueryBuilder {
             QueryBuilder typeQb;
             // optimise wildcard search when user enters only digits by prefixing with case type
             if (caseTypes != null && caseTypes.size() == 1 && isInteger.matcher(reference).matches()) {
-                typeQb = QueryBuilders.wildcardQuery("reference", String.format("%s/*%s*", caseTypes.get(0), reference));
+                typeQb = QueryBuilders.wildcardQuery("reference",
+                    String.format("%s/*%s*", caseTypes.get(0), reference));
             } else {
                 typeQb = QueryBuilders.wildcardQuery("reference", String.format("*%s*", reference));
             }
@@ -99,8 +100,10 @@ class HocsQueryBuilder {
     HocsQueryBuilder correspondentAddress1(String correspondentAddress1) {
         if (StringUtils.hasText(correspondentAddress1)) {
             log.debug("CorrespondentAddress {}, adding to query", correspondentAddress1);
-            QueryBuilder addressQb = QueryBuilders.matchQuery("currentCorrespondents.address1", correspondentAddress1).operator(Operator.AND);
-            QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", addressQb, ScoreMode.None);
+            QueryBuilder addressQb = QueryBuilders.matchQuery("currentCorrespondents.address1",
+                correspondentAddress1).operator(Operator.AND);
+            QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", addressQb,
+                ScoreMode.None);
             mqb.must(correspondentQb);
             hasClause = true;
         } else {
@@ -113,7 +116,8 @@ class HocsQueryBuilder {
     HocsQueryBuilder correspondentEmail(String correspondentEmail) {
         if (StringUtils.hasText(correspondentEmail)) {
             log.debug("CorrespondentEmail {}, adding to query", correspondentEmail);
-            QueryBuilder emailQb = QueryBuilders.matchQuery("currentCorrespondents.email", correspondentEmail).operator(Operator.AND);
+            QueryBuilder emailQb = QueryBuilders.matchQuery("currentCorrespondents.email", correspondentEmail).operator(
+                Operator.AND);
             QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", emailQb, ScoreMode.None);
             mqb.must(correspondentQb);
             hasClause = true;
@@ -127,8 +131,10 @@ class HocsQueryBuilder {
     HocsQueryBuilder correspondentName(String correspondentName) {
         if (StringUtils.hasText(correspondentName)) {
             log.debug("CorrespondentName {}, adding to query", correspondentName);
-            QueryBuilder fullnameQb = QueryBuilders.matchQuery("currentCorrespondents.fullname", correspondentName).operator(Operator.AND);
-            QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", fullnameQb, ScoreMode.None);
+            QueryBuilder fullnameQb = QueryBuilders.matchQuery("currentCorrespondents.fullname",
+                correspondentName).operator(Operator.AND);
+            QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", fullnameQb,
+                ScoreMode.None);
             mqb.must(correspondentQb);
             hasClause = true;
         } else {
@@ -141,14 +147,17 @@ class HocsQueryBuilder {
     HocsQueryBuilder correspondentNameNotMember(String correspondentNameNotMember) {
         if (StringUtils.hasText(correspondentNameNotMember)) {
             log.debug("CorrespondentNameNotMember {}, adding to query", correspondentNameNotMember);
-            QueryBuilder fullnameQb = QueryBuilders.matchQuery("currentCorrespondents.fullname", correspondentNameNotMember).operator(Operator.AND);
-            QueryBuilder typeQb = QueryBuilders.matchQuery("currentCorrespondents.type", "MEMBER").operator(Operator.AND);
+            QueryBuilder fullnameQb = QueryBuilders.matchQuery("currentCorrespondents.fullname",
+                correspondentNameNotMember).operator(Operator.AND);
+            QueryBuilder typeQb = QueryBuilders.matchQuery("currentCorrespondents.type", "MEMBER").operator(
+                Operator.AND);
 
             BoolQueryBuilder correspondentBqb = new BoolQueryBuilder();
             correspondentBqb.must(fullnameQb);
             correspondentBqb.mustNot(typeQb);
 
-            QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", correspondentBqb, ScoreMode.None);
+            QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", correspondentBqb,
+                ScoreMode.None);
             mqb.must(correspondentQb);
             hasClause = true;
         } else {
@@ -161,8 +170,10 @@ class HocsQueryBuilder {
     HocsQueryBuilder correspondentPostcode(String correspondentPostcode) {
         if (StringUtils.hasText(correspondentPostcode)) {
             log.debug("CorrespondentPostcode {}, adding to query", correspondentPostcode);
-            QueryBuilder postcodeQb = QueryBuilders.matchQuery("currentCorrespondents.postcode", correspondentPostcode).operator(Operator.AND);
-            QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", postcodeQb, ScoreMode.None);
+            QueryBuilder postcodeQb = QueryBuilders.matchQuery("currentCorrespondents.postcode",
+                correspondentPostcode).operator(Operator.AND);
+            QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", postcodeQb,
+                ScoreMode.None);
             mqb.must(correspondentQb);
             hasClause = true;
         } else {
@@ -175,8 +186,10 @@ class HocsQueryBuilder {
     HocsQueryBuilder correspondentReference(String correspondentReference) {
         if (StringUtils.hasText(correspondentReference)) {
             log.debug("correspondentReference {}, adding to query", correspondentReference);
-            QueryBuilder referenceQb = QueryBuilders.wildcardQuery("currentCorrespondents.reference", "*" + correspondentReference + "*");
-            QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", referenceQb, ScoreMode.None);
+            QueryBuilder referenceQb = QueryBuilders.wildcardQuery("currentCorrespondents.reference",
+                "*" + correspondentReference + "*");
+            QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", referenceQb,
+                ScoreMode.None);
             mqb.must(correspondentQb);
             hasClause = true;
         } else {
@@ -189,8 +202,10 @@ class HocsQueryBuilder {
     HocsQueryBuilder correspondentExternalKey(String correspondentExternalKey) {
         if (StringUtils.hasText(correspondentExternalKey)) {
             log.debug("correspondentExternalKey {}, adding to query", correspondentExternalKey);
-            QueryBuilder fullnameQb = QueryBuilders.matchQuery("currentCorrespondents.externalKey", correspondentExternalKey).operator(Operator.AND);
-            QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", fullnameQb, ScoreMode.None);
+            QueryBuilder fullnameQb = QueryBuilders.matchQuery("currentCorrespondents.externalKey",
+                correspondentExternalKey).operator(Operator.AND);
+            QueryBuilder correspondentQb = QueryBuilders.nestedQuery("currentCorrespondents", fullnameQb,
+                ScoreMode.None);
             mqb.must(correspondentQb);
             hasClause = true;
         } else {
@@ -217,39 +232,25 @@ class HocsQueryBuilder {
         if (privateOfficeTeam != null && !privateOfficeTeam.isEmpty()) {
             log.debug("Private office team {}, adding to query", privateOfficeTeam);
 
-            BoolQueryBuilder[] privateOfficeQueries = {
-                    QueryBuilders.boolQuery()
-                            .must(QueryBuilders.matchQuery("data.PrivateOfficeOverridePOTeamUUID", privateOfficeTeam)
-                            .operator(Operator.AND)),
-                    QueryBuilders.boolQuery()
-                            .mustNot(fieldExists("data.PrivateOfficeOverridePOTeamUUID"))
-                            .must(QueryBuilders.matchQuery("data.OverridePOTeamUUID", privateOfficeTeam)
-                            .operator(Operator.AND)),
-                    QueryBuilders.boolQuery()
-                            .mustNot(nonEmptyField("data.PrivateOfficeOverridePOTeamUUID"))
-                            .must(QueryBuilders.matchQuery("data.OverridePOTeamUUID", privateOfficeTeam)
-                            .operator(Operator.AND)),
-                    QueryBuilders.boolQuery()
-                            .mustNot(fieldExists("data.PrivateOfficeOverridePOTeamUUID"))
-                            .mustNot(fieldExists("data.OverridePOTeamUUID"))
-                            .must(QueryBuilders.matchQuery("data.POTeamUUID", privateOfficeTeam)
-                            .operator(Operator.AND)),
-                    QueryBuilders.boolQuery()
-                            .mustNot(fieldExists("data.PrivateOfficeOverridePOTeamUUID"))
-                            .mustNot(nonEmptyField("data.OverridePOTeamUUID"))
-                            .must(QueryBuilders.matchQuery("data.POTeamUUID", privateOfficeTeam)
-                            .operator(Operator.AND)),
-                    QueryBuilders.boolQuery()
-                            .mustNot(nonEmptyField("data.PrivateOfficeOverridePOTeamUUID"))
-                            .mustNot(fieldExists("data.OverridePOTeamUUID"))
-                            .must(QueryBuilders.matchQuery("data.POTeamUUID", privateOfficeTeam)
-                            .operator(Operator.AND)),
-                    QueryBuilders.boolQuery()
-                            .mustNot(nonEmptyField("data.PrivateOfficeOverridePOTeamUUID"))
-                            .mustNot(nonEmptyField("data.OverridePOTeamUUID"))
-                            .must(QueryBuilders.matchQuery("data.POTeamUUID", privateOfficeTeam)
-                            .operator(Operator.AND))
-            };
+            BoolQueryBuilder[] privateOfficeQueries = { QueryBuilders.boolQuery().must(
+                QueryBuilders.matchQuery("data.PrivateOfficeOverridePOTeamUUID", privateOfficeTeam).operator(
+                    Operator.AND)),
+                QueryBuilders.boolQuery().mustNot(fieldExists("data.PrivateOfficeOverridePOTeamUUID")).must(
+                    QueryBuilders.matchQuery("data.OverridePOTeamUUID", privateOfficeTeam).operator(Operator.AND)),
+                QueryBuilders.boolQuery().mustNot(nonEmptyField("data.PrivateOfficeOverridePOTeamUUID")).must(
+                    QueryBuilders.matchQuery("data.OverridePOTeamUUID", privateOfficeTeam).operator(Operator.AND)),
+                QueryBuilders.boolQuery().mustNot(fieldExists("data.PrivateOfficeOverridePOTeamUUID")).mustNot(
+                    fieldExists("data.OverridePOTeamUUID")).must(
+                    QueryBuilders.matchQuery("data.POTeamUUID", privateOfficeTeam).operator(Operator.AND)),
+                QueryBuilders.boolQuery().mustNot(fieldExists("data.PrivateOfficeOverridePOTeamUUID")).mustNot(
+                    nonEmptyField("data.OverridePOTeamUUID")).must(
+                    QueryBuilders.matchQuery("data.POTeamUUID", privateOfficeTeam).operator(Operator.AND)),
+                QueryBuilders.boolQuery().mustNot(nonEmptyField("data.PrivateOfficeOverridePOTeamUUID")).mustNot(
+                    fieldExists("data.OverridePOTeamUUID")).must(
+                    QueryBuilders.matchQuery("data.POTeamUUID", privateOfficeTeam).operator(Operator.AND)),
+                QueryBuilders.boolQuery().mustNot(nonEmptyField("data.PrivateOfficeOverridePOTeamUUID")).mustNot(
+                    nonEmptyField("data.OverridePOTeamUUID")).must(
+                    QueryBuilders.matchQuery("data.POTeamUUID", privateOfficeTeam).operator(Operator.AND)) };
 
             BoolQueryBuilder privateOfficeFilter = new BoolQueryBuilder();
             Arrays.stream(privateOfficeQueries).forEach(privateOfficeFilter::should);
@@ -265,7 +266,10 @@ class HocsQueryBuilder {
     HocsQueryBuilder dataFields(Map<String, String> data) {
         if (data != null && !data.isEmpty()) {
             log.debug("data size {}, adding to query", data.size());
-            Set<QueryBuilder> dataQb = data.entrySet().stream().filter(v -> v.getValue() != null && !v.getValue().isEmpty()).map(v -> QueryBuilders.matchQuery("data." + v.getKey(), v.getValue()).operator(Operator.AND)).collect(Collectors.toSet());
+            Set<QueryBuilder> dataQb = data.entrySet().stream().filter(
+                v -> v.getValue() != null && !v.getValue().isEmpty()).map(
+                v -> QueryBuilders.matchQuery("data." + v.getKey(), v.getValue()).operator(Operator.AND)).collect(
+                Collectors.toSet());
             log.debug("filtered data size {}, adding to query", dataQb.size());
             for (QueryBuilder qb : dataQb) {
                 mqb.must(qb);
@@ -298,4 +302,5 @@ class HocsQueryBuilder {
     boolean hasClauses() {
         return hasClause;
     }
+
 }

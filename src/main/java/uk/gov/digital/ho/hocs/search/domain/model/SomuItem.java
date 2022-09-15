@@ -18,8 +18,9 @@ public class SomuItem {
     private UUID somuTypeUuid;
 
     private Object data;
-    
+
     public static SomuItem from(SomuItemDto somuItemDto) {
         return new SomuItem(somuItemDto.getUuid(), somuItemDto.getSomuTypeUuid(), somuItemDto.getData());
     }
+
 }

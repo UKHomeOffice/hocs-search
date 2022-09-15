@@ -27,4 +27,5 @@ class CaseDataResource {
         Set<UUID> results = caseDataService.search(request);
         return ResponseEntity.ok(results);
     }
+
 }

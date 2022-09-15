@@ -17,4 +17,5 @@ public class DateRangeDto {
 
     @JsonProperty("to")
     private String to;
+
 }

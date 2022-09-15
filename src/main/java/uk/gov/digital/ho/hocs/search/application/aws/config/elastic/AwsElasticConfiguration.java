@@ -20,22 +20,24 @@ import org.springframework.context.annotation.Profile;
 public class AwsElasticConfiguration {
 
     @Bean(destroyMethod = "close")
-    public RestHighLevelClient client(
-            @Value("${aws.es.host}")String host,
-            @Value("${aws.es.serviceName}") String serviceName,
-            @Value("${aws.region}") String region,
-            @Value("${aws.es.access-key}") String accessKey,
-            @Value("${aws.es.secret-key}") String secretKey) {
+    public RestHighLevelClient client(@Value("${aws.es.host}") String host,
+                                      @Value("${aws.es.serviceName}") String serviceName,
+                                      @Value("${aws.region}") String region,
+                                      @Value("${aws.es.access-key}") String accessKey,
+                                      @Value("${aws.es.secret-key}") String secretKey) {
 
-        AWSCredentialsProvider credentialsProvider = new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
+        AWSCredentialsProvider credentialsProvider = new AWSStaticCredentialsProvider(
+            new BasicAWSCredentials(accessKey, secretKey));
 
         AWS4Signer signer = new AWS4Signer();
         signer.setServiceName(serviceName);
         signer.setRegionName(region);
 
-        HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(serviceName, signer, credentialsProvider);
+        HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(serviceName, signer,
+            credentialsProvider);
         RestClientBuilder builder = RestClient.builder(new HttpHost(host, -1, "https"));
-        builder.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.useSystemProperties().addInterceptorLast(interceptor));
+        builder.setHttpClientConfigCallback(
+            httpClientBuilder -> httpClientBuilder.useSystemProperties().addInterceptorLast(interceptor));
 
         return new RestHighLevelClient(builder);
     }

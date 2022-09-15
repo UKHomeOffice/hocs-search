@@ -19,4 +19,5 @@ public class DeleteCaseRequest {
 
     @JsonProperty("deleted")
     private Boolean deleted;
+
 }

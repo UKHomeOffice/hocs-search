@@ -13,10 +13,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CaseDataTest {
 
     private UUID caseUUID = UUID.randomUUID();
-    private CreateCaseRequest validCreateCaseRequest = new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), new HashMap());
-    private UpdateCaseRequest validUpdateCaseRequest = new UpdateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", UUID.randomUUID(), UUID.randomUUID(), LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), new HashMap());
-    private CorrespondentDetailsDto validCorrespondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(), LocalDateTime.now(), "LAW", "FULLNAME", null, "0", "e", "REF", "ExtKey");
+
+    private CreateCaseRequest validCreateCaseRequest = new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(),
+        "MIN", "REF", LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), new HashMap());
+
+    private UpdateCaseRequest validUpdateCaseRequest = new UpdateCaseRequest(UUID.randomUUID(), LocalDateTime.now(),
+        "MIN", "REF", UUID.randomUUID(), UUID.randomUUID(), LocalDate.now().plusDays(1), LocalDate.now().plusDays(2),
+        new HashMap());
+
+    private CorrespondentDetailsDto validCorrespondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(),
+        LocalDateTime.now(), "LAW", "FULLNAME", null, "0", "e", "REF", "ExtKey");
+
     private Topic validTopic = Topic.from(new CreateTopicRequest(UUID.randomUUID(), "VALUE"));
+
     private final SomuItem validSomuItem = SomuItem.from(new SomuItemDto(UUID.randomUUID(), UUID.randomUUID(), "{}"));
 
     @Test
@@ -155,8 +164,9 @@ public class CaseDataTest {
 
         caseData.addCorrespondent(validCorrespondentDetailsDto);
 
-        CorrespondentDetailsDto updatedCorrespondentDetailsDto = new CorrespondentDetailsDto(validCorrespondentDetailsDto.getUuid(), LocalDateTime.now(), "LAW2", "FULLNAME2", null, "2", "e2", "REF2", "ExtKey2");
-
+        CorrespondentDetailsDto updatedCorrespondentDetailsDto = new CorrespondentDetailsDto(
+            validCorrespondentDetailsDto.getUuid(), LocalDateTime.now(), "LAW2", "FULLNAME2", null, "2", "e2", "REF2",
+            "ExtKey2");
 
         caseData.updateCorrespondent(updatedCorrespondentDetailsDto);
 
@@ -235,15 +245,17 @@ public class CaseDataTest {
 
         assertThat(caseData.getAllSomuItems()).hasSize(1);
 
-        SomuItem updatedSomuItem = SomuItem.from(new SomuItemDto(validSomuItem.getUuid(), validSomuItem.getSomuTypeUuid(), "TEST"));
-        
+        SomuItem updatedSomuItem = SomuItem.from(
+            new SomuItemDto(validSomuItem.getUuid(), validSomuItem.getSomuTypeUuid(), "TEST"));
+
         caseData.updateSomuItem(updatedSomuItem);
 
         assertThat(caseData.getAllSomuItems()).hasSize(1);
-        
-        SomuItem caseDataSomuItem = (SomuItem)caseData.getAllSomuItems().toArray()[0];
+
+        SomuItem caseDataSomuItem = (SomuItem) caseData.getAllSomuItems().toArray()[0];
         assertThat(caseDataSomuItem.getUuid()).isEqualTo(validSomuItem.getUuid());
         assertThat(caseDataSomuItem.getSomuTypeUuid()).isEqualTo(validSomuItem.getSomuTypeUuid());
         assertThat(caseDataSomuItem.getData()).isEqualTo("TEST");
     }
+
 }

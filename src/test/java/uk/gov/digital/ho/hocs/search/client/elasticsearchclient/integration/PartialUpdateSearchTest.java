@@ -15,6 +15,7 @@ import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.search.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.search.domain.model.Topic;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -47,24 +48,12 @@ public class PartialUpdateSearchTest extends BaseAwsSqsIntegrationTest {
     public void onlyUpdateCorrespondents() throws IOException {
         UUID caseUUID = UUID.randomUUID();
 
-        CreateCaseRequest createCaseRequest = new CreateCaseRequest(
-                caseUUID,
-                LocalDateTime.now(),
-                "MIN",
-                "MIN12345",
-                LocalDate.now(),
-                LocalDate.now(),
-                Map.of("field", "value", "field2", "value2"));
+        CreateCaseRequest createCaseRequest = new CreateCaseRequest(caseUUID, LocalDateTime.now(), "MIN", "MIN12345",
+            LocalDate.now(), LocalDate.now(), Map.of("field", "value", "field2", "value2"));
 
         CorrespondentDetailsDto correspondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(),
-                LocalDateTime.now(),
-                "LAW",
-                "FULLNAME",
-                new AddressDto("postcode", "address1", "address2", "address3", "country"),
-                "0",
-                "e",
-                "REF",
-                "ExtKey");
+            LocalDateTime.now(), "LAW", "FULLNAME",
+            new AddressDto("postcode", "address1", "address2", "address3", "country"), "0", "e", "REF", "ExtKey");
 
         CaseData caseData = new CaseData(caseUUID);
         caseData.create(createCaseRequest);
@@ -84,11 +73,12 @@ public class PartialUpdateSearchTest extends BaseAwsSqsIntegrationTest {
         assertThat(caseDataResult.getAllCorrespondents()).hasSize(1);
         assertThat(caseDataResult.getCurrentCorrespondents()).hasSize(1);
         assertThat(caseDataResult.getAllTopics()).hasSize(0);
-        assertThat(caseDataResult.getData()).containsExactlyInAnyOrderEntriesOf(Map.of("field", "value", "field2", "value2"));
+        assertThat(caseDataResult.getData()).containsExactlyInAnyOrderEntriesOf(
+            Map.of("field", "value", "field2", "value2"));
 
         //assert that the correspondent has been updated
-        Correspondent currentCorrespondent =  caseDataResult.getCurrentCorrespondents().stream().findFirst().get();
-        Correspondent allCorrespondent =  caseDataResult.getCurrentCorrespondents().stream().findFirst().get();
+        Correspondent currentCorrespondent = caseDataResult.getCurrentCorrespondents().stream().findFirst().get();
+        Correspondent allCorrespondent = caseDataResult.getCurrentCorrespondents().stream().findFirst().get();
         assertThat(currentCorrespondent).isEqualTo(allCorrespondent);
         assertThat(currentCorrespondent.getUuid()).isEqualTo(correspondentDetailsDto.getUuid());
         assertThat(currentCorrespondent.getCreated()).isEqualTo(correspondentDetailsDto.getCreated());
@@ -109,14 +99,8 @@ public class PartialUpdateSearchTest extends BaseAwsSqsIntegrationTest {
     public void onlyUpdateTopics() throws IOException {
         UUID caseUUID = UUID.randomUUID();
 
-        CreateCaseRequest createCaseRequest = new CreateCaseRequest(
-                caseUUID,
-                LocalDateTime.now(),
-                "MIN",
-                "MIN12345",
-                LocalDate.now(),
-                LocalDate.now(),
-                Map.of("field", "value", "field2", "value2"));
+        CreateCaseRequest createCaseRequest = new CreateCaseRequest(caseUUID, LocalDateTime.now(), "MIN", "MIN12345",
+            LocalDate.now(), LocalDate.now(), Map.of("field", "value", "field2", "value2"));
 
         CreateTopicRequest createTopicRequest = new CreateTopicRequest(UUID.randomUUID(), "TOPIC");
 
@@ -136,7 +120,8 @@ public class PartialUpdateSearchTest extends BaseAwsSqsIntegrationTest {
         CaseData caseDataResult = elasticSearchClient.findById(caseUUID);
         assertThat(caseDataResult.getAllTopics()).hasSize(1);
         assertThat(caseDataResult.getCurrentTopics()).hasSize(1);
-        assertThat(caseDataResult.getData()).containsExactlyInAnyOrderEntriesOf(Map.of("field", "value", "field2", "value2"));
+        assertThat(caseDataResult.getData()).containsExactlyInAnyOrderEntriesOf(
+            Map.of("field", "value", "field2", "value2"));
 
         //assert that the topic has been updated
         Topic topic = caseDataResult.getCurrentTopics().stream().findFirst().get();
@@ -149,14 +134,8 @@ public class PartialUpdateSearchTest extends BaseAwsSqsIntegrationTest {
     public void onlyUpdateSoumu() throws IOException {
         UUID caseUUID = UUID.randomUUID();
 
-        CreateCaseRequest createCaseRequest = new CreateCaseRequest(
-                caseUUID,
-                LocalDateTime.now(),
-                "MIN",
-                "MIN12345",
-                LocalDate.now(),
-                LocalDate.now(),
-                Map.of("field", "value", "field2", "value2"));
+        CreateCaseRequest createCaseRequest = new CreateCaseRequest(caseUUID, LocalDateTime.now(), "MIN", "MIN12345",
+            LocalDate.now(), LocalDate.now(), Map.of("field", "value", "field2", "value2"));
 
         SomuItemDto somuItemDto = new SomuItemDto(UUID.randomUUID(), UUID.randomUUID(), Map.of("field", "value"));
 
@@ -175,11 +154,13 @@ public class PartialUpdateSearchTest extends BaseAwsSqsIntegrationTest {
         //assert that only somu has changed
         CaseData caseDataResult = elasticSearchClient.findById(caseUUID);
         assertThat(caseDataResult.getAllSomuItems()).hasSize(1);
-        assertThat(caseDataResult.getData()).containsExactlyInAnyOrderEntriesOf(Map.of("field", "value", "field2", "value2"));
+        assertThat(caseDataResult.getData()).containsExactlyInAnyOrderEntriesOf(
+            Map.of("field", "value", "field2", "value2"));
 
         SomuItem somuItem = caseDataResult.getAllSomuItems().stream().findFirst().get();
         assertThat(somuItem.getUuid()).isEqualTo(somuItemDto.getUuid());
         assertThat(somuItem.getData()).isEqualTo(somuItemDto.getData());
 
     }
+
 }

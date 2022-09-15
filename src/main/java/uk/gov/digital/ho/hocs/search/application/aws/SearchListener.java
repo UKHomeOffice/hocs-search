@@ -24,10 +24,10 @@ import uk.gov.digital.ho.hocs.search.domain.exceptions.ApplicationExceptions;
 public class SearchListener {
 
     private final ObjectMapper objectMapper;
+
     private final CaseDataService caseDataService;
 
-    public SearchListener(ObjectMapper objectMapper,
-                          CaseDataService caseDataService) {
+    public SearchListener(ObjectMapper objectMapper, CaseDataService caseDataService) {
         this.objectMapper = objectMapper;
         this.caseDataService = caseDataService;
     }
@@ -38,41 +38,49 @@ public class SearchListener {
 
         DataChangeType type = DataChangeType.fromString(request.getType());
 
-        if(type != null) {
+        if (type != null) {
             switch (type) {
                 case CASE_CREATED:
-                    CreateCaseRequest createCaseRequest = objectMapper.readValue(request.getData(), CreateCaseRequest.class);
+                    CreateCaseRequest createCaseRequest = objectMapper.readValue(request.getData(),
+                        CreateCaseRequest.class);
                     caseDataService.createCase(request.getCaseUUID(), createCaseRequest);
                     break;
                 case CASE_UPDATED:
-                    UpdateCaseRequest updateCaseRequest = objectMapper.readValue(request.getData(), UpdateCaseRequest.class);
+                    UpdateCaseRequest updateCaseRequest = objectMapper.readValue(request.getData(),
+                        UpdateCaseRequest.class);
                     caseDataService.updateCase(request.getCaseUUID(), updateCaseRequest);
                     break;
                 case CASE_DELETED:
-                    DeleteCaseRequest deleteCaseRequest = objectMapper.readValue(request.getData(), DeleteCaseRequest.class);
+                    DeleteCaseRequest deleteCaseRequest = objectMapper.readValue(request.getData(),
+                        DeleteCaseRequest.class);
                     caseDataService.deleteCase(request.getCaseUUID(), deleteCaseRequest);
                     break;
                 case CASE_COMPLETED:
                     caseDataService.completeCase(request.getCaseUUID());
                     break;
                 case CORRESPONDENT_CREATED:
-                    CorrespondentDetailsDto correspondentCreated = objectMapper.readValue(request.getData(), CorrespondentDetailsDto.class);
+                    CorrespondentDetailsDto correspondentCreated = objectMapper.readValue(request.getData(),
+                        CorrespondentDetailsDto.class);
                     caseDataService.createCorrespondent(request.getCaseUUID(), correspondentCreated);
                     break;
                 case CORRESPONDENT_UPDATED:
-                    CorrespondentDetailsDto correspondentUpdated = objectMapper.readValue(request.getData(), CorrespondentDetailsDto.class);
+                    CorrespondentDetailsDto correspondentUpdated = objectMapper.readValue(request.getData(),
+                        CorrespondentDetailsDto.class);
                     caseDataService.updateCorrespondent(request.getCaseUUID(), correspondentUpdated);
                     break;
                 case CORRESPONDENT_DELETED:
-                    CorrespondentDetailsDto correspondentDeleted = objectMapper.readValue(request.getData(), CorrespondentDetailsDto.class);
+                    CorrespondentDetailsDto correspondentDeleted = objectMapper.readValue(request.getData(),
+                        CorrespondentDetailsDto.class);
                     caseDataService.deleteCorrespondent(request.getCaseUUID(), correspondentDeleted);
                     break;
                 case CASE_TOPIC_CREATED:
-                    CreateTopicRequest createTopicRequest = objectMapper.readValue(request.getData(), CreateTopicRequest.class);
+                    CreateTopicRequest createTopicRequest = objectMapper.readValue(request.getData(),
+                        CreateTopicRequest.class);
                     caseDataService.createTopic(request.getCaseUUID(), createTopicRequest);
                     break;
                 case CASE_TOPIC_DELETED:
-                    DeleteTopicRequest deleteTopicRequest = objectMapper.readValue(request.getData(), DeleteTopicRequest.class);
+                    DeleteTopicRequest deleteTopicRequest = objectMapper.readValue(request.getData(),
+                        DeleteTopicRequest.class);
                     caseDataService.deleteTopic(request.getCaseUUID(), deleteTopicRequest);
                     break;
                 case SOMU_ITEM_CREATED:
@@ -88,10 +96,13 @@ public class SearchListener {
                     caseDataService.deleteSomuItem(request.getCaseUUID(), deleteSomuItem);
                     break;
                 default:
-                    throw new ApplicationExceptions.InvalidEventTypeException(String.format("Missing Case statement: %s", request.getType()), LogEvent.UNKNOWN_SEARCH_MESSAGE_TYPE);
+                    throw new ApplicationExceptions.InvalidEventTypeException(
+                        String.format("Missing Case statement: %s", request.getType()),
+                        LogEvent.UNKNOWN_SEARCH_MESSAGE_TYPE);
             }
         } else {
             log.debug("Skipping message, message Type: {}", request.getType(), LogEvent.NULL_SEARCH_MESSAGE_TYPE);
         }
     }
+
 }

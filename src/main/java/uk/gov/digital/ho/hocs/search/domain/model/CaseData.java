@@ -44,7 +44,7 @@ public class CaseData {
     private Set<Topic> currentTopics = new HashSet<>();
 
     private Set<Topic> allTopics = new HashSet<>();
-    
+
     private Set<SomuItem> allSomuItems = new HashSet<>();
 
     private Map data;
@@ -98,8 +98,8 @@ public class CaseData {
     public void updateCorrespondent(CorrespondentDetailsDto correspondentDetailsDto) {
         Correspondent updatedCorrespondent = Correspondent.from(correspondentDetailsDto);
         List<Correspondent> toRemove = new ArrayList<>();
-        for(Correspondent correspondent : currentCorrespondents){
-            if(correspondent.getUuid().equals(updatedCorrespondent.getUuid())){
+        for (Correspondent correspondent : currentCorrespondents) {
+            if (correspondent.getUuid().equals(updatedCorrespondent.getUuid())) {
                 toRemove.add(correspondent);
             }
         }
@@ -107,7 +107,6 @@ public class CaseData {
         this.currentCorrespondents.add(updatedCorrespondent);
         this.allCorrespondents.add(updatedCorrespondent);
     }
-
 
     public void addTopic(Topic topic) {
         this.currentTopics.add(topic);
@@ -121,7 +120,7 @@ public class CaseData {
     public void addSomuItem(SomuItem somuItem) {
         this.allSomuItems.add(somuItem);
     }
-    
+
     public void updateSomuItem(SomuItem somuItem) {
         this.allSomuItems.removeIf(x -> x.getUuid().equals(somuItem.getUuid()));
         this.allSomuItems.add(somuItem);

@@ -20,4 +20,5 @@ public class CreateTopicRequest {
 
     @JsonProperty("topicName")
     private String topicName;
+
 }

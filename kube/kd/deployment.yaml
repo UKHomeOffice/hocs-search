@@ -139,7 +139,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{.KUBE_NAMESPACE}}-elasticsearch
-                  key: endpoint 
+                  key: endpoint
             - name: ELASTICSEARCH_ACCESS_KEY
               valueFrom:
                 secretKeyRef:

@@ -20,4 +20,5 @@ public class Topic {
     public static Topic from(CreateTopicRequest topicRequest) {
         return new Topic(topicRequest.getUuid(), topicRequest.getTopicName());
     }
+
 }

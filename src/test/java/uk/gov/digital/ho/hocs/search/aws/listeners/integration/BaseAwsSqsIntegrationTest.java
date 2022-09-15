@@ -14,6 +14,7 @@ import java.util.List;
 public class BaseAwsSqsIntegrationTest {
 
     private static final String APPROXIMATE_NUMBER_OF_MESSAGES = "ApproximateNumberOfMessages";
+
     private static final String APPROXIMATE_NUMBER_OF_MESSAGES_NOT_VISIBLE = "ApproximateNumberOfMessagesNotVisible";
 
     @Autowired
@@ -45,6 +46,5 @@ public class BaseAwsSqsIntegrationTest {
         var messageCount = queueAttributes.getAttributes().get(attribute);
         return messageCount == null ? 0 : Integer.parseInt(messageCount);
     }
-
 
 }

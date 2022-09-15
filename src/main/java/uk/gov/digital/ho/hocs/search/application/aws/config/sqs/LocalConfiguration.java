@@ -24,11 +24,8 @@ public class LocalConfiguration {
     public AmazonSQSAsync awsSqsClient(@Value("${aws.sqs.search.access-key}") String accessKey,
                                        @Value("${aws.sqs.search.secret-key}") String secretKey,
                                        @Value("${aws.region}") String region) {
-        return AmazonSQSAsyncClientBuilder
-                .standard()
-                .withRegion(region)
-                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey)))
-                .build();
+        return AmazonSQSAsyncClientBuilder.standard().withRegion(region).withCredentials(
+            new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey))).build();
     }
 
     @Primary
@@ -41,4 +38,5 @@ public class LocalConfiguration {
 
         return factory;
     }
+
 }

@@ -22,17 +22,13 @@ public class AwsConfiguration {
 
     @Primary
     @Bean
-    public AmazonSQSAsync awsSqsClient(
-            @Value("${aws.sqs.search.url}") String awsBaseUrl,
-            @Value("${aws.sqs.search.access-key}") String accessKey,
-            @Value("${aws.sqs.search.secret-key}") String secretKey,
-            @Value("${aws.region}") String region){
-        return AmazonSQSAsyncClientBuilder
-                .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(
-                        new BasicAWSCredentials(accessKey, secretKey)))
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(awsBaseUrl, region))
-                .build();
+    public AmazonSQSAsync awsSqsClient(@Value("${aws.sqs.search.url}") String awsBaseUrl,
+                                       @Value("${aws.sqs.search.access-key}") String accessKey,
+                                       @Value("${aws.sqs.search.secret-key}") String secretKey,
+                                       @Value("${aws.region}") String region) {
+        return AmazonSQSAsyncClientBuilder.standard().withCredentials(
+            new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey))).withEndpointConfiguration(
+            new AwsClientBuilder.EndpointConfiguration(awsBaseUrl, region)).build();
     }
 
     @Primary
@@ -46,4 +42,5 @@ public class AwsConfiguration {
 
         return factory;
     }
+
 }
