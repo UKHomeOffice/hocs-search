@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.search.client.elasticsearchclient;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.client.RestHighLevelClient;

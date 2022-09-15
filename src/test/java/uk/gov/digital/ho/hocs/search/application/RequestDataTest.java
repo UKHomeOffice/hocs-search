@@ -17,10 +17,13 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class RequestDataTest {
+
     @Mock
     private HttpServletRequest mockHttpServletRequest;
+
     @Mock
     private HttpServletResponse mockHttpServletResponse;
+
     @Mock
     private Object mockHandler;
 
@@ -66,4 +69,5 @@ public class RequestDataTest {
 
         assertThat(requestData.username()).isEqualTo("some username");
     }
+
 }

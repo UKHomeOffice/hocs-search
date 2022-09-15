@@ -15,9 +15,11 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import uk.gov.digital.ho.hocs.search.domain.exceptions.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
 import static uk.gov.digital.ho.hocs.search.application.LogEvent.CASE_NOT_FOUND;
 import static uk.gov.digital.ho.hocs.search.application.LogEvent.CASE_SAVE_FAILED;
 import static uk.gov.digital.ho.hocs.search.application.LogEvent.CASE_UPDATE_FAILED;
@@ -26,14 +28,14 @@ import static uk.gov.digital.ho.hocs.search.application.LogEvent.CASE_UPDATE_FAI
 public class ElasticSearchClient {
 
     private final ObjectMapper objectMapper;
+
     private final RestHighLevelClient client;
+
     private final String index;
 
     private static final String COMPLETED = "completed";
 
-    public ElasticSearchClient(ObjectMapper objectMapper,
-                               RestHighLevelClient client,
-                               String prefix) {
+    public ElasticSearchClient(ObjectMapper objectMapper, RestHighLevelClient client, String prefix) {
         this.objectMapper = objectMapper;
         this.client = client;
         this.index = String.format("%s-%s", prefix, "case");
@@ -41,13 +43,14 @@ public class ElasticSearchClient {
     }
 
     public CaseData findById(UUID uuid) {
-       GetRequest getRequest = new GetRequest(index, uuid.toString());
+        GetRequest getRequest = new GetRequest(index, uuid.toString());
 
         GetResponse getResponse = null;
         try {
             getResponse = client.get(getRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Unable to find Case: %s. %s", uuid, e), CASE_NOT_FOUND);
+            throw new ApplicationExceptions.EntityNotFoundException(
+                String.format("Unable to find Case: %s. %s", uuid, e), CASE_NOT_FOUND);
         }
         Map<String, Object> resultMap = getResponse.getSource();
 
@@ -63,12 +66,14 @@ public class ElasticSearchClient {
     public void save(CaseData caseData) {
         Map<String, Object> documentMapper = removeRedundantMappings(objectMapper.convertValue(caseData, Map.class));
 
-        IndexRequest indexRequest = new IndexRequest(index).id(caseData.getCaseUUID().toString()).source(documentMapper);
+        IndexRequest indexRequest = new IndexRequest(index).id(caseData.getCaseUUID().toString()).source(
+            documentMapper);
 
         try {
             client.index(indexRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            throw new ApplicationExceptions.ResourceServerException(String.format("Unable to find Case: %s. %s", caseData.getCaseUUID(), e), CASE_SAVE_FAILED);
+            throw new ApplicationExceptions.ResourceServerException(
+                String.format("Unable to find Case: %s. %s", caseData.getCaseUUID(), e), CASE_SAVE_FAILED);
         }
     }
 
@@ -84,7 +89,8 @@ public class ElasticSearchClient {
         try {
             client.update(updateRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            throw new ApplicationExceptions.ResourceServerException(String.format("Unable to update Case: %s. %s", caseData.getCaseUUID(), e), CASE_UPDATE_FAILED);
+            throw new ApplicationExceptions.ResourceServerException(
+                String.format("Unable to update Case: %s. %s", caseData.getCaseUUID(), e), CASE_UPDATE_FAILED);
         }
     }
 
@@ -96,7 +102,8 @@ public class ElasticSearchClient {
         try {
             client.update(updateRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            throw new ApplicationExceptions.ResourceServerException(String.format("Unable to update partial Case: %s. %s", caseData.getCaseUUID(), e), CASE_UPDATE_FAILED);
+            throw new ApplicationExceptions.ResourceServerException(
+                String.format("Unable to update partial Case: %s. %s", caseData.getCaseUUID(), e), CASE_UPDATE_FAILED);
         }
     }
 
@@ -125,7 +132,8 @@ public class ElasticSearchClient {
             Set<CaseData> cases = new HashSet<>();
 
             if (searchHit.length > 0) {
-                Arrays.stream(searchHit).forEach(hit -> cases.add(objectMapper.convertValue(hit.getSourceAsMap(), CaseData.class)));
+                Arrays.stream(searchHit).forEach(
+                    hit -> cases.add(objectMapper.convertValue(hit.getSourceAsMap(), CaseData.class)));
                 return cases.stream().map(CaseData::getCaseUUID).collect(Collectors.toSet());
             } else {
                 return new HashSet<>();
@@ -145,4 +153,5 @@ public class ElasticSearchClient {
 
         return result;
     }
+
 }

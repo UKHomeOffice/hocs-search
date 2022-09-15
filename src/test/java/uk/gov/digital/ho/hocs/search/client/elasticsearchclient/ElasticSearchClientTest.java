@@ -15,6 +15,7 @@ import uk.gov.digital.ho.hocs.search.api.dto.AddressDto;
 import uk.gov.digital.ho.hocs.search.api.dto.CorrespondentDetailsDto;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -38,24 +39,12 @@ public class ElasticSearchClientTest {
     @Captor
     ArgumentCaptor<UpdateRequest> updateRequestArgumentCaptor;
 
-    private CreateCaseRequest createCaseRequest = new CreateCaseRequest(UUID.randomUUID(),
-            LocalDateTime.now(),
-            "MIN",
-            "REF",
-            LocalDate.now().plusDays(1),
-            LocalDate.now().plusDays(2),
-            Map.of("field", "value", "field2", "value2"));
+    private CreateCaseRequest createCaseRequest = new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN",
+        "REF", LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), Map.of("field", "value", "field2", "value2"));
 
     private CorrespondentDetailsDto correspondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(),
-            LocalDateTime.now(),
-            "LAW",
-            "FULLNAME",
-            new AddressDto("postcode", "address1", "address2", "address3", "country"),
-            "0",
-            "e",
-            "REF",
-            "ExtKey");
-
+        LocalDateTime.now(), "LAW", "FULLNAME",
+        new AddressDto("postcode", "address1", "address2", "address3", "country"), "0", "e", "REF", "ExtKey");
 
     @BeforeEach
     public void setup() {
@@ -82,7 +71,8 @@ public class ElasticSearchClientTest {
 
         Map<String, Object> sourceMap = updateRequestArgumentCaptor.getValue().doc().sourceAsMap();
         assertThat(sourceMap).containsOnlyKeys("currentCorrespondents");
-        Map<String, String> correspondentMap = ((List<Map<String, String>>) sourceMap.get("currentCorrespondents")).get(0);
+        Map<String, String> correspondentMap = ((List<Map<String, String>>) sourceMap.get("currentCorrespondents")).get(
+            0);
 
         Map<String, String> expectedMap = new HashMap<>();
         expectedMap.put("uuid", correspondentDetailsDto.getUuid().toString());
@@ -101,4 +91,5 @@ public class ElasticSearchClientTest {
 
         assertThat(correspondentMap).containsExactlyEntriesOf(expectedMap);
     }
+
 }

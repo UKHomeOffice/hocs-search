@@ -19,4 +19,5 @@ public class DeleteTopicRequest {
 
     @JsonProperty("topicName")
     private String topicName;
+
 }

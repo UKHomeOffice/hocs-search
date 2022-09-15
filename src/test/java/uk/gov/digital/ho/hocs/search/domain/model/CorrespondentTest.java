@@ -12,7 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CorrespondentTest {
 
     private AddressDto validAddressDto = new AddressDto("Postcode", "add1", "add2", "add3", "country");
-    private CorrespondentDetailsDto validCorrespondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(), LocalDateTime.now(), "LAW", "FULLNAME", validAddressDto, "0", "e", "REF", "ExtKey");
+
+    private CorrespondentDetailsDto validCorrespondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(),
+        LocalDateTime.now(), "LAW", "FULLNAME", validAddressDto, "0", "e", "REF", "ExtKey");
 
     @Test
     public void shouldCreateCorrespondentConstructor() {

@@ -28,16 +28,29 @@ public class CaseDataServiceTest {
     private CaseData caseData;
 
     private CaseDataService caseDataService;
+
     private UUID caseUUID = UUID.randomUUID();
-    private CreateCaseRequest validCreateCaseRequest = new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), new HashMap());
-    private UpdateCaseRequest validUpdateCaseRequest = new UpdateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", UUID.randomUUID(), UUID.randomUUID(), LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), new HashMap());
-    private CorrespondentDetailsDto validCorrespondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(), LocalDateTime.now(), "LAW", "FULLNAME", null, "0", "e", "REF", "ExtKey");
+
+    private CreateCaseRequest validCreateCaseRequest = new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(),
+        "MIN", "REF", LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), new HashMap());
+
+    private UpdateCaseRequest validUpdateCaseRequest = new UpdateCaseRequest(UUID.randomUUID(), LocalDateTime.now(),
+        "MIN", "REF", UUID.randomUUID(), UUID.randomUUID(), LocalDate.now().plusDays(1), LocalDate.now().plusDays(2),
+        new HashMap());
+
+    private CorrespondentDetailsDto validCorrespondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(),
+        LocalDateTime.now(), "LAW", "FULLNAME", null, "0", "e", "REF", "ExtKey");
+
     private CreateTopicRequest validCreateTopicRequest = new CreateTopicRequest(UUID.randomUUID(), "Test Topic");
+
     private DeleteTopicRequest validDeleteTopicRequest = new DeleteTopicRequest(UUID.randomUUID(), "Test Topic");
-    private SomuItemDto validSomuItemDto = new SomuItemDto(UUID.randomUUID(),UUID.randomUUID(), "{\"Test\": 1}");
+
+    private SomuItemDto validSomuItemDto = new SomuItemDto(UUID.randomUUID(), UUID.randomUUID(), "{\"Test\": 1}");
 
     private final Set<String> correspondentFields = Set.of("allCorrespondents", "currentCorrespondents");
+
     private final Set<String> topicFields = Set.of("allTopics", "currentTopics");
+
     private final Set<String> somuFields = Set.of("allSomuItems");
 
     @BeforeEach
@@ -246,7 +259,6 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(elasticSearchClient, caseData);
     }
 
-
     @Test
     public void shouldCreateNewIfNotFoundDeleteCorrespondent() {
 
@@ -270,7 +282,6 @@ public class CaseDataServiceTest {
         verify(elasticSearchClient).findById(caseUUID);
         verify(elasticSearchClient).update(topicFields, caseData);
 
-
         verify(caseData).addTopic(any(Topic.class));
 
         verifyNoMoreInteractions(elasticSearchClient);
@@ -286,7 +297,6 @@ public class CaseDataServiceTest {
 
         verify(elasticSearchClient).findById(caseUUID);
         verify(elasticSearchClient).update(eq(topicFields), any(CaseData.class));
-
 
         verifyNoMoreInteractions(elasticSearchClient);
     }
@@ -366,4 +376,5 @@ public class CaseDataServiceTest {
 
         verifyNoMoreInteractions(elasticSearchClient);
     }
+
 }
