@@ -5,6 +5,7 @@ import uk.gov.digital.ho.hocs.search.application.LogEvent;
 public interface ApplicationExceptions {
 
     class ResourceException extends RuntimeException {
+
         private final LogEvent event;
 
         ResourceException(String msg, LogEvent event, Object... args) {
@@ -15,9 +16,11 @@ public interface ApplicationExceptions {
         public LogEvent getEvent() {
             return event;
         }
+
     }
 
     class EntityNotFoundException extends RuntimeException {
+
         private final LogEvent event;
 
         public EntityNotFoundException(String msg, LogEvent event, Object... args) {
@@ -28,9 +31,11 @@ public interface ApplicationExceptions {
         public LogEvent getEvent() {
             return event;
         }
+
     }
 
     class InvalidEventTypeException extends RuntimeException {
+
         private final LogEvent event;
 
         public InvalidEventTypeException(String msg, LogEvent event, Object... args) {
@@ -41,6 +46,7 @@ public interface ApplicationExceptions {
         public LogEvent getEvent() {
             return event;
         }
+
     }
 
     class ResourceServerException extends ResourceException {
@@ -50,4 +56,5 @@ public interface ApplicationExceptions {
         }
 
     }
+
 }

@@ -13,10 +13,9 @@ import org.springframework.context.annotation.Profile;
 public class LocalElasticConfiguration {
 
     @Bean(destroyMethod = "close")
-    public RestHighLevelClient client(
-            @Value("${aws.es.host}") String host,
-            @Value("${aws.es.port}") int port) {
-        return new RestHighLevelClient(RestClient.builder(new HttpHost(host, port)).setPathPrefix("/es/eu-west-2/decs"));
+    public RestHighLevelClient client(@Value("${aws.es.host}") String host, @Value("${aws.es.port}") int port) {
+        return new RestHighLevelClient(
+            RestClient.builder(new HttpHost(host, port)).setPathPrefix("/es/eu-west-2/decs"));
     }
 
 }

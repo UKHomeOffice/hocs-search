@@ -42,14 +42,8 @@ public class SearchListenerTest {
     @Test
     public void callsSearchServiceWithValidCreateCaseMessage() throws JsonProcessingException {
         UUID caseUUID = UUID.randomUUID();
-        CreateCaseRequest createCaseRequest = (new CreateCaseRequest(
-                UUID.randomUUID(),
-                LocalDateTime.now(),
-                "CASE",
-                "CASE/12345",
-                now.plusDays(1),
-                now.minusDays(1),
-                new HashMap()));
+        CreateCaseRequest createCaseRequest = (new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "CASE",
+            "CASE/12345", now.plusDays(1), now.minusDays(1), new HashMap()));
         String data = objectMapper.writeValueAsString(createCaseRequest);
         IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data, DataChangeType.CASE_CREATED.value);
         String message = objectMapper.writeValueAsString(request);
@@ -64,16 +58,8 @@ public class SearchListenerTest {
     @Test
     public void callsSearchServiceWithValidUpdateCaseMessage() throws JsonProcessingException {
         UUID caseUUID = UUID.randomUUID();
-        UpdateCaseRequest updateCaseRequest = (new UpdateCaseRequest(
-                UUID.randomUUID(),
-                LocalDateTime.now(),
-                "CASE",
-                "CASE/12345",
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                now.plusDays(1),
-                now.minusDays(1),
-                new HashMap()));
+        UpdateCaseRequest updateCaseRequest = (new UpdateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "CASE",
+            "CASE/12345", UUID.randomUUID(), UUID.randomUUID(), now.plusDays(1), now.minusDays(1), new HashMap()));
         String data = objectMapper.writeValueAsString(updateCaseRequest);
         IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data, DataChangeType.CASE_UPDATED.value);
         String message = objectMapper.writeValueAsString(request);
@@ -88,9 +74,7 @@ public class SearchListenerTest {
     @Test
     public void callsSearchServiceWithValidDeleteCaseMessage() throws JsonProcessingException {
         UUID caseUUID = UUID.randomUUID();
-        DeleteCaseRequest deleteCaseRequest = new DeleteCaseRequest(
-                UUID.randomUUID(),
-                Boolean.TRUE);
+        DeleteCaseRequest deleteCaseRequest = new DeleteCaseRequest(UUID.randomUUID(), Boolean.TRUE);
 
         String data = objectMapper.writeValueAsString(deleteCaseRequest);
         IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data, DataChangeType.CASE_DELETED.value);
@@ -107,7 +91,8 @@ public class SearchListenerTest {
     public void callsSearchServiceWithValidCompleteCaseMessage() throws JsonProcessingException {
         UUID caseUUID = UUID.randomUUID();
 
-        IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, null, DataChangeType.CASE_COMPLETED.value);
+        IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, null,
+            DataChangeType.CASE_COMPLETED.value);
         String message = objectMapper.writeValueAsString(request);
 
         SearchListener searchListener = new SearchListener(objectMapper, caseDataService);
@@ -120,19 +105,12 @@ public class SearchListenerTest {
     @Test
     public void callsSearchServiceWithValidCorrespondentCreatedMessage() throws JsonProcessingException {
         UUID caseUUID = UUID.randomUUID();
-        CorrespondentDetailsDto correspondentDetailsDto = new CorrespondentDetailsDto(
-                UUID.randomUUID(),
-                LocalDateTime.now(),
-                "Type",
-                "FullName",
-                new AddressDto(),
-                "Phone",
-                "Email",
-                "Reference",
-                "ExternalKey");
+        CorrespondentDetailsDto correspondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(),
+            LocalDateTime.now(), "Type", "FullName", new AddressDto(), "Phone", "Email", "Reference", "ExternalKey");
 
         String data = objectMapper.writeValueAsString(correspondentDetailsDto);
-        IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data, DataChangeType.CORRESPONDENT_CREATED.value);
+        IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data,
+            DataChangeType.CORRESPONDENT_CREATED.value);
         String message = objectMapper.writeValueAsString(request);
 
         SearchListener searchListener = new SearchListener(objectMapper, caseDataService);
@@ -145,19 +123,12 @@ public class SearchListenerTest {
     @Test
     public void callsSearchServiceWithValidCorrespondentUpdatedMessage() throws JsonProcessingException {
         UUID caseUUID = UUID.randomUUID();
-        CorrespondentDetailsDto correspondentDetailsDto = new CorrespondentDetailsDto(
-                UUID.randomUUID(),
-                LocalDateTime.now(),
-                "Type",
-                "FullName",
-                new AddressDto(),
-                "Phone",
-                "Email",
-                "Reference",
-                "ExternalKey");
+        CorrespondentDetailsDto correspondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(),
+            LocalDateTime.now(), "Type", "FullName", new AddressDto(), "Phone", "Email", "Reference", "ExternalKey");
 
         String data = objectMapper.writeValueAsString(correspondentDetailsDto);
-        IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data, DataChangeType.CORRESPONDENT_UPDATED.value);
+        IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data,
+            DataChangeType.CORRESPONDENT_UPDATED.value);
         String message = objectMapper.writeValueAsString(request);
 
         SearchListener searchListener = new SearchListener(objectMapper, caseDataService);
@@ -170,19 +141,12 @@ public class SearchListenerTest {
     @Test
     public void callsSearchServiceWithValidCorrespondentDeletedMessage() throws JsonProcessingException {
         UUID caseUUID = UUID.randomUUID();
-        CorrespondentDetailsDto correspondentDetailsDto = new CorrespondentDetailsDto(
-                UUID.randomUUID(),
-                LocalDateTime.now(),
-                "Type",
-                "FullName",
-                new AddressDto(),
-                "Phone",
-                "Email",
-                "Reference",
-                "ExternalKey");
+        CorrespondentDetailsDto correspondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(),
+            LocalDateTime.now(), "Type", "FullName", new AddressDto(), "Phone", "Email", "Reference", "ExternalKey");
 
         String data = objectMapper.writeValueAsString(correspondentDetailsDto);
-        IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data, DataChangeType.CORRESPONDENT_DELETED.value);
+        IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data,
+            DataChangeType.CORRESPONDENT_DELETED.value);
         String message = objectMapper.writeValueAsString(request);
 
         SearchListener searchListener = new SearchListener(objectMapper, caseDataService);
@@ -195,12 +159,11 @@ public class SearchListenerTest {
     @Test
     public void callsSearchServiceWithValidTopicCreatedMessage() throws JsonProcessingException {
         UUID caseUUID = UUID.randomUUID();
-        CreateTopicRequest createTopicRequest = new CreateTopicRequest(
-                UUID.randomUUID(),
-                "TopicName");
+        CreateTopicRequest createTopicRequest = new CreateTopicRequest(UUID.randomUUID(), "TopicName");
 
         String data = objectMapper.writeValueAsString(createTopicRequest);
-        IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data, DataChangeType.CASE_TOPIC_CREATED.value);
+        IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data,
+            DataChangeType.CASE_TOPIC_CREATED.value);
         String message = objectMapper.writeValueAsString(request);
 
         SearchListener searchListener = new SearchListener(objectMapper, caseDataService);
@@ -213,12 +176,11 @@ public class SearchListenerTest {
     @Test
     public void callsSearchServiceWithValidTopicDeletedMessage() throws JsonProcessingException {
         UUID caseUUID = UUID.randomUUID();
-        DeleteTopicRequest deleteTopicRequest = new DeleteTopicRequest(
-                UUID.randomUUID(),
-                "TopicName");
+        DeleteTopicRequest deleteTopicRequest = new DeleteTopicRequest(UUID.randomUUID(), "TopicName");
 
         String data = objectMapper.writeValueAsString(deleteTopicRequest);
-        IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data, DataChangeType.CASE_TOPIC_DELETED.value);
+        IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data,
+            DataChangeType.CASE_TOPIC_DELETED.value);
         String message = objectMapper.writeValueAsString(request);
 
         SearchListener searchListener = new SearchListener(objectMapper, caseDataService);
@@ -231,13 +193,11 @@ public class SearchListenerTest {
     @Test
     public void callsSearchServiceWithValidSomuCreateMessage() throws JsonProcessingException {
         UUID caseUUID = UUID.randomUUID();
-        SomuItemDto somuItemDto = new SomuItemDto(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                "{}");
+        SomuItemDto somuItemDto = new SomuItemDto(UUID.randomUUID(), UUID.randomUUID(), "{}");
 
         String data = objectMapper.writeValueAsString(somuItemDto);
-        IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data, DataChangeType.SOMU_ITEM_CREATED.value);
+        IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data,
+            DataChangeType.SOMU_ITEM_CREATED.value);
         String message = objectMapper.writeValueAsString(request);
 
         SearchListener searchListener = new SearchListener(objectMapper, caseDataService);
@@ -250,13 +210,11 @@ public class SearchListenerTest {
     @Test
     public void callsSearchServiceWithValidSomuUpdatedMessage() throws JsonProcessingException {
         UUID caseUUID = UUID.randomUUID();
-        SomuItemDto somuItemDto = new SomuItemDto(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                "{}");
+        SomuItemDto somuItemDto = new SomuItemDto(UUID.randomUUID(), UUID.randomUUID(), "{}");
 
         String data = objectMapper.writeValueAsString(somuItemDto);
-        IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data, DataChangeType.SOMU_ITEM_UPDATED.value);
+        IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data,
+            DataChangeType.SOMU_ITEM_UPDATED.value);
         String message = objectMapper.writeValueAsString(request);
 
         SearchListener searchListener = new SearchListener(objectMapper, caseDataService);
@@ -269,13 +227,11 @@ public class SearchListenerTest {
     @Test
     public void callsSearchServiceWithValidSomuDeletedMessage() throws JsonProcessingException {
         UUID caseUUID = UUID.randomUUID();
-        SomuItemDto somuItemDto = new SomuItemDto(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                "{}");
+        SomuItemDto somuItemDto = new SomuItemDto(UUID.randomUUID(), UUID.randomUUID(), "{}");
 
         String data = objectMapper.writeValueAsString(somuItemDto);
-        IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data, DataChangeType.SOMU_ITEM_DELETED.value);
+        IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data,
+            DataChangeType.SOMU_ITEM_DELETED.value);
         String message = objectMapper.writeValueAsString(request);
 
         SearchListener searchListener = new SearchListener(objectMapper, caseDataService);
@@ -287,7 +243,7 @@ public class SearchListenerTest {
 
     @Test
     public void callsAuditServiceWithValidTypeButNotInterested() throws JsonProcessingException {
-        String incorrectMessage =  "{\"caseUUID\":\"11111111-1111-1111-1111-111111111111\", \"type\":\"ANY_OTHER_MESSAGE_TYPE\"}";
+        String incorrectMessage = "{\"caseUUID\":\"11111111-1111-1111-1111-111111111111\", \"type\":\"ANY_OTHER_MESSAGE_TYPE\"}";
 
         SearchListener searchListener = new SearchListener(objectMapper, caseDataService);
         searchListener.onDataChange(incorrectMessage);
@@ -297,7 +253,7 @@ public class SearchListenerTest {
 
     @Test
     public void callsAuditServiceWithMissingType() throws JsonProcessingException {
-        String incorrectMessage =  "{\"caseUUID\":\"11111111-1111-1111-1111-111111111111\"}";
+        String incorrectMessage = "{\"caseUUID\":\"11111111-1111-1111-1111-111111111111\"}";
 
         SearchListener searchListener = new SearchListener(objectMapper, caseDataService);
         searchListener.onDataChange(incorrectMessage);
@@ -320,7 +276,6 @@ public class SearchListenerTest {
         assertThrows(IllegalArgumentException.class, () -> searchListener.onDataChange(null));
     }
 
-
     @Test
     public void callsAuditServiceWithInvalidPayload() {
         String incorrectMessage = "{test:1}";
@@ -328,4 +283,5 @@ public class SearchListenerTest {
 
         assertThrows(JsonParseException.class, () -> searchListener.onDataChange(incorrectMessage));
     }
+
 }
