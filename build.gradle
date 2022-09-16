@@ -39,7 +39,7 @@ dependencies {
 
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.springframework:spring-context-indexer:5.3.22'
+    annotationProcessor 'org.springframework:spring-context-indexer:5.3.23'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.mockito', module: 'mockito-core'
