@@ -1,0 +1,19 @@
+---
+hocs-backend-service:
+  nameOverride: hocs-search
+  minReplicas: 1
+  maxReplicas: 1
+
+  app:
+    image:
+      repository: quay.io/ukhomeofficedigital/hocs-search
+    javaOpts: >-
+      -XX:InitialRAMPercentage=50 -XX:MaxRAMPercentage=70
+      -Djava.security.egd=file:/dev/./urandom
+      -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks
+      -Dhttps.proxyHost=hocs-outbound-proxy.{{ .Values.namespace }}.svc.cluster.local
+      -Dhttps.proxyPort=31290
+      -Dhttp.nonProxyHosts=*.{{ .Values.namespace }}.svc.cluster.local
+    springProfiles: 'aws'
+    elasticPrefix: '{{ .Values.namespace }}-latest'
+    searchQueueName: '{{ .Values.namespace }}-search-sqs'
