@@ -1,0 +1,7 @@
+apiVersion: v2
+name: hocs-search
+version: 1.0.0
+dependencies:
+  - name: hocs-backend-service
+    version: 1.2.0
+    repository: https://ukhomeoffice.github.io/hocs-helm-charts
