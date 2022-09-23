@@ -11,9 +11,9 @@ hocs-backend-service:
       -XX:InitialRAMPercentage=50 -XX:MaxRAMPercentage=70
       -Djava.security.egd=file:/dev/./urandom
       -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks
-      -Dhttps.proxyHost=hocs-outbound-proxy.{{ .Values.namespace }}.svc.cluster.local
+      -Dhttps.proxyHost=hocs-outbound-proxy.{{ .Release.Namespace }}.svc.cluster.local
       -Dhttps.proxyPort=31290
-      -Dhttp.nonProxyHosts=*.{{ .Values.namespace }}.svc.cluster.local
+      -Dhttp.nonProxyHosts=*.{{ .Release.Namespace }}.svc.cluster.local
     springProfiles: 'aws'
-    elasticPrefix: '{{ .Values.namespace }}-latest'
-    searchQueueName: '{{ .Values.namespace }}-search-sqs'
+    elasticPrefix: '{{ .Release.Namespace }}-latest'
+    searchQueueName: '{{ .Release.Namespace }}-search-sqs'
