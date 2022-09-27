@@ -59,6 +59,20 @@ steps:
       - git checkout ${VERSION}
       - git submodule update --init --recursive
 
+  - name: dev
+    image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.0.0
+    environment:
+      KUBE_NAMESPACE: ${DRONE_DEPLOY_TO}
+      KUBE_TOKEN:
+        from_secret: cs_notprod
+    commands:
+      - ./ci/helm/helm-deploy.sh --values ./helm/values-notprod.yaml --values ./helm/values-dev.yaml
+    depends_on:
+      - checkout
+    when:
+      target:
+        - "*-dev"
+
   - name: cs-qa
     image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.0.0
     environment:
@@ -72,6 +86,7 @@ steps:
     when:
       target:
         - cs-qa
+        - release
 
   - name: wcs-qa
     image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.0.0
