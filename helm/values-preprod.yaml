@@ -1,8 +1,6 @@
 ---
 hocs-generic-service:
 
-  isProd: false
-
   autoscale:
     enabled: false
 
