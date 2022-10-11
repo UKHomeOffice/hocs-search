@@ -14,7 +14,11 @@ public class ElasticSearchClientConfiguration {
     @Bean
     public ElasticSearchClient elasticSearchSingularClient(ObjectMapper objectMapper,
                                                            RestHighLevelClient client,
+                                                           @Value("${aws.es.mode}") ElasticSearchMode mode,
                                                            @Value("${aws.es.index-prefix}") String prefix) {
+        if (mode.equals(ElasticSearchMode.MULTIPLE)) {
+            return new ElasticSearchMultipleClient(objectMapper, client, prefix);
+        }
         return new ElasticSearchSingularClient(objectMapper, client, prefix);
     }
 
