@@ -5,7 +5,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.digital.ho.hocs.search.api.dto.*;
+import uk.gov.digital.ho.hocs.search.api.dto.CorrespondentDetailsDto;
+import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.CreateTopicRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.DeleteCaseRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.DeleteTopicRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.SearchRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.SomuItemDto;
+import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
 import uk.gov.digital.ho.hocs.search.client.elasticsearchclient.ElasticSearchClient;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.Topic;
@@ -16,7 +23,12 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class CaseDataServiceTest {
