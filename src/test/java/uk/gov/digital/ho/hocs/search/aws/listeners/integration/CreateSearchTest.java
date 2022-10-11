@@ -9,7 +9,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
+import org.springframework.test.context.ActiveProfiles;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.search.application.queue.DataChangeType;
 import uk.gov.digital.ho.hocs.search.application.queue.IndexDataChangeRequest;
@@ -26,7 +26,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-@Profile("localstack")
+@ActiveProfiles("localstack")
 public class CreateSearchTest extends BaseAwsSqsIntegrationTest {
 
     @Autowired

@@ -26,5 +26,3 @@ management:
 aws:
   sqs:
     enabled: true
-  es:
-    version: 7
