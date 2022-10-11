@@ -20,19 +20,24 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ElasticSearchClientTest {
+public class BaseElasticSearchClientTest {
+
+    private ElasticSearchClient elasticSearchClient;
 
     @Mock
     RestHighLevelClient restHighLevelClient;
-
-    private ElasticSearchClient elasticSearchClient;
 
     private UUID caseUUID = UUID.randomUUID();
 
@@ -51,7 +56,7 @@ public class ElasticSearchClientTest {
         ObjectMapper m = new ObjectMapper();
         m.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
         m.registerModule(new JavaTimeModule());
-        elasticSearchClient = new ElasticSearchClient(m, restHighLevelClient, "test");
+        elasticSearchClient = new ElasticSearchSingularClient(m, restHighLevelClient, "test");
     }
 
     @Test
@@ -66,6 +71,7 @@ public class ElasticSearchClientTest {
         when(restHighLevelClient.update(updateRequestArgumentCaptor.capture(), any())).thenReturn(null);
 
         caseData.addCorrespondent(correspondentDetailsDto);
+
         elasticSearchClient.update(Set.of("currentCorrespondents"), caseData);
         verify(restHighLevelClient).update(updateRequestArgumentCaptor.capture(), any());
 
