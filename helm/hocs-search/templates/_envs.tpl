@@ -7,6 +7,8 @@
   value: '{{ tpl .Values.app.env.springProfiles . }}'
 - name: ELASTICSEARCH_INDEX_PREFIX
   value: '{{ tpl .Values.app.env.elasticPrefix . }}'
+- name: ELASTICSEARCH_MODE
+  value: '{{ tpl .Values.app.env.elasticMode . }}'
 - name: SEARCH_SQS_QUEUE_NAME
   value: '{{ tpl .Values.app.env.searchQueueName . }}'
 - name: ELASTICSEARCH_HOST
