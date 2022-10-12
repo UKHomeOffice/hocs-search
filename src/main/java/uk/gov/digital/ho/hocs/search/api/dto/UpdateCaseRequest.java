@@ -42,6 +42,6 @@ public class UpdateCaseRequest {
     private LocalDate dateReceived;
 
     @JsonProperty("data")
-    private Map data;
+    private Map<String, Object> data;
 
 }

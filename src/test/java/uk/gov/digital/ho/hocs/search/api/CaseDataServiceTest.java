@@ -1,5 +1,7 @@
 package uk.gov.digital.ho.hocs.search.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,380 +15,217 @@ import uk.gov.digital.ho.hocs.search.api.dto.DeleteTopicRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.SomuItemDto;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
+import uk.gov.digital.ho.hocs.search.api.helpers.ObjectMapperConverterHelper;
 import uk.gov.digital.ho.hocs.search.client.elasticsearchclient.ElasticSearchClient;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.search.domain.model.Topic;
+import uk.gov.digital.ho.hocs.search.domain.repositories.CaseTypeMappingRepository;
+import uk.gov.digital.ho.hocs.search.helpers.AllMapKeyMatcher;
+import uk.gov.digital.ho.hocs.search.helpers.CaseTypeUuidHelper;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.Set;
+import java.util.Map;
 import java.util.UUID;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class CaseDataServiceTest {
+class CaseDataServiceTest {
+
+    private final CreateCaseRequest validCreateCaseRequest = new CreateCaseRequest(
+        CaseTypeUuidHelper.generateCaseTypeUuid("a1"), LocalDateTime.now(), "MIN", "REF", LocalDate.now().plusDays(1),
+        LocalDate.now().plusDays(2), new HashMap<>());
+
+    private final UpdateCaseRequest validUpdateCaseRequest = new UpdateCaseRequest(
+        CaseTypeUuidHelper.generateCaseTypeUuid("a1"), LocalDateTime.now(), "MIN", "REF", UUID.randomUUID(),
+        UUID.randomUUID(), LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), new HashMap<>());
+
+    private final CorrespondentDetailsDto validCorrespondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(),
+        LocalDateTime.now(), "LAW", "FULLNAME", null, "0", "e", "REF", "ExtKey");
+
+    private final CreateTopicRequest validCreateTopicRequest = new CreateTopicRequest(UUID.randomUUID(), "Test Topic");
+
+    private final DeleteTopicRequest validDeleteTopicRequest = new DeleteTopicRequest(UUID.randomUUID(), "Test Topic");
+
+    private final SomuItemDto validSomuItemDto = new SomuItemDto(UUID.randomUUID(), UUID.randomUUID(), "{\"Test\": 1}");
+
+    private ObjectMapper objectMapper;
 
     @Mock
     private ElasticSearchClient elasticSearchClient;
 
     @Mock
-    private CaseData caseData;
+    private CaseTypeMappingRepository caseTypeMappingRepository;
 
     private CaseDataService caseDataService;
 
-    private UUID caseUUID = UUID.randomUUID();
-
-    private CreateCaseRequest validCreateCaseRequest = new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(),
-        "MIN", "REF", LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), new HashMap());
-
-    private UpdateCaseRequest validUpdateCaseRequest = new UpdateCaseRequest(UUID.randomUUID(), LocalDateTime.now(),
-        "MIN", "REF", UUID.randomUUID(), UUID.randomUUID(), LocalDate.now().plusDays(1), LocalDate.now().plusDays(2),
-        new HashMap());
-
-    private CorrespondentDetailsDto validCorrespondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(),
-        LocalDateTime.now(), "LAW", "FULLNAME", null, "0", "e", "REF", "ExtKey");
-
-    private CreateTopicRequest validCreateTopicRequest = new CreateTopicRequest(UUID.randomUUID(), "Test Topic");
-
-    private DeleteTopicRequest validDeleteTopicRequest = new DeleteTopicRequest(UUID.randomUUID(), "Test Topic");
-
-    private SomuItemDto validSomuItemDto = new SomuItemDto(UUID.randomUUID(), UUID.randomUUID(), "{\"Test\": 1}");
-
-    private final Set<String> correspondentFields = Set.of("allCorrespondents", "currentCorrespondents");
-
-    private final Set<String> topicFields = Set.of("allTopics", "currentTopics");
-
-    private final Set<String> somuFields = Set.of("allSomuItems");
-
     @BeforeEach
     public void setup() {
-        caseDataService = new CaseDataService(elasticSearchClient, 10);
+        objectMapper = new ObjectMapper().setDateFormat(new SimpleDateFormat("yyyy-MM-dd")).registerModule(
+            new JavaTimeModule());
+
+        caseDataService = new CaseDataService(objectMapper, elasticSearchClient, caseTypeMappingRepository);
     }
 
     @Test
-    public void createCase_newCaseData() {
+    void createCase() {
+        CaseData caseData = new CaseData(validCreateCaseRequest);
 
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
-        when(caseData.isNewCaseData()).thenReturn(true);
+        caseDataService.createCase(validCreateCaseRequest.getUuid(), validCreateCaseRequest);
 
-        caseDataService.createCase(caseUUID, validCreateCaseRequest);
-
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).save(caseData);
-
-        verify(caseData).create(validCreateCaseRequest);
-        verify(caseData).isNewCaseData();
-
-        verifyNoMoreInteractions(elasticSearchClient, caseData);
+        verify(elasticSearchClient).update(validCreateCaseRequest.getUuid(), validCreateCaseRequest.getType(),
+            ObjectMapperConverterHelper.convertObjectToMap(objectMapper, caseData));
     }
 
     @Test
-    public void createCase_oldCaseData() {
+    void updateCase() {
+        CaseData caseData = new CaseData(validUpdateCaseRequest);
 
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
-        when(caseData.isNewCaseData()).thenReturn(false);
+        caseDataService.updateCase(validUpdateCaseRequest.getUuid(), validUpdateCaseRequest);
 
-        caseDataService.createCase(caseUUID, validCreateCaseRequest);
-
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(caseData);
-
-        verify(caseData).create(validCreateCaseRequest);
-        verify(caseData).isNewCaseData();
-
-        verifyNoMoreInteractions(elasticSearchClient, caseData);
+        verify(elasticSearchClient).update(validUpdateCaseRequest.getUuid(), validUpdateCaseRequest.getType(),
+            ObjectMapperConverterHelper.convertObjectToMap(objectMapper, caseData));
     }
 
     @Test
-    public void updateCase_newCaseData() {
+    void deleteCase() {
+        DeleteCaseRequest deleteCaseRequest = new DeleteCaseRequest(CaseTypeUuidHelper.generateCaseTypeUuid("a1"),
+            true);
+        when(caseTypeMappingRepository.getCaseTypeByShortCode(deleteCaseRequest.getCaseUUID())).thenReturn("MIN");
 
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
-        when(caseData.isNewCaseData()).thenReturn(true);
+        caseDataService.deleteCase(deleteCaseRequest.getCaseUUID(), deleteCaseRequest);
 
-        caseDataService.updateCase(caseUUID, validUpdateCaseRequest);
-
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).save(caseData);
-
-        verify(caseData).update(validUpdateCaseRequest);
-        verify(caseData).isNewCaseData();
-
-        verifyNoMoreInteractions(elasticSearchClient, caseData);
+        verify(elasticSearchClient).update(deleteCaseRequest.getCaseUUID(), "MIN",
+            ObjectMapperConverterHelper.convertObjectToMap(objectMapper, Map.of("deleted", true)));
     }
 
     @Test
-    public void updateCase_oldCaseData() {
+    void completeCase() {
+        UUID caseUuid = CaseTypeUuidHelper.generateCaseTypeUuid("a1");
+        when(caseTypeMappingRepository.getCaseTypeByShortCode(caseUuid)).thenReturn("MIN");
 
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
-        when(caseData.isNewCaseData()).thenReturn(false);
+        caseDataService.completeCase(caseUuid);
 
-        caseDataService.updateCase(caseUUID, validUpdateCaseRequest);
-
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(caseData);
-
-        verify(caseData).update(validUpdateCaseRequest);
-        verify(caseData).isNewCaseData();
-
-        verifyNoMoreInteractions(elasticSearchClient, caseData);
+        verify(elasticSearchClient).update(caseUuid, "MIN",
+            ObjectMapperConverterHelper.convertObjectToMap(objectMapper, Map.of("completed", true)));
     }
 
     @Test
-    public void shouldCreateNewIfNotFoundSaveCase() {
+    void shouldCallCollaboratorsCreateCorrespondent() {
+        UUID caseUUID = CaseTypeUuidHelper.generateCaseTypeUuid("a1");
 
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
-
-        caseDataService.updateCase(caseUUID, validUpdateCaseRequest);
-
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).save(any(CaseData.class));
-
-        verifyNoMoreInteractions(elasticSearchClient, caseData);
-    }
-
-    @Test
-    public void shouldCallCollaboratorsDeleteCase() {
-
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
-        DeleteCaseRequest deleteCaseRequest = new DeleteCaseRequest(caseUUID, true);
-
-        caseDataService.deleteCase(caseUUID, deleteCaseRequest);
-
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(caseData);
-
-        verify(caseData).delete(true);
-
-        verifyNoMoreInteractions(elasticSearchClient);
-        verifyNoMoreInteractions(caseData);
-    }
-
-    @Test
-    public void shouldCallCollaboratorsCompleteCase() {
-
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
-
-        caseDataService.completeCase(caseUUID);
-
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(caseData);
-
-        verify(caseData).complete();
-
-        verifyNoMoreInteractions(elasticSearchClient);
-        verifyNoMoreInteractions(caseData);
-    }
-
-    @Test
-    public void shouldCreateNewIfNotFoundDeleteCase() {
-
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
-        DeleteCaseRequest deleteCaseRequest = new DeleteCaseRequest(caseUUID, true);
-
-        caseDataService.deleteCase(caseUUID, deleteCaseRequest);
-
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(any(CaseData.class));
-
-        verifyNoMoreInteractions(elasticSearchClient);
-    }
-
-    @Test
-    public void shouldCreateNewIfNotFoundCompleteCase() {
-
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
-
-        caseDataService.completeCase(caseUUID);
-
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(any(CaseData.class));
-
-        verifyNoMoreInteractions(elasticSearchClient);
-    }
-
-    @Test
-    public void shouldCallCollaboratorsCreateCorrespondent() {
-
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
+        when(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID)).thenReturn("MIN");
 
         caseDataService.createCorrespondent(caseUUID, validCorrespondentDetailsDto);
 
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(correspondentFields, caseData);
-
-        verify(caseData).addCorrespondent(validCorrespondentDetailsDto);
-
-        verifyNoMoreInteractions(elasticSearchClient);
-        verifyNoMoreInteractions(caseData);
+        verify(elasticSearchClient).update(eq(caseUUID), eq("MIN"),
+            argThat(new AllMapKeyMatcher("allCorrespondents", "currentCorrespondents")));
     }
 
     @Test
-    public void shouldCreateNewIfNotFoundCreateCorrespondent() {
+    void shouldCallCollaboratorsDeleteCorrespondent() {
+        UUID caseUUID = CaseTypeUuidHelper.generateCaseTypeUuid("a1");
 
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
-
-        caseDataService.createCorrespondent(caseUUID, validCorrespondentDetailsDto);
-
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(eq(correspondentFields), any(CaseData.class));
-
-        verifyNoMoreInteractions(elasticSearchClient);
-    }
-
-    @Test
-    public void shouldCallCollaboratorsDeleteCorrespondent() {
-
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
+        when(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID)).thenReturn("MIN");
 
         caseDataService.deleteCorrespondent(caseUUID, validCorrespondentDetailsDto);
 
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(correspondentFields, caseData);
-
-        verify(caseData).removeCorrespondent(validCorrespondentDetailsDto.getUuid());
-
-        verifyNoMoreInteractions(elasticSearchClient);
-        verifyNoMoreInteractions(caseData);
+        verify(elasticSearchClient).update(eq(caseUUID), eq("MIN"),
+            argThat(new AllMapKeyMatcher("allCorrespondents", "currentCorrespondents")));
     }
 
     @Test
-    public void shouldCallUpdateCorrespondent() {
+    void shouldCallUpdateCorrespondent() {
+        UUID caseUUID = CaseTypeUuidHelper.generateCaseTypeUuid("a1");
 
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
+        when(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID)).thenReturn("MIN");
 
         caseDataService.updateCorrespondent(caseUUID, validCorrespondentDetailsDto);
 
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(correspondentFields, caseData);
-
-        verify(caseData).updateCorrespondent(validCorrespondentDetailsDto);
-
-        verifyNoMoreInteractions(elasticSearchClient, caseData);
+        verify(elasticSearchClient).update(eq(caseUUID), eq("MIN"),
+            argThat(new AllMapKeyMatcher("allCorrespondents", "currentCorrespondents")));
     }
 
     @Test
-    public void shouldCreateNewIfNotFoundDeleteCorrespondent() {
+    void shouldCallCollaboratorsCreateTopic() {
+        UUID caseUUID = CaseTypeUuidHelper.generateCaseTypeUuid("a1");
 
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
-
-        caseDataService.deleteCorrespondent(caseUUID, validCorrespondentDetailsDto);
-
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(eq(correspondentFields), any(CaseData.class));
-
-        verifyNoMoreInteractions(elasticSearchClient);
-    }
-
-    @Test
-    public void shouldCallCollaboratorsCreateTopic() {
-
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
+        when(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID)).thenReturn("MIN");
+        when(elasticSearchClient.findById(caseUUID, "MIN")).thenReturn(Map.of());
 
         caseDataService.createTopic(caseUUID, validCreateTopicRequest);
 
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(topicFields, caseData);
-
-        verify(caseData).addTopic(any(Topic.class));
-
-        verifyNoMoreInteractions(elasticSearchClient);
-        verifyNoMoreInteractions(caseData);
+        verify(elasticSearchClient).findById(caseUUID, "MIN");
+        verify(elasticSearchClient).update(eq(caseUUID), eq("MIN"),
+            argThat(new AllMapKeyMatcher("allTopics", "currentTopics")));
     }
 
     @Test
-    public void shouldCreateNewIfNotFoundCreateTopic() {
+    void shouldCallCollaboratorsDeleteTopic() {
+        UUID caseUUID = CaseTypeUuidHelper.generateCaseTypeUuid("a1");
 
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
-
-        caseDataService.createTopic(caseUUID, validCreateTopicRequest);
-
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(eq(topicFields), any(CaseData.class));
-
-        verifyNoMoreInteractions(elasticSearchClient);
-    }
-
-    @Test
-    public void shouldCallCollaboratorsDeleteTopic() {
-
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(caseData);
+        when(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID)).thenReturn("MIN");
+        when(elasticSearchClient.findById(caseUUID, "MIN")).thenReturn(Map.of());
 
         caseDataService.deleteTopic(caseUUID, validDeleteTopicRequest);
 
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(topicFields, caseData);
-
-        verify(caseData).removeTopic(validDeleteTopicRequest.getUuid());
-
-        verifyNoMoreInteractions(elasticSearchClient);
-        verifyNoMoreInteractions(caseData);
+        verify(elasticSearchClient).findById(caseUUID, "MIN");
+        verify(elasticSearchClient).update(eq(caseUUID), eq("MIN"),
+            argThat(new AllMapKeyMatcher("allTopics", "currentTopics")));
     }
 
     @Test
-    public void shouldCreateNewIfNotFoundDeleteTopic() {
+    void shouldCreateSomuItemIfNotExists() {
+        UUID caseUUID = CaseTypeUuidHelper.generateCaseTypeUuid("a1");
 
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
-
-        caseDataService.deleteTopic(caseUUID, validDeleteTopicRequest);
-
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(eq(topicFields), any(CaseData.class));
-
-        verifyNoMoreInteractions(elasticSearchClient);
-    }
-
-    @Test
-    public void shouldCreateSomuItemIfNotExists() {
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
+        when(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID)).thenReturn("MIN");
+        when(elasticSearchClient.findById(caseUUID, "MIN")).thenReturn(Map.of());
 
         caseDataService.createSomuItem(caseUUID, validSomuItemDto);
 
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(eq(somuFields), any(CaseData.class));
-
-        verifyNoMoreInteractions(elasticSearchClient);
+        verify(elasticSearchClient).findById(caseUUID, "MIN");
+        verify(elasticSearchClient).update(eq(caseUUID), eq("MIN"), argThat(new AllMapKeyMatcher("allSomuItems")));
     }
 
     @Test
-    public void shouldDeleteSomuItemIfExists() {
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
+    void shouldDeleteSomuItemIfExists() {
+        UUID caseUUID = CaseTypeUuidHelper.generateCaseTypeUuid("a1");
+
+        when(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID)).thenReturn("MIN");
+        when(elasticSearchClient.findById(caseUUID, "MIN")).thenReturn(Map.of());
 
         caseDataService.deleteSomuItem(caseUUID, validSomuItemDto);
 
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(eq(somuFields), any(CaseData.class));
-
-        verifyNoMoreInteractions(elasticSearchClient);
+        verify(elasticSearchClient).findById(caseUUID, "MIN");
+        verify(elasticSearchClient).update(eq(caseUUID), eq("MIN"), argThat(new AllMapKeyMatcher("allSomuItems")));
     }
 
     @Test
-    public void shouldUpdateSomuItemIfExists() {
-        when(elasticSearchClient.findById(caseUUID)).thenReturn(new CaseData(caseUUID));
+    void shouldUpdateSomuItemIfExists() {
+        UUID caseUUID = CaseTypeUuidHelper.generateCaseTypeUuid("a1");
+
+        when(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID)).thenReturn("MIN");
+        when(elasticSearchClient.findById(caseUUID, "MIN")).thenReturn(Map.of());
 
         caseDataService.updateSomuItem(caseUUID, validSomuItemDto);
 
-        verify(elasticSearchClient).findById(caseUUID);
-        verify(elasticSearchClient).update(eq(somuFields), any(CaseData.class));
-
-        verifyNoMoreInteractions(elasticSearchClient);
+        verify(elasticSearchClient).findById(caseUUID, "MIN");
+        verify(elasticSearchClient).update(eq(caseUUID), eq("MIN"), argThat(new AllMapKeyMatcher("allSomuItems")));
     }
 
     @Test
-    public void shouldNotSearchIfNoParams() {
-
+    void shouldNotSearchIfNoParams() {
         SearchRequest searchRequest = new SearchRequest();
         caseDataService.search(searchRequest);
 
-        verify(elasticSearchClient, times(0)).update(any(CaseData.class));
-
-        verifyNoMoreInteractions(elasticSearchClient);
+        verify(elasticSearchClient, times(0)).search(any());
     }
 
 }

@@ -1,10 +1,8 @@
 package uk.gov.digital.ho.hocs.search.client.elasticsearchclient;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +15,6 @@ import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -25,53 +22,50 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ElasticSearchMultipleClientTest {
+class ElasticSearchMultipleClientTest {
 
     @Mock
-    RestHighLevelClient restHighLevelClient;
-
-    @Mock
-    GetResponse getResponse;
+    private RestHighLevelClient restHighLevelClient;
 
     @Captor
-    ArgumentCaptor<GetRequest> getRequestArgumentCaptor;
+    private ArgumentCaptor<GetRequest> getRequestArgumentCaptor;
 
     @Captor
-    ArgumentCaptor<IndexRequest> indexRequestArgumentCaptor;
+    private ArgumentCaptor<UpdateRequest> indexRequestArgumentCaptor;
 
     private ElasticSearchClient elasticSearchClient;
 
     @BeforeEach
     public void setup() {
-        ObjectMapper m = new ObjectMapper();
-        m.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
-        m.registerModule(new JavaTimeModule());
-        elasticSearchClient = new ElasticSearchMultipleClient(m, restHighLevelClient, "test");
+        elasticSearchClient = new ElasticSearchMultipleClient(restHighLevelClient, "test", 10);
     }
 
     @Test
-    public void shouldWriteFromCorrectAlias() throws IOException {
-        CaseData caseData = new CaseData(UUID.randomUUID());
-        caseData.create(new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN",
-            "REF", LocalDate.now(), LocalDate.now(), Map.of()));
+    void shouldWriteFromCorrectAlias() throws IOException {
+        CaseData caseData = new CaseData(
+            new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", LocalDate.now(),
+                LocalDate.now(), Map.of()));
 
-        when(restHighLevelClient.index(indexRequestArgumentCaptor.capture(), any())).thenReturn(null);
+        when(restHighLevelClient.update(indexRequestArgumentCaptor.capture(), any())).thenReturn(null);
 
-        elasticSearchClient.save(caseData);
+        elasticSearchClient.update(caseData.getCaseUUID(), caseData.getType(), Map.of());
 
         assertThat(indexRequestArgumentCaptor.getValue().index()).isEqualTo("test-min");
     }
 
     @Test
-    public void shouldReadFromCorrectAlias() throws IOException {
+    void shouldReadFromCorrectAlias() throws IOException {
+        GetResponse getResponse = mock(GetResponse.class);
+
         when(restHighLevelClient.get(getRequestArgumentCaptor.capture(), any())).thenReturn(getResponse);
 
-        elasticSearchClient.findById(UUID.randomUUID());
+        elasticSearchClient.findById(UUID.randomUUID(), "MIN");
 
-        assertThat(getRequestArgumentCaptor.getValue().index()).isEqualTo("test-read");
+        assertThat(getRequestArgumentCaptor.getValue().index()).isEqualTo("test-min-read");
     }
 
 }

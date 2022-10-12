@@ -3,7 +3,9 @@ package uk.gov.digital.ho.hocs.search.application;
 public enum LogEvent {
     CASE_NOT_FOUND,
     CASE_SAVE_FAILED,
+    CASE_TYPE_MAPPING_NOT_FOUND,
     CASE_UPDATE_FAILED,
+    CONFIG_PARSE_FAILURE,
     NULL_SEARCH_MESSAGE_TYPE,
     SEARCH_CASE_CREATED,
     SEARCH_CASE_COMPLETED,
