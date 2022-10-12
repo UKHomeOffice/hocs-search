@@ -15,8 +15,6 @@ public class BaseAwsSqsIntegrationTest {
 
     private static final String APPROXIMATE_NUMBER_OF_MESSAGES = "ApproximateNumberOfMessages";
 
-    private static final String APPROXIMATE_NUMBER_OF_MESSAGES_NOT_VISIBLE = "ApproximateNumberOfMessagesNotVisible";
-
     @Autowired
     public AmazonSQSAsync amazonSQSAsync;
 
@@ -35,10 +33,6 @@ public class BaseAwsSqsIntegrationTest {
 
     public int getNumberOfMessagesOnQueue() {
         return getValueFromQueue(searchQueue, APPROXIMATE_NUMBER_OF_MESSAGES);
-    }
-
-    public int getNumberOfMessagesNotVisibleOnQueue() {
-        return getValueFromQueue(searchQueue, APPROXIMATE_NUMBER_OF_MESSAGES_NOT_VISIBLE);
     }
 
     private int getValueFromQueue(String queue, String attribute) {

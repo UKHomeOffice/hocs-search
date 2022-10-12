@@ -2,7 +2,11 @@ package uk.gov.digital.ho.hocs.search.api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.search.join.ScoreMode;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.Operator;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.springframework.util.StringUtils;
 import uk.gov.digital.ho.hocs.search.api.dto.DateRangeDto;
 
@@ -27,17 +31,6 @@ class HocsQueryBuilder {
 
     HocsQueryBuilder(BoolQueryBuilder mqb) {
         this.mqb = mqb;
-    }
-
-    HocsQueryBuilder deleted(Boolean deleted) {
-        if (deleted != null) {
-            log.debug("deleted {} , adding to query", deleted);
-            QueryBuilder typeQb = QueryBuilders.matchQuery("deleted", deleted);
-            mqb.must(typeQb);
-        } else {
-            log.debug("deleted was null");
-        }
-        return this;
     }
 
     HocsQueryBuilder reference(String reference, List<String> caseTypes) {
@@ -294,7 +287,7 @@ class HocsQueryBuilder {
     }
 
     BoolQueryBuilder build() {
-        QueryBuilder deletedQb = QueryBuilders.matchQuery("deleted", false).operator(Operator.AND);
+        QueryBuilder deletedQb = QueryBuilders.boolQuery().mustNot(QueryBuilders.matchQuery("deleted", true).operator(Operator.AND));
         this.mqb.must(deletedQb);
         return this.mqb;
     }
