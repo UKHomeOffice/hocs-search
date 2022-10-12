@@ -1,18 +1,32 @@
 package uk.gov.digital.ho.hocs.search.api;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.search.api.dto.*;
+import uk.gov.digital.ho.hocs.search.api.dto.CorrespondentDetailsDto;
+import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.CreateTopicRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.DeleteCaseRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.DeleteTopicRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.SearchRequest;
+import uk.gov.digital.ho.hocs.search.api.dto.SomuItemDto;
+import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
+import uk.gov.digital.ho.hocs.search.api.helpers.ObjectMapperConverterHelper;
 import uk.gov.digital.ho.hocs.search.client.elasticsearchclient.ElasticSearchClient;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.search.domain.model.Correspondent;
+import uk.gov.digital.ho.hocs.search.domain.model.CorrespondentCaseData;
+import uk.gov.digital.ho.hocs.search.domain.model.SomuCaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.search.domain.model.Topic;
+import uk.gov.digital.ho.hocs.search.domain.model.TopicCaseData;
+import uk.gov.digital.ho.hocs.search.domain.repositories.CaseTypeMappingRepository;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
@@ -36,171 +50,229 @@ import static uk.gov.digital.ho.hocs.search.application.LogEvent.SOMU_ITEM_UPDAT
 @Slf4j
 public class CaseDataService {
 
+    private final ObjectMapper objectMapper;
+
     private final ElasticSearchClient elasticSearchClient;
 
-    private final int resultsLimit;
+    private final CaseTypeMappingRepository caseTypeMappingRepository;
 
-    private final Set<String> correspondentFields = Set.of("allCorrespondents", "currentCorrespondents");
-
-    private final Set<String> topicFields = Set.of("allTopics", "currentTopics");
-
-    private final Set<String> somuFields = Set.of("allSomuItems");
-
-    @Autowired
-    public CaseDataService(ElasticSearchClient elasticSearchClient,
-                           @Value("${aws.es.results-limit}") int resultsLimit) {
+    public CaseDataService(ObjectMapper objectMapper,
+                           ElasticSearchClient elasticSearchClient,
+                           CaseTypeMappingRepository caseTypeMappingRepository) {
+        this.objectMapper = objectMapper;
         this.elasticSearchClient = elasticSearchClient;
-        this.resultsLimit = resultsLimit;
+        this.caseTypeMappingRepository = caseTypeMappingRepository;
     }
 
     public void createCase(UUID caseUUID, CreateCaseRequest createCaseRequest) {
         log.debug("Creating case {}", caseUUID);
-        CaseData caseData = getCaseData(caseUUID);
-        caseData.create(createCaseRequest);
-        if (caseData.isNewCaseData()) {
-            elasticSearchClient.save(caseData);
-        } else {
-            log.warn("Updating case {} as already exists in elastic search", caseUUID);
-            elasticSearchClient.update(caseData);
-        }
-        log.info("Created case {}", caseUUID, value(EVENT, SEARCH_CASE_CREATED));
 
+        var caseData = new CaseData(createCaseRequest);
+        var caseDataMap = ObjectMapperConverterHelper.convertObjectToMap(objectMapper, caseData);
+        elasticSearchClient.update(caseUUID,
+            createCaseRequest.getType(),
+            caseDataMap);
+
+        log.info("Created case {}", caseUUID, value(EVENT, SEARCH_CASE_CREATED));
     }
 
     public void updateCase(UUID caseUUID, UpdateCaseRequest updateCaseRequest) {
         log.debug("Updating case {}", caseUUID);
-        CaseData caseData = getCaseData(caseUUID);
-        caseData.update(updateCaseRequest);
-        if (caseData.isNewCaseData()) {
-            log.warn("Creating case {} as does not exists in elastic search", caseUUID);
-            elasticSearchClient.save(caseData);
-        } else {
-            elasticSearchClient.update(caseData);
-        }
+
+        var caseData = new CaseData(updateCaseRequest);
+        var caseDataMap = ObjectMapperConverterHelper.convertObjectToMap(objectMapper, caseData);
+        elasticSearchClient.update(caseUUID,
+            updateCaseRequest.getType(),
+            caseDataMap);
+
         log.info("Updated case {}", caseUUID, value(EVENT, SEARCH_CASE_UPDATED));
     }
 
     public void deleteCase(UUID caseUUID, DeleteCaseRequest deleteCaseRequest) {
         log.debug("Deleting ({}) case {}", deleteCaseRequest.getDeleted(), caseUUID);
-        CaseData caseData = getCaseData(caseUUID);
-        caseData.delete(deleteCaseRequest.getDeleted());
-        elasticSearchClient.update(caseData);
+
+        Map<String, Object> objectMap = Map.of("deleted", deleteCaseRequest.getDeleted());
+        elasticSearchClient.update(caseUUID,
+            caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            objectMap);
+
         log.info("Deleted ({}) case {}", deleteCaseRequest.getDeleted(), caseUUID, value(EVENT, SEARCH_CASE_DELETED));
     }
 
     public void completeCase(UUID caseUUID) {
         log.debug("Complete case {}", caseUUID);
-        CaseData caseData = getCaseData(caseUUID);
-        caseData.complete();
-        elasticSearchClient.update(caseData);
-        log.info("Compeleted case {}", caseUUID, value(EVENT, SEARCH_CASE_COMPLETED));
+
+        Map<String, Object> objectMap = Map.of("completed", true);
+        elasticSearchClient.update(caseUUID,
+            caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            objectMap);
+
+        log.info("Completed case {}", caseUUID, value(EVENT, SEARCH_CASE_COMPLETED));
     }
 
     public void createCorrespondent(UUID caseUUID, CorrespondentDetailsDto correspondentDetailsDto) {
         log.debug("Adding correspondent {} to case {}", correspondentDetailsDto.getUuid(), caseUUID);
-        CaseData caseData = getCaseData(caseUUID);
-        caseData.addCorrespondent(correspondentDetailsDto);
-        elasticSearchClient.update(correspondentFields, caseData);
+
+        CorrespondentCaseData correspondentCaseData =
+            objectMapper.convertValue(getCaseData(caseUUID), CorrespondentCaseData.class);
+        correspondentCaseData.addCorrespondent(correspondentDetailsDto);
+
+        elasticSearchClient.update(caseUUID,
+            caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            ObjectMapperConverterHelper.convertObjectToMap(objectMapper, correspondentCaseData));
+
         log.info("Added correspondent {} to case {}", correspondentDetailsDto.getUuid(), caseUUID,
             value(EVENT, SEARCH_CORRESPONDENT_CREATED));
     }
 
     public void deleteCorrespondent(UUID caseUUID, CorrespondentDetailsDto correspondentDetailsDto) {
         log.debug("Deleting correspondent {} from case {}", correspondentDetailsDto.getUuid(), caseUUID);
-        CaseData caseData = getCaseData(caseUUID);
-        caseData.removeCorrespondent(correspondentDetailsDto.getUuid());
-        elasticSearchClient.update(correspondentFields, caseData);
+
+        CorrespondentCaseData correspondentCaseData =
+            objectMapper.convertValue(getCaseData(caseUUID), CorrespondentCaseData.class);
+        correspondentCaseData.removeCorrespondent(correspondentDetailsDto.getUuid());
+
+        elasticSearchClient.update(caseUUID,
+            caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            ObjectMapperConverterHelper.convertObjectToMap(objectMapper, correspondentCaseData));
+
         log.info("Deleted correspondent {} from case {}", correspondentDetailsDto.getUuid(), caseUUID,
             value(EVENT, SEARCH_CORRESPONDENT_DELETED));
     }
 
     public void updateCorrespondent(UUID caseUUID, CorrespondentDetailsDto correspondentDetailsDto) {
         log.debug("Updating correspondent {} from case {}", correspondentDetailsDto.getUuid(), caseUUID);
-        CaseData caseData = getCaseData(caseUUID);
-        caseData.updateCorrespondent(correspondentDetailsDto);
-        elasticSearchClient.update(correspondentFields, caseData);
+
+        CorrespondentCaseData correspondentCaseData =
+            objectMapper.convertValue(getCaseData(caseUUID), CorrespondentCaseData.class);
+        correspondentCaseData.updateCorrespondent(correspondentDetailsDto);
+
+        elasticSearchClient.update(caseUUID,
+            caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            ObjectMapperConverterHelper.convertObjectToMap(objectMapper, correspondentCaseData));
+
         log.info("Updating correspondent {} for case {}", correspondentDetailsDto.getUuid(), caseUUID,
             value(EVENT, SEARCH_CORRESPONDENT_UPDATED));
     }
 
     public void createTopic(UUID caseUUID, CreateTopicRequest createTopicRequest) {
         log.debug("Adding topic {} to case {}", createTopicRequest.getUuid(), caseUUID);
-        CaseData caseData = getCaseData(caseUUID);
-        caseData.addTopic(Topic.from(createTopicRequest));
-        elasticSearchClient.update(topicFields, caseData);
+
+        TopicCaseData topicCaseData =
+            objectMapper.convertValue(getCaseData(caseUUID), TopicCaseData.class);
+        topicCaseData.addTopic(Topic.from(createTopicRequest));
+
+        elasticSearchClient.update(caseUUID,
+            caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            ObjectMapperConverterHelper.convertObjectToMap(objectMapper, topicCaseData));
+
         log.info("Added topic {} to case {}", createTopicRequest.getUuid(), caseUUID,
             value(EVENT, SEARCH_TOPIC_CREATED));
     }
 
     public void deleteTopic(UUID caseUUID, DeleteTopicRequest deleteTopicRequest) {
         log.debug("Deleting topic {} from case {}", deleteTopicRequest.getUuid(), caseUUID);
-        CaseData caseData = getCaseData(caseUUID);
-        caseData.removeTopic(deleteTopicRequest.getUuid());
-        elasticSearchClient.update(topicFields, caseData);
+        TopicCaseData topicCaseData =
+            objectMapper.convertValue(getCaseData(caseUUID), TopicCaseData.class);
+        topicCaseData.removeTopic(deleteTopicRequest.getUuid());
+
+        elasticSearchClient.update(caseUUID,
+            caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            ObjectMapperConverterHelper.convertObjectToMap(objectMapper, topicCaseData));
+
         log.info("Deleted topic {} from case {}. Event {}", deleteTopicRequest.getUuid(), caseUUID,
             value(EVENT, SEARCH_TOPIC_DELETED));
     }
 
     public void createSomuItem(UUID caseUUID, SomuItemDto somuItemDto) {
         log.debug("Adding somu item {} to case {}", somuItemDto.getUuid(), caseUUID);
-        CaseData caseData = getCaseData(caseUUID);
-        caseData.addSomuItem(SomuItem.from(somuItemDto));
-        elasticSearchClient.update(somuFields, caseData);
+
+        SomuCaseData somuCaseData =
+            objectMapper.convertValue(getCaseData(caseUUID), SomuCaseData.class);
+        somuCaseData.addSomuItem(SomuItem.from(somuItemDto));
+
+        elasticSearchClient.update(caseUUID,
+            caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            ObjectMapperConverterHelper.convertObjectToMap(objectMapper, somuCaseData));
+
         log.info("Added somu item {} to case {}. Event {}", somuItemDto.getUuid(), caseUUID,
             value(EVENT, SOMU_ITEM_CREATED));
     }
 
     public void deleteSomuItem(UUID caseUUID, SomuItemDto somuItem) {
         log.debug("Deleting somu item {} from case {}", somuItem.getUuid(), caseUUID);
-        CaseData caseData = getCaseData(caseUUID);
-        caseData.removeSomuItem(somuItem.getUuid());
-        elasticSearchClient.update(somuFields, caseData);
+
+        SomuCaseData somuCaseData =
+            objectMapper.convertValue(getCaseData(caseUUID), SomuCaseData.class);
+        somuCaseData.removeSomuItem(somuItem.getSomuTypeUuid());
+
+        elasticSearchClient.update(caseUUID,
+            caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            ObjectMapperConverterHelper.convertObjectToMap(objectMapper, somuCaseData));
+
         log.info("Deleted somu item {} from case {}. Event {}", somuItem.getUuid(), caseUUID,
             value(EVENT, SOMU_ITEM_DELETED));
     }
 
     public void updateSomuItem(UUID caseUUID, SomuItemDto somuItemDto) {
         log.debug("Updating somu item {} from case {}", somuItemDto.getUuid(), caseUUID);
-        CaseData caseData = getCaseData(caseUUID);
-        caseData.updateSomuItem(SomuItem.from(somuItemDto));
-        elasticSearchClient.update(somuFields, caseData);
+
+        SomuCaseData somuCaseData =
+            objectMapper.convertValue(getCaseData(caseUUID), SomuCaseData.class);
+        somuCaseData.updateSomuItem(SomuItem.from(somuItemDto));
+
+        elasticSearchClient.update(caseUUID,
+            caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            ObjectMapperConverterHelper.convertObjectToMap(objectMapper, somuCaseData));
+
         log.info("Updated somu item {} from case {}. Event {}", somuItemDto.getUuid(), caseUUID,
             value(EVENT, SOMU_ITEM_UPDATED));
     }
 
-    Set<UUID> search(SearchRequest request) {
+    public Set<UUID> search(SearchRequest request) {
         log.info("Searching for case {}", request.toString(), value(EVENT, SEARCH_REQUEST));
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(QueryBuilders.boolQuery());
-        hocsQueryBuilder.deleted(false);
-        hocsQueryBuilder.reference(request.getReference(), request.getCaseTypes());
-        hocsQueryBuilder.caseTypes(request.getCaseTypes());
-        hocsQueryBuilder.dateRange(request.getDateReceived());
-        hocsQueryBuilder.correspondentAddress1(request.getCorrespondentAddress1());
-        hocsQueryBuilder.correspondentEmail(request.getCorrespondentEmail());
-        hocsQueryBuilder.correspondentName(request.getCorrespondentName());
-        hocsQueryBuilder.correspondentNameNotMember(request.getCorrespondentNameNotMember());
-        hocsQueryBuilder.correspondentPostcode(request.getCorrespondentPostcode());
-        hocsQueryBuilder.correspondentReference(request.getCorrespondentReference());
-        hocsQueryBuilder.correspondentExternalKey(request.getCorrespondentExternalKey());
-        hocsQueryBuilder.topic(request.getTopic());
-        hocsQueryBuilder.privateOfficeTeam(request.getPrivateOfficeTeamUuid());
-        hocsQueryBuilder.dataFields(request.getData());
-        hocsQueryBuilder.activeOnlyFlag(request.getActiveOnly());
+        HocsQueryBuilder hocsQueryBuilder =
+            new HocsQueryBuilder(QueryBuilders.boolQuery())
+                .reference(request.getReference(), request.getCaseTypes())
+                .caseTypes(request.getCaseTypes())
+                .dateRange(request.getDateReceived())
+                .correspondentAddress1(request.getCorrespondentAddress1())
+                .correspondentEmail(request.getCorrespondentEmail())
+                .correspondentName(request.getCorrespondentName())
+                .correspondentNameNotMember(request.getCorrespondentNameNotMember())
+                .correspondentPostcode(request.getCorrespondentPostcode())
+                .correspondentReference(request.getCorrespondentReference())
+                .correspondentExternalKey(request.getCorrespondentExternalKey())
+                .topic(request.getTopic())
+                .privateOfficeTeam(request.getPrivateOfficeTeamUuid())
+                .dataFields(request.getData())
+                .activeOnlyFlag(request.getActiveOnly());
 
-        Set<UUID> caseUUIDs;
-        if (hocsQueryBuilder.hasClauses()) {
-            caseUUIDs = elasticSearchClient.search(hocsQueryBuilder.build(), resultsLimit);
-        } else {
-            caseUUIDs = new HashSet<>(0);
+        if (!hocsQueryBuilder.hasClauses()) {
+            return Collections.emptySet();
         }
 
-        log.info("Results {}", caseUUIDs.size(), value(EVENT, SEARCH_RESPONSE));
-        return caseUUIDs;
+        var cases = elasticSearchClient.search(hocsQueryBuilder.build());
+        var casesUuids =
+            cases.stream()
+                .map(caseMap -> {
+                    var caseData = convertMapToCaseData(caseMap);
+                    return caseData.getCaseUUID();
+                })
+                .collect(Collectors.toSet());
+
+        log.info("Results {}", casesUuids.size(), value(EVENT, SEARCH_RESPONSE));
+        return casesUuids;
     }
 
-    private CaseData getCaseData(UUID caseUUID) {
-        log.debug("Fetching Case {}", caseUUID);
-        return elasticSearchClient.findById(caseUUID);
+    private Map<String, Object> getCaseData(UUID caseUuid) {
+        log.debug("Fetching Case {}", caseUuid);
+        return elasticSearchClient.findById(caseUuid,
+                caseTypeMappingRepository.getCaseTypeByShortCode(caseUuid));
+    }
+
+    private CaseData convertMapToCaseData(Map<String, Object> caseData) {
+        return objectMapper.convertValue(caseData, new TypeReference<>() {});
     }
 
 }

@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.search.domain.model;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.search.api.dto.AddressDto;
@@ -10,6 +11,7 @@ import java.util.UUID;
 
 @NoArgsConstructor
 @Getter
+@Data
 public class Correspondent {
 
     private UUID uuid;

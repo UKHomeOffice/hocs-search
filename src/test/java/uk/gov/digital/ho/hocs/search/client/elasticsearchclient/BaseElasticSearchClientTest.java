@@ -13,89 +13,61 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.digital.ho.hocs.search.api.dto.AddressDto;
 import uk.gov.digital.ho.hocs.search.api.dto.CorrespondentDetailsDto;
-import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.search.api.helpers.ObjectMapperConverterHelper;
+import uk.gov.digital.ho.hocs.search.domain.model.CorrespondentCaseData;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class BaseElasticSearchClientTest {
+class BaseElasticSearchClientTest {
 
     private ElasticSearchClient elasticSearchClient;
+
+    private ObjectMapper objectMapper;
 
     @Mock
     RestHighLevelClient restHighLevelClient;
 
-    private UUID caseUUID = UUID.randomUUID();
-
     @Captor
     ArgumentCaptor<UpdateRequest> updateRequestArgumentCaptor;
 
-    private CreateCaseRequest createCaseRequest = new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN",
-        "REF", LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), Map.of("field", "value", "field2", "value2"));
-
-    private CorrespondentDetailsDto correspondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(),
+    private final CorrespondentDetailsDto correspondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(),
         LocalDateTime.now(), "LAW", "FULLNAME",
         new AddressDto("postcode", "address1", "address2", "address3", "country"), "0", "e", "REF", "ExtKey");
 
     @BeforeEach
     public void setup() {
-        ObjectMapper m = new ObjectMapper();
-        m.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
-        m.registerModule(new JavaTimeModule());
-        elasticSearchClient = new ElasticSearchSingularClient(m, restHighLevelClient, "test");
+        objectMapper = new ObjectMapper()
+            .setDateFormat(new SimpleDateFormat("yyyy-MM-dd"))
+            .registerModule(new JavaTimeModule());
+
+        elasticSearchClient = new ElasticSearchSingularClient(restHighLevelClient, "test", 10);
     }
 
     @Test
-    public void shouldOnlyUpdatePartialFields() throws IOException {
-
-        CaseData caseData = new CaseData(caseUUID);
-        caseData.create(createCaseRequest);
-
-        assertThat(caseData.getCurrentCorrespondents()).isEmpty();
-        assertThat(caseData.getAllCorrespondents()).isEmpty();
+    void shouldOnlyUpdatePartialFields() throws IOException {
+        CorrespondentCaseData correspondentCaseData = new CorrespondentCaseData();
+        correspondentCaseData.addCorrespondent(correspondentDetailsDto);
 
         when(restHighLevelClient.update(updateRequestArgumentCaptor.capture(), any())).thenReturn(null);
 
-        caseData.addCorrespondent(correspondentDetailsDto);
+        Map<String, Object> obj = ObjectMapperConverterHelper.convertObjectToMap(objectMapper, correspondentCaseData);
 
-        elasticSearchClient.update(Set.of("currentCorrespondents"), caseData);
+        elasticSearchClient.update(UUID.randomUUID(), "TEST", obj);
+
         verify(restHighLevelClient).update(updateRequestArgumentCaptor.capture(), any());
 
         Map<String, Object> sourceMap = updateRequestArgumentCaptor.getValue().doc().sourceAsMap();
-        assertThat(sourceMap).containsOnlyKeys("currentCorrespondents");
-        Map<String, String> correspondentMap = ((List<Map<String, String>>) sourceMap.get("currentCorrespondents")).get(
-            0);
-
-        Map<String, String> expectedMap = new HashMap<>();
-        expectedMap.put("uuid", correspondentDetailsDto.getUuid().toString());
-        expectedMap.put("created", correspondentDetailsDto.getCreated().toString());
-        expectedMap.put("type", correspondentDetailsDto.getType());
-        expectedMap.put("fullname", correspondentDetailsDto.getFullname());
-        expectedMap.put("email", correspondentDetailsDto.getEmail());
-        expectedMap.put("reference", correspondentDetailsDto.getReference());
-        expectedMap.put("country", correspondentDetailsDto.getAddress().getCountry());
-        expectedMap.put("address3", correspondentDetailsDto.getAddress().getAddress3());
-        expectedMap.put("address2", correspondentDetailsDto.getAddress().getAddress2());
-        expectedMap.put("address1", correspondentDetailsDto.getAddress().getAddress1());
-        expectedMap.put("postcode", correspondentDetailsDto.getAddress().getPostcode());
-        expectedMap.put("telephone", correspondentDetailsDto.getTelephone());
-        expectedMap.put("externalKey", correspondentDetailsDto.getExternalKey());
-
-        assertThat(correspondentMap).containsExactlyEntriesOf(expectedMap);
+        assertThat(sourceMap).isEqualTo(obj);
     }
 
 }

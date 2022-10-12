@@ -1,42 +1,31 @@
 package uk.gov.digital.ho.hocs.search.client.elasticsearchclient;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
 
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class ElasticSearchSingularClient extends BaseElasticSearchClient {
 
-    public ElasticSearchSingularClient(ObjectMapper objectMapper, RestHighLevelClient client, String aliasPrefix) {
-        super(objectMapper, client, aliasPrefix);
+    public ElasticSearchSingularClient(RestHighLevelClient client, String aliasPrefix, int resultsLimit) {
+        super(client, aliasPrefix, resultsLimit);
     }
 
     @Override
-    public CaseData findById(UUID uuid) {
+    public Map<String, Object> findById(UUID uuid, String type) {
         return findById(getAlias(), uuid);
     }
 
     @Override
-    public void save(CaseData caseData) {
-        save(getAlias(), caseData);
+    public void update(UUID uuid, String type, Map<String, Object> caseData) {
+        update(getAlias(), uuid, caseData);
     }
 
     @Override
-    public void update(CaseData caseData) {
-        update(getAlias(), caseData);
-    }
-
-    @Override
-    public void update(Set<String> keys, CaseData caseData) {
-        update(getAlias(), keys, caseData);
-    }
-
-    @Override
-    public Set<UUID> search(BoolQueryBuilder query, int resultsLimit) {
-        return search(getAlias(), query, resultsLimit);
+    public List<Map<String, Object>> search(BoolQueryBuilder query) {
+        return search(getAlias(), query);
     }
 
     private String getAlias() {

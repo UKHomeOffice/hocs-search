@@ -36,6 +36,6 @@ public class CreateCaseRequest {
     private LocalDate dateReceived;
 
     @JsonProperty("data")
-    private Map data;
+    private Map<String, Object> data;
 
 }
