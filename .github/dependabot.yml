@@ -25,6 +25,8 @@ updates:
       - "UKHomeOffice/hocs-core"
     ignore:
       - dependency-name: "org.elasticsearch:*"
+      - dependency-name: "software.amazon.awssdk:auth"
+        update-types: [ "version-update:semver-patch" ]
     labels:
       - "patch"
       - "dependencies"
