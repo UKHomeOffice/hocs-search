@@ -19,6 +19,7 @@ import uk.gov.digital.ho.hocs.search.api.helpers.ObjectMapperConverterHelper;
 import uk.gov.digital.ho.hocs.search.client.elasticsearchclient.ElasticSearchClient;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.search.domain.repositories.CaseTypeMappingRepository;
+import uk.gov.digital.ho.hocs.search.domain.repositories.FieldQueryTypeMappingRepository;
 import uk.gov.digital.ho.hocs.search.helpers.AllMapKeyMatcher;
 import uk.gov.digital.ho.hocs.search.helpers.CaseTypeUuidHelper;
 
@@ -64,6 +65,9 @@ class CaseDataServiceTest {
     @Mock
     private CaseTypeMappingRepository caseTypeMappingRepository;
 
+    @Mock
+    private FieldQueryTypeMappingRepository fieldQueryTypeMappingRepository;
+
     private CaseDataService caseDataService;
 
     @BeforeEach
@@ -71,7 +75,7 @@ class CaseDataServiceTest {
         objectMapper = new ObjectMapper().setDateFormat(new SimpleDateFormat("yyyy-MM-dd")).registerModule(
             new JavaTimeModule());
 
-        caseDataService = new CaseDataService(objectMapper, elasticSearchClient, caseTypeMappingRepository);
+        caseDataService = new CaseDataService(objectMapper, elasticSearchClient, caseTypeMappingRepository, fieldQueryTypeMappingRepository);
     }
 
     @Test

@@ -6,9 +6,11 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.digital.ho.hocs.search.api.dto.DateRangeDto;
+import uk.gov.digital.ho.hocs.search.domain.repositories.FieldQueryTypeMappingRepository;
 
 import java.util.*;
 
@@ -21,6 +23,9 @@ public class HocsQueryBuilderTest {
 
     private BoolQueryBuilder bqb;
 
+    @Mock
+    private FieldQueryTypeMappingRepository fieldQueryTypeMappingRepository;
+
     @BeforeEach
     public void setup() {
         this.bqb = Mockito.spy(QueryBuilders.boolQuery());
@@ -30,7 +35,7 @@ public class HocsQueryBuilderTest {
     public void shouldAddReference() {
         String reference = "reference123";
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.reference(reference, null);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -44,7 +49,7 @@ public class HocsQueryBuilderTest {
         String reference = "123";
         List<String> caseTypes = Collections.singletonList("TYPE");
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.reference(reference, caseTypes);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -58,7 +63,7 @@ public class HocsQueryBuilderTest {
         String reference = "reference123";
         List<String> caseTypes = Collections.singletonList("TYPE");
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.reference(reference, caseTypes);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -73,7 +78,7 @@ public class HocsQueryBuilderTest {
         String reference = "reference123";
         List<String> caseTypes = Arrays.asList("TYPE", "TYPE2");
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.reference(reference, caseTypes);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -87,7 +92,7 @@ public class HocsQueryBuilderTest {
     public void shouldNotAddBlankReference() {
         String reference = "";
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.reference(reference, null);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -95,7 +100,7 @@ public class HocsQueryBuilderTest {
 
     @Test
     public void shouldNotAddNullReference() {
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.reference(null, null);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -106,7 +111,7 @@ public class HocsQueryBuilderTest {
         List<String> caseTypes = new ArrayList<>();
         caseTypes.add("ANYTYPE");
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.caseTypes(caseTypes);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -118,7 +123,7 @@ public class HocsQueryBuilderTest {
     public void shouldNotAddNoCaseTypes() {
         List<String> caseTypes = new ArrayList<>();
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.caseTypes(caseTypes);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -127,7 +132,7 @@ public class HocsQueryBuilderTest {
     @Test
     public void shouldNotAddNullCaseTypes() {
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.caseTypes(null);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -137,7 +142,7 @@ public class HocsQueryBuilderTest {
     public void shouldAddCorrespondentAddress1() {
         String correspondentAddress1 = "Address1";
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.correspondentAddress1(correspondentAddress1);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -149,7 +154,7 @@ public class HocsQueryBuilderTest {
     public void shouldNotAddNoCorrespondentAddress1() {
         String correspondentAddress1 = "";
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.correspondentAddress1(correspondentAddress1);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -158,7 +163,7 @@ public class HocsQueryBuilderTest {
     @Test
     public void shouldNotAddNullCorrespondentAddress1() {
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.correspondentAddress1(null);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -168,7 +173,7 @@ public class HocsQueryBuilderTest {
     public void shouldAddCorrespondentEmail() {
         String correspondentEmail = "EMAIL";
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.correspondentEmail(correspondentEmail);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -180,7 +185,7 @@ public class HocsQueryBuilderTest {
     public void shouldNotAddNoCorrespondentEmail() {
         String correspondentEmail = "";
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.correspondentEmail(correspondentEmail);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -189,7 +194,7 @@ public class HocsQueryBuilderTest {
     @Test
     public void shouldNotAddNullCorrespondentEmail() {
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.correspondentEmail(null);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -199,7 +204,7 @@ public class HocsQueryBuilderTest {
     public void shouldAddCorrespondentName() {
         String correspondentName = "MYNAME";
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.correspondentName(correspondentName);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -211,7 +216,7 @@ public class HocsQueryBuilderTest {
     public void shouldNotAddNoCorrespondentName() {
         String correspondentName = "";
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.correspondentName(correspondentName);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -220,7 +225,7 @@ public class HocsQueryBuilderTest {
     @Test
     public void shouldNotAddNullCorrespondentName() {
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.correspondentName(null);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -230,7 +235,7 @@ public class HocsQueryBuilderTest {
     public void shouldAddCorrespondentNameNotMember() {
         String correspondentNameNotMember = "BOB";
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.correspondentNameNotMember(correspondentNameNotMember);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -243,7 +248,7 @@ public class HocsQueryBuilderTest {
     public void shouldAddCorrespondentPostcode() {
         String correspondentPostcode = "Postcode";
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.correspondentPostcode(correspondentPostcode);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -255,7 +260,7 @@ public class HocsQueryBuilderTest {
     public void shouldNotAddNoCorrespondentPostcode() {
         String correspondentPostcode = "";
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.correspondentPostcode(correspondentPostcode);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -264,7 +269,7 @@ public class HocsQueryBuilderTest {
     @Test
     public void shouldNotAddNullCorrespondentPostcode() {
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.correspondentPostcode(null);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -274,7 +279,7 @@ public class HocsQueryBuilderTest {
     public void shouldAddCorrespondentReference() {
         String correspondentReference = "MYReference";
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.correspondentReference(correspondentReference);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -286,7 +291,7 @@ public class HocsQueryBuilderTest {
     public void shouldNotAddNoCorrespondentReference() {
         String correspondentReference = "";
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.correspondentReference(correspondentReference);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -295,7 +300,7 @@ public class HocsQueryBuilderTest {
     @Test
     public void shouldNotAddNullCorrespondentReference() {
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.correspondentReference(null);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -305,7 +310,7 @@ public class HocsQueryBuilderTest {
     public void shouldAddCorrespondentExternalKey() {
         String correspondentExternalKey = "MYExternalKey";
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.correspondentExternalKey(correspondentExternalKey);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -317,7 +322,7 @@ public class HocsQueryBuilderTest {
     public void shouldNotAddNoCorrespondentExternalKey() {
         String correspondentExternalKey = "";
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.correspondentExternalKey(correspondentExternalKey);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -326,7 +331,7 @@ public class HocsQueryBuilderTest {
     @Test
     public void shouldNotAddNullCorrespondentExternalKey() {
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.correspondentExternalKey(null);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -336,7 +341,7 @@ public class HocsQueryBuilderTest {
     public void shouldAddTopic() {
         String topic = "MYNAME";
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.topic(topic);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -348,7 +353,7 @@ public class HocsQueryBuilderTest {
     public void shouldNotAddNoTopic() {
         String topic = "";
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.topic(topic);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -357,7 +362,7 @@ public class HocsQueryBuilderTest {
     @Test
     public void shouldNotAddNullTopic() {
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.topic(null);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -368,7 +373,7 @@ public class HocsQueryBuilderTest {
         Map<String, String> data = new HashMap<>();
         data.put("dataKey", "dataValue");
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.dataFields(data);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -378,10 +383,26 @@ public class HocsQueryBuilderTest {
     }
 
     @Test
+    public void shouldAddWildcardData() {
+        Map<String, String> data = new HashMap<>();
+        data.put("dataKey", "dataValue");
+        Mockito.when(fieldQueryTypeMappingRepository.getQueryTypeByFieldLabel("dataKey")).thenReturn("wildcard");
+
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
+        hocsQueryBuilder.dataFields(data);
+
+        Mockito.verify(bqb).must(any(QueryBuilder.class));
+
+        assertThat(bqb.toString()).contains("wildcard");
+        assertThat(bqb.toString()).contains("data.dataKey");
+        assertThat(bqb.toString()).contains("dataValue");
+    }
+
+    @Test
     public void shouldNotAddNoData() {
         Map<String, String> data = new HashMap<>();
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.dataFields(data);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -390,7 +411,7 @@ public class HocsQueryBuilderTest {
     @Test
     public void shouldNotAddNullData() {
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.dataFields(null);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -398,7 +419,7 @@ public class HocsQueryBuilderTest {
 
     @Test
     public void shouldAddActiveFalse() {
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.activeOnlyFlag(false);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -406,7 +427,7 @@ public class HocsQueryBuilderTest {
 
     @Test
     public void shouldAddActiveTrue() {
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.activeOnlyFlag(true);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -414,7 +435,7 @@ public class HocsQueryBuilderTest {
 
     @Test
     public void shouldNotAddActive() {
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.dataFields(null);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -424,7 +445,7 @@ public class HocsQueryBuilderTest {
     public void shouldAddDateRange() {
         DateRangeDto dateRangeDto = new DateRangeDto("fromDate", "toDate");
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.dateRange(dateRangeDto);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -437,7 +458,7 @@ public class HocsQueryBuilderTest {
     public void shouldAddDateRangeFromEmpty() {
         DateRangeDto dateRangeDto = new DateRangeDto("", "toDate");
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.dateRange(dateRangeDto);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -449,7 +470,7 @@ public class HocsQueryBuilderTest {
     public void shouldAddDateRangeFromNull() {
         DateRangeDto dateRangeDto = new DateRangeDto(null, "toDate");
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.dateRange(dateRangeDto);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -461,7 +482,7 @@ public class HocsQueryBuilderTest {
     public void shouldAddDateRangeToEmpty() {
         DateRangeDto dateRangeDto = new DateRangeDto("fromDate", "");
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.dateRange(dateRangeDto);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -473,7 +494,7 @@ public class HocsQueryBuilderTest {
     public void shouldAddDateRangeToNull() {
         DateRangeDto dateRangeDto = new DateRangeDto("fromDate", null);
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.dateRange(dateRangeDto);
 
         Mockito.verify(bqb).must(any(QueryBuilder.class));
@@ -484,7 +505,7 @@ public class HocsQueryBuilderTest {
     @Test
     public void shouldNotAddDateRangeActive() {
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.dateRange(null);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -513,7 +534,7 @@ public class HocsQueryBuilderTest {
                 "$['bool']['must_not'][0]['wildcard']['data.PrivateOfficeOverridePOTeamUUID']['wildcard']", "*",
                 "$['bool']['must_not'][1]['wildcard']['data.OverridePOTeamUUID']['wildcard']", "*"));
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.privateOfficeTeam(privateOfficeTeamUuid);
 
         // Retrieve the overarching core must query
@@ -538,7 +559,7 @@ public class HocsQueryBuilderTest {
     public void shouldNotAddEmptyPrivateOfficeTeam() {
         String privateOfficeTeamUuid = "";
 
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.privateOfficeTeam(privateOfficeTeamUuid);
 
         Mockito.verifyNoMoreInteractions(bqb);
@@ -546,7 +567,7 @@ public class HocsQueryBuilderTest {
 
     @Test
     public void shouldNotAddNullPrivateOfficeTeam() {
-        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb);
+        HocsQueryBuilder hocsQueryBuilder = new HocsQueryBuilder(bqb, fieldQueryTypeMappingRepository);
         hocsQueryBuilder.privateOfficeTeam(null);
 
         Mockito.verifyNoMoreInteractions(bqb);

@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.search.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -9,8 +10,10 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.springframework.util.StringUtils;
 import uk.gov.digital.ho.hocs.search.api.dto.DateRangeDto;
+import uk.gov.digital.ho.hocs.search.domain.repositories.FieldQueryTypeMappingRepository;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,10 +30,13 @@ class HocsQueryBuilder {
 
     private final BoolQueryBuilder mqb;
 
+    private final FieldQueryTypeMappingRepository fieldQueryTypeMappingRepository;
+
     private boolean hasClause = false;
 
-    HocsQueryBuilder(BoolQueryBuilder mqb) {
+    HocsQueryBuilder(BoolQueryBuilder mqb, FieldQueryTypeMappingRepository fieldQueryTypeMappingRepository) {
         this.mqb = mqb;
+        this.fieldQueryTypeMappingRepository = fieldQueryTypeMappingRepository;
     }
 
     HocsQueryBuilder reference(String reference, List<String> caseTypes) {
@@ -259,10 +265,18 @@ class HocsQueryBuilder {
     HocsQueryBuilder dataFields(Map<String, String> data) {
         if (data != null && !data.isEmpty()) {
             log.debug("data size {}, adding to query", data.size());
-            Set<QueryBuilder> dataQb = data.entrySet().stream().filter(
-                v -> v.getValue() != null && !v.getValue().isEmpty()).map(
-                v -> QueryBuilders.matchQuery("data." + v.getKey(), v.getValue()).operator(Operator.AND)).collect(
-                Collectors.toSet());
+
+            Map<String, String> dataMap = data.entrySet().stream().filter(v -> v.getValue() != null && !v.getValue().isEmpty()).collect(Collectors.toMap(v -> v.getKey(), v -> v.getValue()));
+            Set<QueryBuilder> dataQb = new HashSet<>();
+            for (Map.Entry<String, String> entry : dataMap.entrySet()) {
+                String fieldQueryType = fieldQueryTypeMappingRepository.getQueryTypeByFieldLabel(entry.getKey());
+                if (fieldQueryType != null && fieldQueryType.equals("wildcard")) {
+                    dataQb.add(QueryBuilders.wildcardQuery("data." + entry.getKey(), String.format("*%s*", entry.getValue())));
+                } else {
+                    dataQb.add(QueryBuilders.matchQuery("data." + entry.getKey(), entry.getValue()).operator(Operator.AND));
+                }
+            }
+
             log.debug("filtered data size {}, adding to query", dataQb.size());
             for (QueryBuilder qb : dataQb) {
                 mqb.must(qb);

@@ -22,6 +22,7 @@ import uk.gov.digital.ho.hocs.search.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.search.domain.model.Topic;
 import uk.gov.digital.ho.hocs.search.domain.model.TopicCaseData;
 import uk.gov.digital.ho.hocs.search.domain.repositories.CaseTypeMappingRepository;
+import uk.gov.digital.ho.hocs.search.domain.repositories.FieldQueryTypeMappingRepository;
 
 import java.util.Collections;
 import java.util.Map;
@@ -56,12 +57,16 @@ public class CaseDataService {
 
     private final CaseTypeMappingRepository caseTypeMappingRepository;
 
+    private final FieldQueryTypeMappingRepository fieldQueryTypeMappingRepository;
+
     public CaseDataService(ObjectMapper objectMapper,
                            ElasticSearchClient elasticSearchClient,
-                           CaseTypeMappingRepository caseTypeMappingRepository) {
+                           CaseTypeMappingRepository caseTypeMappingRepository,
+                           FieldQueryTypeMappingRepository fieldQueryTypeMappingRepository) {
         this.objectMapper = objectMapper;
         this.elasticSearchClient = elasticSearchClient;
         this.caseTypeMappingRepository = caseTypeMappingRepository;
+        this.fieldQueryTypeMappingRepository = fieldQueryTypeMappingRepository;
     }
 
     public void createCase(UUID caseUUID, CreateCaseRequest createCaseRequest) {
@@ -232,7 +237,7 @@ public class CaseDataService {
     public Set<UUID> search(SearchRequest request) {
         log.info("Searching for case {}", request.toString(), value(EVENT, SEARCH_REQUEST));
         HocsQueryBuilder hocsQueryBuilder =
-            new HocsQueryBuilder(QueryBuilders.boolQuery())
+            new HocsQueryBuilder(QueryBuilders.boolQuery(), fieldQueryTypeMappingRepository)
                 .reference(request.getReference(), request.getCaseTypes())
                 .caseTypes(request.getCaseTypes())
                 .dateRange(request.getDateReceived())
