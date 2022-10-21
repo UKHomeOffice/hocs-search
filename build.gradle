@@ -31,7 +31,7 @@ dependencies {
     implementation "org.elasticsearch:elasticsearch-secure-sm:${elasticVersion}"
     implementation "org.elasticsearch.client:elasticsearch-rest-high-level-client:${elasticVersion}"
 
-    implementation 'software.amazon.awssdk:auth:2.17.293'
+    implementation 'software.amazon.awssdk:auth:2.18.0'
 
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
 
