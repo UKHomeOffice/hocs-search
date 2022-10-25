@@ -26,16 +26,16 @@
 - name: ELASTICSEARCH_HOST
   valueFrom:
     secretKeyRef:
-      name: {{ .Release.Namespace }}-elasticsearch
+      name: {{ .Release.Namespace }}-opensearch
       key: endpoint
 - name: ELASTICSEARCH_ACCESS_KEY
   valueFrom:
     secretKeyRef:
-      name: {{ .Release.Namespace }}-elasticsearch
+      name: {{ .Release.Namespace }}-opensearch
       key: access_key_id
 - name: ELASTICSEARCH_SECRET_KEY
   valueFrom:
     secretKeyRef:
-      name: {{ .Release.Namespace }}-elasticsearch
+      name: {{ .Release.Namespace }}-opensearch
       key: secret_access_key
 {{- end -}}
