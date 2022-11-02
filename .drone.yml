@@ -44,7 +44,7 @@ steps:
     name: cs-dev-consumer
     environment:
       CHART_NAME: hocs-search-consumer
-      CHART_VERSION: 2.0.0
+      CHART_VERSION: 2.0.1
       KUBE_NAMESPACE: cs-dev
     commands:
       - ./ci/helm/helm-chart-deploy.sh --values ./helm/hocs-search-consumer.yaml
