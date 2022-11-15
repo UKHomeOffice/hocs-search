@@ -33,7 +33,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-@ActiveProfiles("localstack")
+@ActiveProfiles({"localstack", "consumer"})
 class PartialUpdateSearchTest extends BaseAwsSqsIntegrationTest {
 
     @Autowired

@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
-@ActiveProfiles("localstack")
+@ActiveProfiles({"localstack", "consumer"})
 public class BaseAwsSqsIntegrationTest {
 
     private static final String APPROXIMATE_NUMBER_OF_MESSAGES = "ApproximateNumberOfMessages";

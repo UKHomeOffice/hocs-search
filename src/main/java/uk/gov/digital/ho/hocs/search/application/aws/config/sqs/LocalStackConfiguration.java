@@ -16,8 +16,7 @@ import org.springframework.context.annotation.Profile;
 
 @EnableSqs
 @Configuration
-@Profile("localstack")
-@ConditionalOnProperty(prefix = "aws.sqs", value = "enabled", havingValue = "true")
+@Profile("localstack & consumer")
 public class LocalStackConfiguration {
 
     @Primary
