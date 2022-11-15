@@ -22,7 +22,3 @@ management:
       enabled: true
       probes:
         enabled: true
-
-aws:
-  sqs:
-    enabled: true

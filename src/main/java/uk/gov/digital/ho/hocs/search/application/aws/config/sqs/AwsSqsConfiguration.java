@@ -15,8 +15,7 @@ import org.springframework.context.annotation.Profile;
 
 @EnableSqs
 @Configuration
-@Profile("aws")
-@ConditionalOnProperty(prefix = "aws.sqs", value = "enabled", havingValue = "true")
+@Profile("aws & consumer")
 public class AwsSqsConfiguration {
 
     @Primary
