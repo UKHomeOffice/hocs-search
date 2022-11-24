@@ -40,23 +40,26 @@ steps:
     depends_on:
       - cs-dev
 
-  - <<: *deploy
+  - &deploy-consumer
     name: cs-dev-consumer
+    image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.1.0
     environment:
       CHART_NAME: hocs-search-consumer
       CHART_VERSION: ^3.0.0
+      KUBE_CLUSTER: acp-notprod
       KUBE_NAMESPACE: cs-dev
+      KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+      KUBE_TOKEN:
+        from_secret: cs_notprod
+      VERSION: ${DRONE_TAG}
     commands:
       - ./ci/helm/helm-chart-deploy.sh --values ./helm/hocs-search-consumer.yaml
     depends_on:
       - checkout
 
-  - <<: *deploy
+  - <<: *deploy-consumer
     name: wcs-dev-consumer
     environment:
-      CHART_NAME: hocs-search-consumer
       KUBE_NAMESPACE: wcs-dev
-    commands:
-      - ./ci/helm/helm-chart-deploy.sh --values ./helm/hocs-search-consumer.yaml
     depends_on:
       - cs-dev-consumer
