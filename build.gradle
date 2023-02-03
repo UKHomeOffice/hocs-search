@@ -5,7 +5,7 @@ plugins {
 }
 
 def elasticVersion = '7.10.2'
-def lombokVersion = '1.18.24'
+def lombokVersion = '1.18.26'
 
 group = 'uk.gov.digital.ho.hocs'
 sourceCompatibility = JavaVersion.VERSION_17
