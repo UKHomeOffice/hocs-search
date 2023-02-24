@@ -15,7 +15,7 @@ public class LocalElasticConfiguration {
     @Bean(destroyMethod = "close")
     public RestHighLevelClient client(@Value("${aws.es.host}") String host, @Value("${aws.es.port}") int port) {
         return new RestHighLevelClient(
-            RestClient.builder(new HttpHost(host, port)).setPathPrefix("/es/eu-west-2/decs"));
+            RestClient.builder(new HttpHost(host, port)).setPathPrefix("/opensearch/eu-west-2/decs"));
     }
 
 }
