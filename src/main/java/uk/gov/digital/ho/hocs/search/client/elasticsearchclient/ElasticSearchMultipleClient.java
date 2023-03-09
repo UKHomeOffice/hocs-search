@@ -9,20 +9,24 @@ import java.util.UUID;
 
 public class ElasticSearchMultipleClient extends BaseElasticSearchClient {
 
+    private final String aliasPrefix;
+
+
     public ElasticSearchMultipleClient(RestHighLevelClient client,
                                        String aliasPrefix,
                                        int resultsLimit) {
-        super(client, aliasPrefix, resultsLimit);
+        super(client, resultsLimit);
+        this.aliasPrefix = aliasPrefix;
     }
 
     @Override
     public Map<String, Object> findById(UUID uuid, String type) {
-        return findById(getTypeReadAlias(type), uuid);
+        return findById(getReadTypeAlias(type), uuid);
     }
 
     @Override
     public void update(UUID uuid, String type, Map<String, Object> caseData) {
-        update(getAlias(type), uuid, caseData);
+        update(getWriteTypeAlias(type), uuid, caseData);
     }
 
     @Override
@@ -30,15 +34,15 @@ public class ElasticSearchMultipleClient extends BaseElasticSearchClient {
         return search(getReadAlias(), query);
     }
 
-    private String getAlias(String type) {
-        return String.format("%s-%s", aliasPrefix, type.toLowerCase());
+    private String getWriteTypeAlias(String type) {
+        return String.format("%s-%s-write", aliasPrefix, type.toLowerCase());
     }
 
     private String getReadAlias() {
         return String.format("%s-read", aliasPrefix);
     }
 
-    private String getTypeReadAlias(String type) {
+    private String getReadTypeAlias(String type) {
         return String.format("%s-%s-read", aliasPrefix, type.toLowerCase());
     }
 

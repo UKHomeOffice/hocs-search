@@ -54,7 +54,7 @@ class ElasticSearchMultipleClientTest {
 
         elasticSearchClient.update(caseData.getCaseUUID(), caseData.getType(), Map.of());
 
-        assertThat(indexRequestArgumentCaptor.getValue().index()).isEqualTo("test-min");
+        assertThat(indexRequestArgumentCaptor.getValue().index()).isEqualTo("test-min-write");
     }
 
     @Test
