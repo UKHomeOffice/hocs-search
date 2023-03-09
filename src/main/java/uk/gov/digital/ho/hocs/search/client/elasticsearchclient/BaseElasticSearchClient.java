@@ -27,15 +27,11 @@ public abstract class BaseElasticSearchClient implements ElasticSearchClient {
 
     protected final RestHighLevelClient client;
 
-    protected final String aliasPrefix;
-
     private final int resultsLimit;
 
     protected BaseElasticSearchClient(RestHighLevelClient client,
-                                      String aliasPrefix,
                                       int resultsLimit) {
         this.client = client;
-        this.aliasPrefix = aliasPrefix;
         this.resultsLimit = resultsLimit;
     }
 

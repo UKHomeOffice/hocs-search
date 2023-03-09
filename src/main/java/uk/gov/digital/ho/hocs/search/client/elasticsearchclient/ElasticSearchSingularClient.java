@@ -9,8 +9,11 @@ import java.util.UUID;
 
 public class ElasticSearchSingularClient extends BaseElasticSearchClient {
 
+    private final String aliasPrefix;
+
     public ElasticSearchSingularClient(RestHighLevelClient client, String aliasPrefix, int resultsLimit) {
-        super(client, aliasPrefix, resultsLimit);
+        super(client, resultsLimit);
+        this.aliasPrefix = aliasPrefix;
     }
 
     @Override
