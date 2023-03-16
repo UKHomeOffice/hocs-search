@@ -1,0 +1,5 @@
+---
+hocs-generic-service:
+  app:
+    env:
+      elasticPrefix: 'wcs-dev-202303161020'
