@@ -10,7 +10,7 @@ trigger:
 
 steps:
   - name: checkout
-    image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.1.0
+    image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.1.1
     commands:
       - git fetch --tags
       - git checkout ${DRONE_TAG}
@@ -18,7 +18,7 @@ steps:
 
   - &deploy
     name: cs-dev
-    image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.1.0
+    image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.1.1
     environment:
       CHART_NAME: hocs-search
       CHART_VERSION: ^6.0.0
@@ -63,7 +63,7 @@ steps:
 
   - &deploy-consumer
     name: cs-dev-consumer
-    image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.1.0
+    image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.1.1
     environment:
       CHART_NAME: hocs-search-consumer
       CHART_VERSION: ^5.0.0
