@@ -61,7 +61,10 @@ class.
 The service can then be accessed at ```http://localhost:8088```.
 
 You need to specify appropriate Spring profiles.
-Paste `development,localstack` into the "Active profiles" box of your run configuration.
+Paste `development,localstack,consumer` into the "Active profiles" box of your run configuration.
+
+The `consumer` profile ensures messages are ingested and processed from the search queue.
+As a deployment the search service can be run in a provider (providing the capability of searching the index to users) mode, consumer (ingestion of messages) mode, or both.
 
 ## Versioning
 
