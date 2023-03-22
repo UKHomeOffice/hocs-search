@@ -1,11 +1,11 @@
 package uk.gov.digital.ho.hocs.search.aws.listeners.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.opensearch.action.get.GetRequest;
+import org.opensearch.client.RequestOptions;
+import org.opensearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;

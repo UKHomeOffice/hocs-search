@@ -1,14 +1,14 @@
 package uk.gov.digital.ho.hocs.search.api;
 
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensearch.index.query.BoolQueryBuilder;
+import org.opensearch.index.query.QueryBuilder;
+import org.opensearch.index.query.QueryBuilders;
 import uk.gov.digital.ho.hocs.search.api.dto.DateRangeDto;
 import uk.gov.digital.ho.hocs.search.domain.repositories.FieldQueryTypeMappingRepository;
 

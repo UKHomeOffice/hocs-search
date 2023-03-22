@@ -1,7 +1,7 @@
 package uk.gov.digital.ho.hocs.search.client.elasticsearchclient;
 
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.opensearch.client.RestHighLevelClient;
+import org.opensearch.index.query.BoolQueryBuilder;
 
 import java.util.List;
 import java.util.Map;
