@@ -2,4 +2,4 @@
 hocs-generic-service:
   app:
     env:
-      elasticPrefix: 'wcs-dev-202303161020'
+      elasticPrefix: 'wcs-dev-202303221400'
