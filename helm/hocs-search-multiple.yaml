@@ -11,4 +11,4 @@ hocs-generic-service:
       requests:
         memory: 512Mi
     env:
-      elasticPrefix: 'cs-dev-202303101500'
+      elasticPrefix: 'cs-dev-202303221400'
