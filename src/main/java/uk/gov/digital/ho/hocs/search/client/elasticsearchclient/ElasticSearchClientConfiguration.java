@@ -1,6 +1,6 @@
 package uk.gov.digital.ho.hocs.search.client.elasticsearchclient;
 
-import org.elasticsearch.client.RestHighLevelClient;
+import org.opensearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

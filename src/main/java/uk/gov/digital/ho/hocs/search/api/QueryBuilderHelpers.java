@@ -1,7 +1,9 @@
 package uk.gov.digital.ho.hocs.search.api;
 
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.index.query.*;
+import org.opensearch.index.query.ExistsQueryBuilder;
+import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.index.query.WildcardQueryBuilder;
 
 @Slf4j
 class QueryBuilderHelpers {
