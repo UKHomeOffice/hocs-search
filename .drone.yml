@@ -20,8 +20,8 @@ steps:
     name: cs-dev
     image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.1.1
     environment:
-      CHART_NAME: hocs-search
-      CHART_VERSION: ^6.0.0
+      CHART_NAME: hocs-search-multiple
+      CHART_VERSION: ^1.0.0
       KUBE_CLUSTER: acp-notprod
       KUBE_NAMESPACE: cs-dev
       KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
@@ -37,36 +37,18 @@ steps:
     name: wcs-dev
     environment:
       KUBE_NAMESPACE: wcs-dev
+    commands:
+      - commands:
+          - ./ci/helm/helm-chart-deploy.sh --values ./helm/hocs-search.yaml --values ./helm/wcs/hocs-search.yaml
     depends_on:
       - cs-dev
-
-  - <<: *deploy
-    name: cs-dev-multiple
-    environment:
-      CHART_NAME: hocs-search-multiple
-      CHART_VERSION: ^1.0.0
-    commands:
-      - ./ci/helm/helm-chart-deploy.sh --values ./helm/hocs-search-multiple.yaml
-    depends_on:
-      - wcs-dev
-
-  - <<: *deploy
-    name: wcs-dev-multiple
-    environment:
-      CHART_NAME: hocs-search-multiple
-      CHART_VERSION: ^1.0.0
-      KUBE_NAMESPACE: wcs-dev
-    commands:
-      - ./ci/helm/helm-chart-deploy.sh --values ./helm/hocs-search-multiple.yaml --values ./helm/wcs/hocs-search-multiple.yaml
-    depends_on:
-      - cs-dev-multiple
 
   - &deploy-consumer
     name: cs-dev-consumer
     image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.1.1
     environment:
-      CHART_NAME: hocs-search-consumer
-      CHART_VERSION: ^5.0.0
+      CHART_NAME: hocs-search-multiple-consumer
+      CHART_VERSION: ^1.0.0
       KUBE_CLUSTER: acp-notprod
       KUBE_NAMESPACE: cs-dev
       KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
@@ -82,26 +64,7 @@ steps:
     name: wcs-dev-consumer
     environment:
       KUBE_NAMESPACE: wcs-dev
+    commands:
+      - ./ci/helm/helm-chart-deploy.sh --values ./helm/hocs-search-consumer.yaml --values ./helm/wcs/hocs-search-consumer.yaml
     depends_on:
       - cs-dev-consumer
-
-  - <<: *deploy-consumer
-    name: cs-dev-multiple-consumer
-    environment:
-      CHART_NAME: hocs-search-multiple-consumer
-      CHART_VERSION: ^1.0.0
-    commands:
-      - ./ci/helm/helm-chart-deploy.sh --values ./helm/hocs-search-multiple-consumer.yaml
-    depends_on:
-      - wcs-dev-consumer
-
-  - <<: *deploy-consumer
-    name: wcs-dev-multiple-consumer
-    environment:
-      CHART_NAME: hocs-search-multiple-consumer
-      CHART_VERSION: ^1.0.0
-      KUBE_NAMESPACE: wcs-dev
-    commands:
-      - ./ci/helm/helm-chart-deploy.sh --values ./helm/hocs-search-multiple-consumer.yaml --values ./helm/wcs/hocs-search-multiple-consumer.yaml
-    depends_on:
-      - cs-dev-multiple-consumer
