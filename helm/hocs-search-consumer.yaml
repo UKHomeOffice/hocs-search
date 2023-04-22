@@ -11,4 +11,4 @@ hocs-generic-service:
       requests:
         memory: 512Mi
     env:
-      elasticMode: 'SINGULAR'
+      elasticPrefix: 'cs-dev-202303270930'
