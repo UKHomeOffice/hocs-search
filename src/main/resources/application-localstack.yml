@@ -16,4 +16,3 @@ aws:
     port: 4566
     results-limit: 500
     index-prefix: local
-    mode: SINGULAR

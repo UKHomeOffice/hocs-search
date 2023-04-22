@@ -14,7 +14,7 @@ import uk.gov.digital.ho.hocs.search.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.SomuItemDto;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
 import uk.gov.digital.ho.hocs.search.api.helpers.ObjectMapperConverterHelper;
-import uk.gov.digital.ho.hocs.search.client.elasticsearchclient.ElasticSearchClient;
+import uk.gov.digital.ho.hocs.search.client.ElasticSearchClient;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.CorrespondentCaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.SomuCaseData;
@@ -74,8 +74,9 @@ public class CaseDataService {
 
         var caseData = new CaseData(createCaseRequest);
         var caseDataMap = ObjectMapperConverterHelper.convertObjectToMap(objectMapper, caseData);
-        elasticSearchClient.update(caseUUID,
+        elasticSearchClient.update(
             createCaseRequest.getType(),
+            caseUUID,
             caseDataMap);
 
         log.info("Created case {}", caseUUID, value(EVENT, SEARCH_CASE_CREATED));
@@ -86,8 +87,9 @@ public class CaseDataService {
 
         var caseData = new CaseData(updateCaseRequest);
         var caseDataMap = ObjectMapperConverterHelper.convertObjectToMap(objectMapper, caseData);
-        elasticSearchClient.update(caseUUID,
+        elasticSearchClient.update(
             updateCaseRequest.getType(),
+            caseUUID,
             caseDataMap);
 
         log.info("Updated case {}", caseUUID, value(EVENT, SEARCH_CASE_UPDATED));
@@ -97,8 +99,9 @@ public class CaseDataService {
         log.debug("Deleting ({}) case {}", deleteCaseRequest.getDeleted(), caseUUID);
 
         Map<String, Object> objectMap = Map.of("deleted", deleteCaseRequest.getDeleted());
-        elasticSearchClient.update(caseUUID,
+        elasticSearchClient.update(
             caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            caseUUID,
             objectMap);
 
         log.info("Deleted ({}) case {}", deleteCaseRequest.getDeleted(), caseUUID, value(EVENT, SEARCH_CASE_DELETED));
@@ -108,8 +111,9 @@ public class CaseDataService {
         log.debug("Complete case {}", caseUUID);
 
         Map<String, Object> objectMap = Map.of("completed", true);
-        elasticSearchClient.update(caseUUID,
+        elasticSearchClient.update(
             caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            caseUUID,
             objectMap);
 
         log.info("Completed case {}", caseUUID, value(EVENT, SEARCH_CASE_COMPLETED));
@@ -122,8 +126,9 @@ public class CaseDataService {
             objectMapper.convertValue(getCaseData(caseUUID), CorrespondentCaseData.class);
         correspondentCaseData.addCorrespondent(correspondentDetailsDto);
 
-        elasticSearchClient.update(caseUUID,
+        elasticSearchClient.update(
             caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            caseUUID,
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, correspondentCaseData));
 
         log.info("Added correspondent {} to case {}", correspondentDetailsDto.getUuid(), caseUUID,
@@ -137,8 +142,8 @@ public class CaseDataService {
             objectMapper.convertValue(getCaseData(caseUUID), CorrespondentCaseData.class);
         correspondentCaseData.removeCorrespondent(correspondentDetailsDto.getUuid());
 
-        elasticSearchClient.update(caseUUID,
-            caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+        elasticSearchClient.update(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            caseUUID,
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, correspondentCaseData));
 
         log.info("Deleted correspondent {} from case {}", correspondentDetailsDto.getUuid(), caseUUID,
@@ -152,8 +157,8 @@ public class CaseDataService {
             objectMapper.convertValue(getCaseData(caseUUID), CorrespondentCaseData.class);
         correspondentCaseData.updateCorrespondent(correspondentDetailsDto);
 
-        elasticSearchClient.update(caseUUID,
-            caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+        elasticSearchClient.update(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            caseUUID,
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, correspondentCaseData));
 
         log.info("Updating correspondent {} for case {}", correspondentDetailsDto.getUuid(), caseUUID,
@@ -167,8 +172,8 @@ public class CaseDataService {
             objectMapper.convertValue(getCaseData(caseUUID), TopicCaseData.class);
         topicCaseData.addTopic(Topic.from(createTopicRequest));
 
-        elasticSearchClient.update(caseUUID,
-            caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+        elasticSearchClient.update(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            caseUUID,
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, topicCaseData));
 
         log.info("Added topic {} to case {}", createTopicRequest.getUuid(), caseUUID,
@@ -181,8 +186,8 @@ public class CaseDataService {
             objectMapper.convertValue(getCaseData(caseUUID), TopicCaseData.class);
         topicCaseData.removeTopic(deleteTopicRequest.getUuid());
 
-        elasticSearchClient.update(caseUUID,
-            caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+        elasticSearchClient.update(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            caseUUID,
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, topicCaseData));
 
         log.info("Deleted topic {} from case {}. Event {}", deleteTopicRequest.getUuid(), caseUUID,
@@ -196,8 +201,8 @@ public class CaseDataService {
             objectMapper.convertValue(getCaseData(caseUUID), SomuCaseData.class);
         somuCaseData.addSomuItem(SomuItem.from(somuItemDto));
 
-        elasticSearchClient.update(caseUUID,
-            caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+        elasticSearchClient.update(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            caseUUID,
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, somuCaseData));
 
         log.info("Added somu item {} to case {}. Event {}", somuItemDto.getUuid(), caseUUID,
@@ -211,8 +216,9 @@ public class CaseDataService {
             objectMapper.convertValue(getCaseData(caseUUID), SomuCaseData.class);
         somuCaseData.removeSomuItem(somuItem.getSomuTypeUuid());
 
-        elasticSearchClient.update(caseUUID,
+        elasticSearchClient.update(
             caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            caseUUID,
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, somuCaseData));
 
         log.info("Deleted somu item {} from case {}. Event {}", somuItem.getUuid(), caseUUID,
@@ -226,8 +232,8 @@ public class CaseDataService {
             objectMapper.convertValue(getCaseData(caseUUID), SomuCaseData.class);
         somuCaseData.updateSomuItem(SomuItem.from(somuItemDto));
 
-        elasticSearchClient.update(caseUUID,
-            caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+        elasticSearchClient.update(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+            caseUUID,
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, somuCaseData));
 
         log.info("Updated somu item {} from case {}. Event {}", somuItemDto.getUuid(), caseUUID,
@@ -272,8 +278,8 @@ public class CaseDataService {
 
     private Map<String, Object> getCaseData(UUID caseUuid) {
         log.debug("Fetching Case {}", caseUuid);
-        return elasticSearchClient.findById(caseUuid,
-                caseTypeMappingRepository.getCaseTypeByShortCode(caseUuid));
+        return elasticSearchClient.findById(caseTypeMappingRepository.getCaseTypeByShortCode(caseUuid),
+            caseUuid);
     }
 
     private CaseData convertMapToCaseData(Map<String, Object> caseData) {
