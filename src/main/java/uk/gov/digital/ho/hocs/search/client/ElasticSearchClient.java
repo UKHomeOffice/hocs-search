@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.search.client.elasticsearchclient;
+package uk.gov.digital.ho.hocs.search.client;
 
 import lombok.extern.slf4j.Slf4j;
 import org.opensearch.action.get.GetRequest;
@@ -10,6 +10,8 @@ import org.opensearch.client.RestHighLevelClient;
 import org.opensearch.index.query.BoolQueryBuilder;
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.builder.SearchSourceBuilder;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.search.domain.exceptions.ApplicationExceptions;
 
 import java.io.IOException;
@@ -22,21 +24,26 @@ import java.util.stream.Stream;
 import static uk.gov.digital.ho.hocs.search.application.LogEvent.CASE_NOT_FOUND;
 import static uk.gov.digital.ho.hocs.search.application.LogEvent.CASE_UPDATE_FAILED;
 
+@Service
 @Slf4j
-public abstract class BaseElasticSearchClient implements ElasticSearchClient {
+public class ElasticSearchClient {
 
     protected final RestHighLevelClient client;
 
     private final int resultsLimit;
 
-    protected BaseElasticSearchClient(RestHighLevelClient client,
-                                      int resultsLimit) {
+    private final String aliasPrefix;
+
+    protected ElasticSearchClient(RestHighLevelClient client,
+                                  @Value("${aws.es.index-prefix}") String aliasPrefix,
+                                  @Value("${aws.es.results-limit}") int resultsLimit) {
         this.client = client;
+        this.aliasPrefix = aliasPrefix;
         this.resultsLimit = resultsLimit;
     }
 
-    protected Map<String, Object> findById(String alias, UUID caseUuid) {
-        var getRequest = new GetRequest(alias, caseUuid.toString());
+    public Map<String, Object> findById(String indexType, UUID documentId) {
+        var getRequest = new GetRequest(getReadTypeAlias(indexType), documentId.toString());
 
         try {
             var getResponse = client.get(getRequest, RequestOptions.DEFAULT);
@@ -44,12 +51,12 @@ public abstract class BaseElasticSearchClient implements ElasticSearchClient {
             return responseMap == null ? Collections.emptyMap() : responseMap;
         } catch (IOException e) {
             throw new ApplicationExceptions.EntityNotFoundException(
-                String.format("Unable to find Case: %s. %s", caseUuid, e), CASE_NOT_FOUND);
+                String.format("Unable to find document: %s. %s", documentId, e), CASE_NOT_FOUND);
         }
     }
 
-    protected void update(String alias, UUID caseUuid, Map<String, Object> data) {
-        var updateRequest = new UpdateRequest(alias, caseUuid.toString())
+    public void update(String indexType, UUID documentId, Map<String, Object> data) {
+        var updateRequest = new UpdateRequest(getWriteTypeAlias(indexType), documentId.toString())
             .docAsUpsert(true)
             .doc(data);
 
@@ -57,15 +64,15 @@ public abstract class BaseElasticSearchClient implements ElasticSearchClient {
             client.update(updateRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
             throw new ApplicationExceptions.ResourceServerException(
-                String.format("Unable to update Case: %s. %s", caseUuid, e), CASE_UPDATE_FAILED);
+                String.format("Unable to update document: %s. %s", documentId, e), CASE_UPDATE_FAILED);
         }
     }
 
-    protected List<Map<String, Object>> search(String alias, BoolQueryBuilder query) {
+    public List<Map<String, Object>> search(BoolQueryBuilder query) {
         var searchSourceBuilder = new SearchSourceBuilder()
             .query(query)
             .size(resultsLimit);
-        var searchRequest = new SearchRequest(new String[] { alias }, searchSourceBuilder);
+        var searchRequest = new SearchRequest(new String[] { getReadAlias() }, searchSourceBuilder);
 
         try {
             var searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
@@ -83,6 +90,18 @@ public abstract class BaseElasticSearchClient implements ElasticSearchClient {
 
         var searchHit = response.getHits().getHits();
         return Stream.of(searchHit).map(SearchHit::getSourceAsMap).toList();
+    }
+
+    private String getWriteTypeAlias(String type) {
+        return String.format("%s-%s-write", aliasPrefix, type.toLowerCase());
+    }
+
+    private String getReadAlias() {
+        return String.format("%s-read", aliasPrefix);
+    }
+
+    private String getReadTypeAlias(String type) {
+        return String.format("%s-%s-read", aliasPrefix, type.toLowerCase());
     }
 
 }
