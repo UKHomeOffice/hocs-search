@@ -42,14 +42,14 @@ class CreateSearchTest extends BaseAwsSqsIntegrationTest {
     void consumeMessageFromQueue() throws IOException {
         var caseUuid = CaseTypeUuidHelper.generateCaseTypeUuid("a1");
 
-        CreateCaseRequest createCaseRequest = new CreateCaseRequest(caseUuid, LocalDateTime.now(), "MIN", "MIN12345",
+        CreateCaseRequest createCaseRequest = new CreateCaseRequest(caseUuid, LocalDateTime.now(), "min", "MIN12345",
             LocalDate.now(), LocalDate.now(), Collections.EMPTY_MAP);
 
         String data = objectMapper.writeValueAsString(createCaseRequest);
         IndexDataChangeRequest request = new IndexDataChangeRequest(caseUuid, data, DataChangeType.CASE_CREATED.value);
         String message = objectMapper.writeValueAsString(request);
 
-        var elasticRequest = new GetRequest(String.format("%s-%s", prefix, "case"), caseUuid.toString());
+        var elasticRequest = new GetRequest(String.format("%s-%s-%s", prefix, "min", "read"), caseUuid.toString());
         assertThat(client.get(elasticRequest, RequestOptions.DEFAULT).getSource()).isNull();
 
         amazonSQSAsync.sendMessage(searchQueue, message);
