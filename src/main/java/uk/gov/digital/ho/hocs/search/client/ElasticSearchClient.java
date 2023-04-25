@@ -2,8 +2,9 @@ package uk.gov.digital.ho.hocs.search.client;
 
 import lombok.extern.slf4j.Slf4j;
 import org.opensearch.action.get.GetRequest;
+import org.opensearch.action.search.MultiSearchRequest;
+import org.opensearch.action.search.MultiSearchResponse;
 import org.opensearch.action.search.SearchRequest;
-import org.opensearch.action.search.SearchResponse;
 import org.opensearch.action.update.UpdateRequest;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.client.RestHighLevelClient;
@@ -15,11 +16,11 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.search.domain.exceptions.ApplicationExceptions;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import static uk.gov.digital.ho.hocs.search.application.LogEvent.CASE_NOT_FOUND;
 import static uk.gov.digital.ho.hocs.search.application.LogEvent.CASE_UPDATE_FAILED;
@@ -68,14 +69,23 @@ public class ElasticSearchClient {
         }
     }
 
-    public List<Map<String, Object>> search(BoolQueryBuilder query) {
-        var searchSourceBuilder = new SearchSourceBuilder()
-            .query(query)
-            .size(resultsLimit);
-        var searchRequest = new SearchRequest(new String[] { getReadAlias() }, searchSourceBuilder);
+    public List<Map<String, Object>> search(List<String> indexes, BoolQueryBuilder query) {
+        if (indexes == null || indexes.isEmpty()) {
+            log.warn("Search failed, returning empty set. No indexes provided.");
+            return Collections.emptyList();
+        }
+
+        var searchRequest = new MultiSearchRequest();
+
+        indexes.forEach(index -> {
+            var searchSourceBuilder = new SearchSourceBuilder()
+                .query(query)
+                .size(resultsLimit);
+            searchRequest.add(new SearchRequest(new String[] { getReadTypeAlias(index) }, searchSourceBuilder));
+        });
 
         try {
-            var searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+            var searchResponse = client.msearch(searchRequest, RequestOptions.DEFAULT);
             return getSearchResult(searchResponse);
         } catch (IOException e) {
             log.warn("Search failed, returning empty set. {}", e.toString());
@@ -83,21 +93,32 @@ public class ElasticSearchClient {
         }
     }
 
-    private List<Map<String, Object>> getSearchResult(SearchResponse response) {
-        if (response == null) {
+    private List<Map<String, Object>> getSearchResult(MultiSearchResponse response) {
+        if (response == null || response.getResponses() == null) {
             return Collections.emptyList();
         }
 
-        var searchHit = response.getHits().getHits();
-        return Stream.of(searchHit).map(SearchHit::getSourceAsMap).toList();
+        List<Map<String, Object>> results = new ArrayList<>();
+        for (var searchResponse : response.getResponses()) {
+            if (searchResponse.isFailure()) {
+                log.warn("Search failed, returning empty set. {}", searchResponse.getFailureMessage());
+                return Collections.emptyList();
+            }
+
+            for (SearchHit hit : searchResponse.getResponse().getHits()) {
+                results.add(hit.getSourceAsMap());
+
+                if (results.size() == resultsLimit) {
+                    return results;
+                }
+            }
+        }
+
+        return results;
     }
 
     private String getWriteTypeAlias(String type) {
         return String.format("%s-%s-write", aliasPrefix, type.toLowerCase());
-    }
-
-    private String getReadAlias() {
-        return String.format("%s-read", aliasPrefix);
     }
 
     private String getReadTypeAlias(String type) {

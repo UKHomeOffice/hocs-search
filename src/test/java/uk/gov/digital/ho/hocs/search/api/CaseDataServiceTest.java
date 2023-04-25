@@ -229,7 +229,7 @@ class CaseDataServiceTest {
         SearchRequest searchRequest = new SearchRequest();
         caseDataService.search(searchRequest);
 
-        verify(elasticSearchClient, times(0)).search(any());
+        verify(elasticSearchClient, times(0)).search(any(), any());
     }
 
 }

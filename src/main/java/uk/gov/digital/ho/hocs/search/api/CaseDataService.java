@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.search.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.undertow.util.BadRequestException;
 import lombok.extern.slf4j.Slf4j;
 import org.opensearch.index.query.QueryBuilders;
 import org.springframework.stereotype.Service;
@@ -242,6 +243,7 @@ public class CaseDataService {
 
     public Set<UUID> search(SearchRequest request) {
         log.info("Searching for case {}", request.toString(), value(EVENT, SEARCH_REQUEST));
+
         HocsQueryBuilder hocsQueryBuilder =
             new HocsQueryBuilder(QueryBuilders.boolQuery(), fieldQueryTypeMappingRepository)
                 .reference(request.getReference(), request.getCaseTypes())
@@ -263,7 +265,7 @@ public class CaseDataService {
             return Collections.emptySet();
         }
 
-        var cases = elasticSearchClient.search(hocsQueryBuilder.build());
+        var cases = elasticSearchClient.search(request.getCaseTypes(), hocsQueryBuilder.build());
         var casesUuids =
             cases.stream()
                 .map(caseMap -> {
