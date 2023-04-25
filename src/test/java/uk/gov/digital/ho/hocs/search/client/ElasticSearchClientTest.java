@@ -12,13 +12,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensearch.action.get.GetRequest;
 import org.opensearch.action.get.GetResponse;
+import org.opensearch.action.search.MultiSearchRequest;
 import org.opensearch.action.update.UpdateRequest;
 import org.opensearch.client.RestHighLevelClient;
+import org.opensearch.index.query.BoolQueryBuilder;
 import uk.gov.digital.ho.hocs.search.api.dto.AddressDto;
 import uk.gov.digital.ho.hocs.search.api.dto.CorrespondentDetailsDto;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.search.api.helpers.ObjectMapperConverterHelper;
-import uk.gov.digital.ho.hocs.search.client.ElasticSearchClient;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.CorrespondentCaseData;
 
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -45,14 +47,14 @@ class ElasticSearchClientTest {
     private ArgumentCaptor<GetRequest> getRequestArgumentCaptor;
 
     @Captor
-    private ArgumentCaptor<UpdateRequest> indexRequestArgumentCaptor;
+    private ArgumentCaptor<UpdateRequest> updateRequestArgumentCaptor;
+
+    @Captor
+    private ArgumentCaptor<MultiSearchRequest> multiSearchRequestArgumentCaptor;
 
     private ElasticSearchClient elasticSearchClient;
 
     private ObjectMapper objectMapper;
-
-    @Captor
-    ArgumentCaptor<UpdateRequest> updateRequestArgumentCaptor;
 
     private final CorrespondentDetailsDto correspondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(),
         LocalDateTime.now(), "LAW", "FULLNAME",
@@ -74,11 +76,11 @@ class ElasticSearchClientTest {
             new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", LocalDate.now(),
                 LocalDate.now(), Map.of()));
 
-        when(restHighLevelClient.update(indexRequestArgumentCaptor.capture(), any())).thenReturn(null);
+        when(restHighLevelClient.update(updateRequestArgumentCaptor.capture(), any())).thenReturn(null);
 
         elasticSearchClient.update(caseData.getType(), caseData.getCaseUUID(), Map.of());
 
-        assertThat(indexRequestArgumentCaptor.getValue().index()).isEqualTo("test-min-write");
+        assertThat(updateRequestArgumentCaptor.getValue().index()).isEqualTo("test-min-write");
     }
 
     @Test
@@ -107,6 +109,16 @@ class ElasticSearchClientTest {
 
         Map<String, Object> sourceMap = updateRequestArgumentCaptor.getValue().doc().sourceAsMap();
         AssertionsForClassTypes.assertThat(sourceMap).isEqualTo(obj);
+    }
+
+
+    @Test
+    void shouldOnlySearchSpecifiedIndexes() throws IOException {
+        elasticSearchClient.search(List.of("TEST", "TEST2"), new BoolQueryBuilder());
+
+        verify(restHighLevelClient).msearch(multiSearchRequestArgumentCaptor.capture(), any());
+
+        assertThat(multiSearchRequestArgumentCaptor.getValue().requests()).hasSize(2);
     }
 
 }
