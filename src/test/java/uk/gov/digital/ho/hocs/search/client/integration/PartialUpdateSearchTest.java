@@ -33,8 +33,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-@ActiveProfiles({"localstack", "consumer"})
-class PartialUpdateSearchTest extends BaseAwsSqsIntegrationTest {
+@ActiveProfiles({"localstack"})
+class PartialUpdateSearchTest {
 
     @Autowired
     public ObjectMapper objectMapper;
