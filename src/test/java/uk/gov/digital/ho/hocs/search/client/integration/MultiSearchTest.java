@@ -3,9 +3,6 @@ package uk.gov.digital.ho.hocs.search.client.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.opensearch.action.update.UpdateRequest;
 import org.opensearch.index.query.BoolQueryBuilder;
 import org.opensearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +26,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-@ActiveProfiles({"localstack", "consumer"})
-class MultiSearchTest extends BaseAwsSqsIntegrationTest {
+@ActiveProfiles({"localstack"})
+class MultiSearchTest {
 
     @Autowired
     public ObjectMapper objectMapper;
