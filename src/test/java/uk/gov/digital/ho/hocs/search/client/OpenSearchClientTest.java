@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -38,7 +37,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ElasticSearchClientTest {
+class OpenSearchClientTest {
 
     @Mock
     private RestHighLevelClient restHighLevelClient;
@@ -52,7 +51,7 @@ class ElasticSearchClientTest {
     @Captor
     private ArgumentCaptor<MultiSearchRequest> multiSearchRequestArgumentCaptor;
 
-    private ElasticSearchClient elasticSearchClient;
+    private OpenSearchClient openSearchClient;
 
     private ObjectMapper objectMapper;
 
@@ -67,18 +66,18 @@ class ElasticSearchClientTest {
             .setDateFormat(new SimpleDateFormat("yyyy-MM-dd"))
             .registerModule(new JavaTimeModule());
 
-        elasticSearchClient = new ElasticSearchClient(restHighLevelClient, "test", 10);
+        openSearchClient = new OpenSearchClient(restHighLevelClient, "test", 10);
     }
 
     @Test
     void shouldWriteFromCorrectAlias() throws IOException {
         CaseData caseData = new CaseData(
-            new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", LocalDate.now(),
+            new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "MIN", "REF", null, LocalDate.now(),
                 LocalDate.now(), Map.of()));
 
         when(restHighLevelClient.update(updateRequestArgumentCaptor.capture(), any())).thenReturn(null);
 
-        elasticSearchClient.update(caseData.getType(), caseData.getCaseUUID(), Map.of());
+        openSearchClient.update(caseData.getType(), caseData.getCaseUUID(), Map.of());
 
         assertThat(updateRequestArgumentCaptor.getValue().index()).isEqualTo("test-min-write");
     }
@@ -89,7 +88,7 @@ class ElasticSearchClientTest {
 
         when(restHighLevelClient.get(getRequestArgumentCaptor.capture(), any())).thenReturn(getResponse);
 
-        elasticSearchClient.findById("MIN", UUID.randomUUID());
+        openSearchClient.findById("MIN", UUID.randomUUID());
 
         assertThat(getRequestArgumentCaptor.getValue().index()).isEqualTo("test-min-read");
     }
@@ -103,7 +102,7 @@ class ElasticSearchClientTest {
 
         Map<String, Object> obj = ObjectMapperConverterHelper.convertObjectToMap(objectMapper, correspondentCaseData);
 
-        elasticSearchClient.update("TEST", UUID.randomUUID() , obj);
+        openSearchClient.update("TEST", UUID.randomUUID() , obj);
 
         verify(restHighLevelClient).update(updateRequestArgumentCaptor.capture(), any());
 
@@ -114,7 +113,9 @@ class ElasticSearchClientTest {
 
     @Test
     void shouldOnlySearchSpecifiedIndexes() throws IOException {
-        elasticSearchClient.search(List.of("TEST", "TEST2"), new BoolQueryBuilder());
+        Map<String, BoolQueryBuilder> searches = Map.of("TEST", new BoolQueryBuilder(), "TEST2", new BoolQueryBuilder());
+
+        openSearchClient.search(searches);
 
         verify(restHighLevelClient).msearch(multiSearchRequestArgumentCaptor.capture(), any());
 

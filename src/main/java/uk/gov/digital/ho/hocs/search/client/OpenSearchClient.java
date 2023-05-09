@@ -27,7 +27,7 @@ import static uk.gov.digital.ho.hocs.search.application.LogEvent.CASE_UPDATE_FAI
 
 @Service
 @Slf4j
-public class ElasticSearchClient {
+public class OpenSearchClient {
 
     protected final RestHighLevelClient client;
 
@@ -35,9 +35,9 @@ public class ElasticSearchClient {
 
     private final String aliasPrefix;
 
-    protected ElasticSearchClient(RestHighLevelClient client,
-                                  @Value("${aws.es.index-prefix}") String aliasPrefix,
-                                  @Value("${aws.es.results-limit}") int resultsLimit) {
+    protected OpenSearchClient(RestHighLevelClient client,
+                               @Value("${aws.es.index-prefix}") String aliasPrefix,
+                               @Value("${aws.es.results-limit}") int resultsLimit) {
         this.client = client;
         this.aliasPrefix = aliasPrefix;
         this.resultsLimit = resultsLimit;
@@ -69,15 +69,15 @@ public class ElasticSearchClient {
         }
     }
 
-    public List<Map<String, Object>> search(List<String> indexes, BoolQueryBuilder query) {
-        if (indexes == null || indexes.isEmpty()) {
+    public List<Map<String, Object>> search(Map<String, BoolQueryBuilder> queries) {
+        if (queries == null || queries.isEmpty()) {
             log.warn("Search failed, returning empty set. No indexes provided.");
             return Collections.emptyList();
         }
 
         var searchRequest = new MultiSearchRequest();
 
-        indexes.forEach(index -> {
+        queries.forEach((index, query) -> {
             var searchSourceBuilder = new SearchSourceBuilder()
                 .query(query)
                 .size(resultsLimit);
