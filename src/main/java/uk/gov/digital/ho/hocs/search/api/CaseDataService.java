@@ -2,9 +2,8 @@ package uk.gov.digital.ho.hocs.search.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.undertow.util.BadRequestException;
 import lombok.extern.slf4j.Slf4j;
-import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.index.query.BoolQueryBuilder;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.search.api.dto.CorrespondentDetailsDto;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
@@ -15,7 +14,8 @@ import uk.gov.digital.ho.hocs.search.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.SomuItemDto;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
 import uk.gov.digital.ho.hocs.search.api.helpers.ObjectMapperConverterHelper;
-import uk.gov.digital.ho.hocs.search.client.ElasticSearchClient;
+import uk.gov.digital.ho.hocs.search.client.OpenSearchClient;
+import uk.gov.digital.ho.hocs.search.client.CaseQueryFactory;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.CorrespondentCaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.SomuCaseData;
@@ -23,9 +23,10 @@ import uk.gov.digital.ho.hocs.search.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.search.domain.model.Topic;
 import uk.gov.digital.ho.hocs.search.domain.model.TopicCaseData;
 import uk.gov.digital.ho.hocs.search.domain.repositories.CaseTypeMappingRepository;
-import uk.gov.digital.ho.hocs.search.domain.repositories.FieldQueryTypeMappingRepository;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -54,20 +55,20 @@ public class CaseDataService {
 
     private final ObjectMapper objectMapper;
 
-    private final ElasticSearchClient elasticSearchClient;
+    private final OpenSearchClient openSearchClient;
 
     private final CaseTypeMappingRepository caseTypeMappingRepository;
 
-    private final FieldQueryTypeMappingRepository fieldQueryTypeMappingRepository;
+    private final CaseQueryFactory caseQueryFactory;
 
     public CaseDataService(ObjectMapper objectMapper,
-                           ElasticSearchClient elasticSearchClient,
+                           OpenSearchClient openSearchClient,
                            CaseTypeMappingRepository caseTypeMappingRepository,
-                           FieldQueryTypeMappingRepository fieldQueryTypeMappingRepository) {
+                           CaseQueryFactory caseQueryFactory) {
         this.objectMapper = objectMapper;
-        this.elasticSearchClient = elasticSearchClient;
+        this.openSearchClient = openSearchClient;
         this.caseTypeMappingRepository = caseTypeMappingRepository;
-        this.fieldQueryTypeMappingRepository = fieldQueryTypeMappingRepository;
+        this.caseQueryFactory = caseQueryFactory;
     }
 
     public void createCase(UUID caseUUID, CreateCaseRequest createCaseRequest) {
@@ -75,7 +76,7 @@ public class CaseDataService {
 
         var caseData = new CaseData(createCaseRequest);
         var caseDataMap = ObjectMapperConverterHelper.convertObjectToMap(objectMapper, caseData);
-        elasticSearchClient.update(
+        openSearchClient.update(
             createCaseRequest.getType(),
             caseUUID,
             caseDataMap);
@@ -88,7 +89,7 @@ public class CaseDataService {
 
         var caseData = new CaseData(updateCaseRequest);
         var caseDataMap = ObjectMapperConverterHelper.convertObjectToMap(objectMapper, caseData);
-        elasticSearchClient.update(
+        openSearchClient.update(
             updateCaseRequest.getType(),
             caseUUID,
             caseDataMap);
@@ -100,7 +101,7 @@ public class CaseDataService {
         log.debug("Deleting ({}) case {}", deleteCaseRequest.getDeleted(), caseUUID);
 
         Map<String, Object> objectMap = Map.of("deleted", deleteCaseRequest.getDeleted());
-        elasticSearchClient.update(
+        openSearchClient.update(
             caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
             caseUUID,
             objectMap);
@@ -112,7 +113,7 @@ public class CaseDataService {
         log.debug("Complete case {}", caseUUID);
 
         Map<String, Object> objectMap = Map.of("completed", true);
-        elasticSearchClient.update(
+        openSearchClient.update(
             caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
             caseUUID,
             objectMap);
@@ -127,7 +128,7 @@ public class CaseDataService {
             objectMapper.convertValue(getCaseData(caseUUID), CorrespondentCaseData.class);
         correspondentCaseData.addCorrespondent(correspondentDetailsDto);
 
-        elasticSearchClient.update(
+        openSearchClient.update(
             caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
             caseUUID,
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, correspondentCaseData));
@@ -143,7 +144,7 @@ public class CaseDataService {
             objectMapper.convertValue(getCaseData(caseUUID), CorrespondentCaseData.class);
         correspondentCaseData.removeCorrespondent(correspondentDetailsDto.getUuid());
 
-        elasticSearchClient.update(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+        openSearchClient.update(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
             caseUUID,
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, correspondentCaseData));
 
@@ -158,7 +159,7 @@ public class CaseDataService {
             objectMapper.convertValue(getCaseData(caseUUID), CorrespondentCaseData.class);
         correspondentCaseData.updateCorrespondent(correspondentDetailsDto);
 
-        elasticSearchClient.update(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+        openSearchClient.update(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
             caseUUID,
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, correspondentCaseData));
 
@@ -173,7 +174,7 @@ public class CaseDataService {
             objectMapper.convertValue(getCaseData(caseUUID), TopicCaseData.class);
         topicCaseData.addTopic(Topic.from(createTopicRequest));
 
-        elasticSearchClient.update(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+        openSearchClient.update(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
             caseUUID,
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, topicCaseData));
 
@@ -187,7 +188,7 @@ public class CaseDataService {
             objectMapper.convertValue(getCaseData(caseUUID), TopicCaseData.class);
         topicCaseData.removeTopic(deleteTopicRequest.getUuid());
 
-        elasticSearchClient.update(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+        openSearchClient.update(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
             caseUUID,
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, topicCaseData));
 
@@ -202,7 +203,7 @@ public class CaseDataService {
             objectMapper.convertValue(getCaseData(caseUUID), SomuCaseData.class);
         somuCaseData.addSomuItem(SomuItem.from(somuItemDto));
 
-        elasticSearchClient.update(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+        openSearchClient.update(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
             caseUUID,
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, somuCaseData));
 
@@ -217,7 +218,7 @@ public class CaseDataService {
             objectMapper.convertValue(getCaseData(caseUUID), SomuCaseData.class);
         somuCaseData.removeSomuItem(somuItem.getSomuTypeUuid());
 
-        elasticSearchClient.update(
+        openSearchClient.update(
             caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
             caseUUID,
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, somuCaseData));
@@ -233,7 +234,7 @@ public class CaseDataService {
             objectMapper.convertValue(getCaseData(caseUUID), SomuCaseData.class);
         somuCaseData.updateSomuItem(SomuItem.from(somuItemDto));
 
-        elasticSearchClient.update(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
+        openSearchClient.update(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
             caseUUID,
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, somuCaseData));
 
@@ -242,30 +243,44 @@ public class CaseDataService {
     }
 
     public Set<UUID> search(SearchRequest request) {
-        log.info("Searching for case {}", request.toString(), value(EVENT, SEARCH_REQUEST));
+        log.debug("Searching for case {}", request.toString(), value(EVENT, SEARCH_REQUEST));
 
-        HocsQueryBuilder hocsQueryBuilder =
-            new HocsQueryBuilder(QueryBuilders.boolQuery(), fieldQueryTypeMappingRepository)
-                .reference(request.getReference(), request.getCaseTypes())
-                .caseTypes(request.getCaseTypes())
-                .dateRange(request.getDateReceived())
-                .correspondentAddress1(request.getCorrespondentAddress1())
-                .correspondentEmail(request.getCorrespondentEmail())
-                .correspondentName(request.getCorrespondentName())
-                .correspondentNameNotMember(request.getCorrespondentNameNotMember())
-                .correspondentPostcode(request.getCorrespondentPostcode())
-                .correspondentReference(request.getCorrespondentReference())
-                .correspondentExternalKey(request.getCorrespondentExternalKey())
-                .topic(request.getTopic())
-                .privateOfficeTeam(request.getPrivateOfficeTeamUuid())
-                .dataFields(request.getData())
-                .activeOnlyFlag(request.getActiveOnly());
+        if (request.getCaseTypes() == null || request.getCaseTypes().isEmpty()) {
+            log.error("No case types provided in search request");
+            return new HashSet<>();
+        }
 
-        if (!hocsQueryBuilder.hasClauses()) {
+        Map<String, BoolQueryBuilder> caseTypeQueryBuilders = new HashMap<>();
+        for (String caseType : request.getCaseTypes()) {
+            CaseQueryFactory.CaseQuery query =
+                caseQueryFactory.createCaseQuery()
+                    .reference(request.getReference(), caseType)
+                    .caseTypes(request.getCaseTypes())
+                    .dateRange(request.getDateReceived())
+                    .correspondentAddress1(request.getCorrespondentAddress1())
+                    .correspondentEmail(request.getCorrespondentEmail())
+                    .correspondentName(request.getCorrespondentName())
+                    .correspondentNameNotMember(request.getCorrespondentNameNotMember())
+                    .correspondentPostcode(request.getCorrespondentPostcode())
+                    .correspondentReference(request.getCorrespondentReference())
+                    .correspondentExternalKey(request.getCorrespondentExternalKey())
+                    .topic(request.getTopic())
+                    .privateOfficeTeam(request.getPrivateOfficeTeamUuid())
+                    .dataFields(request.getData())
+                    .activeOnlyFlag(request.getActiveOnly());
+
+            if (!query.hasClauses()) {
+                continue;
+            }
+
+            caseTypeQueryBuilders.put(caseType, query.build());
+        }
+
+        if (caseTypeQueryBuilders.isEmpty()) {
             return Collections.emptySet();
         }
 
-        var cases = elasticSearchClient.search(request.getCaseTypes(), hocsQueryBuilder.build());
+        var cases = openSearchClient.search(caseTypeQueryBuilders);
         var casesUuids =
             cases.stream()
                 .map(caseMap -> {
@@ -280,7 +295,7 @@ public class CaseDataService {
 
     private Map<String, Object> getCaseData(UUID caseUuid) {
         log.debug("Fetching Case {}", caseUuid);
-        return elasticSearchClient.findById(caseTypeMappingRepository.getCaseTypeByShortCode(caseUuid),
+        return openSearchClient.findById(caseTypeMappingRepository.getCaseTypeByShortCode(caseUuid),
             caseUuid);
     }
 

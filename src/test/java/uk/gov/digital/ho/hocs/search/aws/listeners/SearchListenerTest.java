@@ -43,7 +43,7 @@ public class SearchListenerTest {
     public void callsSearchServiceWithValidCreateCaseMessage() throws JsonProcessingException {
         UUID caseUUID = UUID.randomUUID();
         CreateCaseRequest createCaseRequest = (new CreateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "CASE",
-            "CASE/12345", now.plusDays(1), now.minusDays(1), new HashMap()));
+            "CASE/12345", null, now.plusDays(1), now.minusDays(1), new HashMap()));
         String data = objectMapper.writeValueAsString(createCaseRequest);
         IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data, DataChangeType.CASE_CREATED.value);
         String message = objectMapper.writeValueAsString(request);
@@ -59,7 +59,8 @@ public class SearchListenerTest {
     public void callsSearchServiceWithValidUpdateCaseMessage() throws JsonProcessingException {
         UUID caseUUID = UUID.randomUUID();
         UpdateCaseRequest updateCaseRequest = (new UpdateCaseRequest(UUID.randomUUID(), LocalDateTime.now(), "CASE",
-            "CASE/12345", UUID.randomUUID(), UUID.randomUUID(), now.plusDays(1), now.minusDays(1), new HashMap()));
+            "CASE/12345", UUID.randomUUID(), UUID.randomUUID(), now.plusDays(1), now.minusDays(1),
+            new HashMap(), null));
         String data = objectMapper.writeValueAsString(updateCaseRequest);
         IndexDataChangeRequest request = new IndexDataChangeRequest(caseUUID, data, DataChangeType.CASE_UPDATED.value);
         String message = objectMapper.writeValueAsString(request);

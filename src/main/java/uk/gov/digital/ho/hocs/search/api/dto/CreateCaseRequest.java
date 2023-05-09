@@ -29,6 +29,9 @@ public class CreateCaseRequest {
     @JsonProperty("reference")
     private String reference;
 
+    @JsonProperty("migratedReference")
+    private String migratedReference;
+
     @JsonProperty("caseDeadline")
     private LocalDate caseDeadline;
 

@@ -16,7 +16,8 @@ import uk.gov.digital.ho.hocs.search.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.SomuItemDto;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
 import uk.gov.digital.ho.hocs.search.api.helpers.ObjectMapperConverterHelper;
-import uk.gov.digital.ho.hocs.search.client.ElasticSearchClient;
+import uk.gov.digital.ho.hocs.search.client.CaseQueryFactory;
+import uk.gov.digital.ho.hocs.search.client.OpenSearchClient;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.search.domain.repositories.CaseTypeMappingRepository;
 import uk.gov.digital.ho.hocs.search.domain.repositories.FieldQueryTypeMappingRepository;
@@ -41,12 +42,12 @@ import static org.mockito.Mockito.when;
 class CaseDataServiceTest {
 
     private final CreateCaseRequest validCreateCaseRequest = new CreateCaseRequest(
-        CaseTypeUuidHelper.generateCaseTypeUuid("a1"), LocalDateTime.now(), "MIN", "REF", LocalDate.now().plusDays(1),
-        LocalDate.now().plusDays(2), new HashMap<>());
+        CaseTypeUuidHelper.generateCaseTypeUuid("a1"), LocalDateTime.now(), "MIN", "REF", null,
+        LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), new HashMap<>());
 
     private final UpdateCaseRequest validUpdateCaseRequest = new UpdateCaseRequest(
         CaseTypeUuidHelper.generateCaseTypeUuid("a1"), LocalDateTime.now(), "MIN", "REF", UUID.randomUUID(),
-        UUID.randomUUID(), LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), new HashMap<>());
+        UUID.randomUUID(), LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), new HashMap<>(), null);
 
     private final CorrespondentDetailsDto validCorrespondentDetailsDto = new CorrespondentDetailsDto(UUID.randomUUID(),
         LocalDateTime.now(), "LAW", "FULLNAME", null, "0", "e", "REF", "ExtKey");
@@ -60,7 +61,7 @@ class CaseDataServiceTest {
     private ObjectMapper objectMapper;
 
     @Mock
-    private ElasticSearchClient elasticSearchClient;
+    private OpenSearchClient openSearchClient;
 
     @Mock
     private CaseTypeMappingRepository caseTypeMappingRepository;
@@ -75,7 +76,7 @@ class CaseDataServiceTest {
         objectMapper = new ObjectMapper().setDateFormat(new SimpleDateFormat("yyyy-MM-dd")).registerModule(
             new JavaTimeModule());
 
-        caseDataService = new CaseDataService(objectMapper, elasticSearchClient, caseTypeMappingRepository, fieldQueryTypeMappingRepository);
+        caseDataService = new CaseDataService(objectMapper, openSearchClient, caseTypeMappingRepository, new CaseQueryFactory(fieldQueryTypeMappingRepository));
     }
 
     @Test
@@ -84,7 +85,7 @@ class CaseDataServiceTest {
 
         caseDataService.createCase(validCreateCaseRequest.getUuid(), validCreateCaseRequest);
 
-        verify(elasticSearchClient).update(validCreateCaseRequest.getType(), validCreateCaseRequest.getUuid(),
+        verify(openSearchClient).update(validCreateCaseRequest.getType(), validCreateCaseRequest.getUuid(),
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, caseData));
     }
 
@@ -94,7 +95,7 @@ class CaseDataServiceTest {
 
         caseDataService.updateCase(validUpdateCaseRequest.getUuid(), validUpdateCaseRequest);
 
-        verify(elasticSearchClient).update(validUpdateCaseRequest.getType(), validUpdateCaseRequest.getUuid(),
+        verify(openSearchClient).update(validUpdateCaseRequest.getType(), validUpdateCaseRequest.getUuid(),
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, caseData));
     }
 
@@ -106,7 +107,7 @@ class CaseDataServiceTest {
 
         caseDataService.deleteCase(deleteCaseRequest.getCaseUUID(), deleteCaseRequest);
 
-        verify(elasticSearchClient).update("MIN", deleteCaseRequest.getCaseUUID(),
+        verify(openSearchClient).update("MIN", deleteCaseRequest.getCaseUUID(),
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, Map.of("deleted", true)));
     }
 
@@ -117,7 +118,7 @@ class CaseDataServiceTest {
 
         caseDataService.completeCase(caseUuid);
 
-        verify(elasticSearchClient).update("MIN", caseUuid,
+        verify(openSearchClient).update("MIN", caseUuid,
             ObjectMapperConverterHelper.convertObjectToMap(objectMapper, Map.of("completed", true)));
     }
 
@@ -129,7 +130,7 @@ class CaseDataServiceTest {
 
         caseDataService.createCorrespondent(caseUUID, validCorrespondentDetailsDto);
 
-        verify(elasticSearchClient).update(eq("MIN"), eq(caseUUID),
+        verify(openSearchClient).update(eq("MIN"), eq(caseUUID),
             argThat(new AllMapKeyMatcher("allCorrespondents", "currentCorrespondents")));
     }
 
@@ -141,7 +142,7 @@ class CaseDataServiceTest {
 
         caseDataService.deleteCorrespondent(caseUUID, validCorrespondentDetailsDto);
 
-        verify(elasticSearchClient).update(eq("MIN"), eq(caseUUID),
+        verify(openSearchClient).update(eq("MIN"), eq(caseUUID),
             argThat(new AllMapKeyMatcher("allCorrespondents", "currentCorrespondents")));
     }
 
@@ -153,7 +154,7 @@ class CaseDataServiceTest {
 
         caseDataService.updateCorrespondent(caseUUID, validCorrespondentDetailsDto);
 
-        verify(elasticSearchClient).update(eq("MIN"), eq(caseUUID),
+        verify(openSearchClient).update(eq("MIN"), eq(caseUUID),
             argThat(new AllMapKeyMatcher("allCorrespondents", "currentCorrespondents")));
     }
 
@@ -162,12 +163,12 @@ class CaseDataServiceTest {
         UUID caseUUID = CaseTypeUuidHelper.generateCaseTypeUuid("a1");
 
         when(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID)).thenReturn("MIN");
-        when(elasticSearchClient.findById("MIN", caseUUID)).thenReturn(Map.of());
+        when(openSearchClient.findById("MIN", caseUUID)).thenReturn(Map.of());
 
         caseDataService.createTopic(caseUUID, validCreateTopicRequest);
 
-        verify(elasticSearchClient).findById("MIN", caseUUID);
-        verify(elasticSearchClient).update(eq("MIN"), eq(caseUUID),
+        verify(openSearchClient).findById("MIN", caseUUID);
+        verify(openSearchClient).update(eq("MIN"), eq(caseUUID),
             argThat(new AllMapKeyMatcher("allTopics", "currentTopics")));
     }
 
@@ -176,12 +177,12 @@ class CaseDataServiceTest {
         UUID caseUUID = CaseTypeUuidHelper.generateCaseTypeUuid("a1");
 
         when(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID)).thenReturn("MIN");
-        when(elasticSearchClient.findById("MIN", caseUUID)).thenReturn(Map.of());
+        when(openSearchClient.findById("MIN", caseUUID)).thenReturn(Map.of());
 
         caseDataService.deleteTopic(caseUUID, validDeleteTopicRequest);
 
-        verify(elasticSearchClient).findById("MIN", caseUUID);
-        verify(elasticSearchClient).update(eq("MIN"), eq(caseUUID),
+        verify(openSearchClient).findById("MIN", caseUUID);
+        verify(openSearchClient).update(eq("MIN"), eq(caseUUID),
             argThat(new AllMapKeyMatcher("allTopics", "currentTopics")));
     }
 
@@ -190,12 +191,12 @@ class CaseDataServiceTest {
         UUID caseUUID = CaseTypeUuidHelper.generateCaseTypeUuid("a1");
 
         when(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID)).thenReturn("MIN");
-        when(elasticSearchClient.findById("MIN", caseUUID)).thenReturn(Map.of());
+        when(openSearchClient.findById("MIN", caseUUID)).thenReturn(Map.of());
 
         caseDataService.createSomuItem(caseUUID, validSomuItemDto);
 
-        verify(elasticSearchClient).findById("MIN", caseUUID);
-        verify(elasticSearchClient).update(eq("MIN"), eq(caseUUID), argThat(new AllMapKeyMatcher("allSomuItems")));
+        verify(openSearchClient).findById("MIN", caseUUID);
+        verify(openSearchClient).update(eq("MIN"), eq(caseUUID), argThat(new AllMapKeyMatcher("allSomuItems")));
     }
 
     @Test
@@ -203,12 +204,12 @@ class CaseDataServiceTest {
         UUID caseUUID = CaseTypeUuidHelper.generateCaseTypeUuid("a1");
 
         when(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID)).thenReturn("MIN");
-        when(elasticSearchClient.findById("MIN", caseUUID)).thenReturn(Map.of());
+        when(openSearchClient.findById("MIN", caseUUID)).thenReturn(Map.of());
 
         caseDataService.deleteSomuItem(caseUUID, validSomuItemDto);
 
-        verify(elasticSearchClient).findById("MIN", caseUUID);
-        verify(elasticSearchClient).update(eq("MIN"), eq(caseUUID), argThat(new AllMapKeyMatcher("allSomuItems")));
+        verify(openSearchClient).findById("MIN", caseUUID);
+        verify(openSearchClient).update(eq("MIN"), eq(caseUUID), argThat(new AllMapKeyMatcher("allSomuItems")));
     }
 
     @Test
@@ -216,12 +217,12 @@ class CaseDataServiceTest {
         UUID caseUUID = CaseTypeUuidHelper.generateCaseTypeUuid("a1");
 
         when(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID)).thenReturn("MIN");
-        when(elasticSearchClient.findById("MIN", caseUUID)).thenReturn(Map.of());
+        when(openSearchClient.findById("MIN", caseUUID)).thenReturn(Map.of());
 
         caseDataService.updateSomuItem(caseUUID, validSomuItemDto);
 
-        verify(elasticSearchClient).findById("MIN", caseUUID);
-        verify(elasticSearchClient).update(eq("MIN"), eq(caseUUID), argThat(new AllMapKeyMatcher("allSomuItems")));
+        verify(openSearchClient).findById("MIN", caseUUID);
+        verify(openSearchClient).update(eq("MIN"), eq(caseUUID), argThat(new AllMapKeyMatcher("allSomuItems")));
     }
 
     @Test
@@ -229,7 +230,7 @@ class CaseDataServiceTest {
         SearchRequest searchRequest = new SearchRequest();
         caseDataService.search(searchRequest);
 
-        verify(elasticSearchClient, times(0)).search(any(), any());
+        verify(openSearchClient, times(0)).search(any());
     }
 
 }
