@@ -44,4 +44,7 @@ public class UpdateCaseRequest {
     @JsonProperty("data")
     private Map<String, Object> data;
 
+    @JsonProperty("migratedReference")
+    private String migratedReference;
+
 }

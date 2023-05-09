@@ -12,8 +12,7 @@ import uk.gov.digital.ho.hocs.search.api.dto.AddressDto;
 import uk.gov.digital.ho.hocs.search.api.dto.CorrespondentDetailsDto;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateTopicRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.SomuItemDto;
-import uk.gov.digital.ho.hocs.search.aws.listeners.integration.BaseAwsSqsIntegrationTest;
-import uk.gov.digital.ho.hocs.search.client.ElasticSearchClient;
+import uk.gov.digital.ho.hocs.search.client.OpenSearchClient;
 import uk.gov.digital.ho.hocs.search.domain.model.CorrespondentCaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.SomuCaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.TopicCaseData;
@@ -40,7 +39,7 @@ class PartialUpdateSearchTest {
     public ObjectMapper objectMapper;
 
     @SpyBean
-    private ElasticSearchClient elasticSearchClient;
+    private OpenSearchClient openSearchClient;
 
     @Autowired
     private CaseDataService caseDataService;
@@ -55,14 +54,14 @@ class PartialUpdateSearchTest {
 
         caseDataService.createCorrespondent(caseUuid, correspondentDetailsDto);
 
-        await().until(() -> elasticSearchClient.findById("min", caseUuid) != null);
+        await().until(() -> openSearchClient.findById("min", caseUuid) != null);
 
-        var correspondents = objectMapper.convertValue(elasticSearchClient.findById("min", caseUuid),
+        var correspondents = objectMapper.convertValue(openSearchClient.findById("min", caseUuid),
             CorrespondentCaseData.class);
         assertThat(correspondents.getAllCorrespondents()).hasSize(1);
         assertThat(correspondents.getCurrentCorrespondents()).hasSize(1);
 
-        verify(elasticSearchClient).update(any(), any(),
+        verify(openSearchClient).update(any(), any(),
             argThat(new AllMapKeyMatcher("currentCorrespondents", "allCorrespondents")));
     }
 
@@ -74,13 +73,13 @@ class PartialUpdateSearchTest {
 
         caseDataService.createTopic(caseUuid, createTopicRequest);
 
-        await().until(() -> elasticSearchClient.findById("min", caseUuid) != null);
+        await().until(() -> openSearchClient.findById("min", caseUuid) != null);
 
-        var topics = objectMapper.convertValue(elasticSearchClient.findById("min", caseUuid), TopicCaseData.class);
+        var topics = objectMapper.convertValue(openSearchClient.findById("min", caseUuid), TopicCaseData.class);
         assertThat(topics.getAllTopics()).hasSize(1);
         assertThat(topics.getCurrentTopics()).hasSize(1);
 
-        verify(elasticSearchClient).update(any(), any(), argThat(new AllMapKeyMatcher("allTopics", "currentTopics")));
+        verify(openSearchClient).update(any(), any(), argThat(new AllMapKeyMatcher("allTopics", "currentTopics")));
     }
 
     @Test
@@ -91,12 +90,12 @@ class PartialUpdateSearchTest {
 
         caseDataService.createSomuItem(caseUuid, somuItemDto);
 
-        await().until(() -> elasticSearchClient.findById("min", caseUuid) != null);
+        await().until(() -> openSearchClient.findById("min", caseUuid) != null);
 
-        var somuItems = objectMapper.convertValue(elasticSearchClient.findById("min", caseUuid), SomuCaseData.class);
+        var somuItems = objectMapper.convertValue(openSearchClient.findById("min", caseUuid), SomuCaseData.class);
         assertThat(somuItems.getAllSomuItems()).hasSize(1);
 
-        verify(elasticSearchClient).update(any(), any(), argThat(new AllMapKeyMatcher("allSomuItems")));
+        verify(openSearchClient).update(any(), any(), argThat(new AllMapKeyMatcher("allSomuItems")));
     }
 
 }

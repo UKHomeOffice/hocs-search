@@ -32,6 +32,8 @@ public class CaseData {
 
     private Map<String, Object> data;
 
+    private String migratedReference;
+
     public CaseData(CreateCaseRequest createCaseRequest) {
         this.caseUUID = createCaseRequest.getUuid();
         this.created = createCaseRequest.getCreated();
@@ -40,6 +42,7 @@ public class CaseData {
         this.caseDeadline = createCaseRequest.getCaseDeadline();
         this.dateReceived = createCaseRequest.getDateReceived();
         this.data = createCaseRequest.getData();
+        this.migratedReference = createCaseRequest.getMigratedReference();
     }
 
     public CaseData(UpdateCaseRequest updateCaseRequest) {
@@ -51,6 +54,7 @@ public class CaseData {
         this.caseDeadline = updateCaseRequest.getCaseDeadline();
         this.dateReceived = updateCaseRequest.getDateReceived();
         this.data = updateCaseRequest.getData();
+        this.migratedReference = updateCaseRequest.getMigratedReference();
     }
 
 
