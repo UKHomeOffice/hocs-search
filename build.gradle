@@ -39,7 +39,7 @@ dependencies {
     }
     testImplementation 'org.mockito:mockito-inline:5.2.0'
     testImplementation 'org.awaitility:awaitility:4.2.0'
-    testImplementation 'net.javacrumbs.json-unit:json-unit-assertj:2.37.0'
+    testImplementation 'net.javacrumbs.json-unit:json-unit-assertj:2.38.0'
 
 }
 
