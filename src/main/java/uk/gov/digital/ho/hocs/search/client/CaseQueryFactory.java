@@ -42,7 +42,7 @@ public class CaseQueryFactory {
 
         private final FieldQueryTypeMappingRepository fieldQueryTypeMappingRepository;
 
-        private final List<String> migratedCaseTypeMappings = List.of("comp", "comp2", "bf", "bf2", "pogr", "pogr2", "iedet");
+        private final List<String> migratedCaseTypeMappings = List.of("comp", "comp2", "bf", "bf2", "pogr", "pogr2", "iedet", "to");
 
         private boolean hasClause = false;
 
