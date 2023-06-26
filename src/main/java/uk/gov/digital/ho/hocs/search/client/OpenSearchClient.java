@@ -34,14 +34,18 @@ public class OpenSearchClient {
 
     private final int resultsLimit;
 
+    private final int retryOnConflict;
+
     private final String aliasPrefix;
 
     protected OpenSearchClient(RestHighLevelClient client,
                                @Value("${aws.es.index-prefix}") String aliasPrefix,
-                               @Value("${aws.es.results-limit}") int resultsLimit) {
+                               @Value("${aws.es.results-limit}") int resultsLimit,
+                               @Value("${aws.es.retry_on_conflict:3}") int retryOnConflict) {
         this.client = client;
         this.aliasPrefix = aliasPrefix;
         this.resultsLimit = resultsLimit;
+        this.retryOnConflict = retryOnConflict;
     }
 
     public Map<String, Object> findById(String indexType, UUID documentId) {
@@ -74,7 +78,8 @@ public class OpenSearchClient {
         var updateRequest = new UpdateRequest(getWriteTypeAlias(indexType), documentId.toString())
             .scriptedUpsert(true)
             .upsert(Map.of())
-            .script(script);
+            .script(script)
+            .retryOnConflict(retryOnConflict);
 
         try {
             client.update(updateRequest, RequestOptions.DEFAULT);

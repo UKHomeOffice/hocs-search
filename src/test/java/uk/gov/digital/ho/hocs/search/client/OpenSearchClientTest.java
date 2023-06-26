@@ -59,14 +59,13 @@ class OpenSearchClientTest {
         LocalDateTime.now(), "LAW", "FULLNAME",
         new AddressDto("postcode", "address1", "address2", "address3", "country"), "0", "e", "REF", "ExtKey");
 
-
     @BeforeEach
     public void setup() {
         objectMapper = new ObjectMapper()
             .setDateFormat(new SimpleDateFormat("yyyy-MM-dd"))
             .registerModule(new JavaTimeModule());
 
-        openSearchClient = new OpenSearchClient(restHighLevelClient, "test", 10);
+        openSearchClient = new OpenSearchClient(restHighLevelClient, "test", 10, 3);
     }
 
     @Test
