@@ -18,7 +18,7 @@ import uk.gov.digital.ho.hocs.search.helpers.CaseTypeUuidHelper;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -43,7 +43,7 @@ class CreateSearchTest extends BaseAwsSqsIntegrationTest {
         var caseUuid = CaseTypeUuidHelper.generateCaseTypeUuid("a1");
 
         CreateCaseRequest createCaseRequest = new CreateCaseRequest(caseUuid, LocalDateTime.now(), "min", "MIN12345",
-            null, LocalDate.now(), LocalDate.now(), Collections.EMPTY_MAP);
+            null, LocalDate.now(), LocalDate.now(), Map.of());
 
         String data = objectMapper.writeValueAsString(createCaseRequest);
         IndexDataChangeRequest request = new IndexDataChangeRequest(caseUuid, data, DataChangeType.CASE_CREATED.value);

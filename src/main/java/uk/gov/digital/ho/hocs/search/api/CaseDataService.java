@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.opensearch.index.query.BoolQueryBuilder;
+import org.opensearch.script.Script;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.search.api.dto.CorrespondentDetailsDto;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
@@ -13,10 +14,12 @@ import uk.gov.digital.ho.hocs.search.api.dto.DeleteTopicRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.SomuItemDto;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
+import uk.gov.digital.ho.hocs.search.api.elastic.scripts.CorrespondentScriptService;
 import uk.gov.digital.ho.hocs.search.api.helpers.ObjectMapperConverterHelper;
 import uk.gov.digital.ho.hocs.search.client.OpenSearchClient;
 import uk.gov.digital.ho.hocs.search.client.CaseQueryFactory;
 import uk.gov.digital.ho.hocs.search.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.search.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.search.domain.model.CorrespondentCaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.SomuCaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.SomuItem;
@@ -61,14 +64,18 @@ public class CaseDataService {
 
     private final CaseQueryFactory caseQueryFactory;
 
+    private final CorrespondentScriptService correspondentScriptService;
+
     public CaseDataService(ObjectMapper objectMapper,
                            OpenSearchClient openSearchClient,
                            CaseTypeMappingRepository caseTypeMappingRepository,
-                           CaseQueryFactory caseQueryFactory) {
+                           CaseQueryFactory caseQueryFactory,
+                           CorrespondentScriptService correspondentScriptService) {
         this.objectMapper = objectMapper;
         this.openSearchClient = openSearchClient;
         this.caseTypeMappingRepository = caseTypeMappingRepository;
         this.caseQueryFactory = caseQueryFactory;
+        this.correspondentScriptService = correspondentScriptService;
     }
 
     public void createCase(UUID caseUUID, CreateCaseRequest createCaseRequest) {
@@ -124,17 +131,14 @@ public class CaseDataService {
     public void createCorrespondent(UUID caseUUID, CorrespondentDetailsDto correspondentDetailsDto) {
         log.debug("Adding correspondent {} to case {}", correspondentDetailsDto.getUuid(), caseUUID);
 
-        CorrespondentCaseData correspondentCaseData =
-            objectMapper.convertValue(getCaseData(caseUUID), CorrespondentCaseData.class);
-        correspondentCaseData.addCorrespondent(correspondentDetailsDto);
+        Script script = correspondentScriptService.upsertCorrespondentScript(
+            Correspondent.from(correspondentDetailsDto));
 
-        openSearchClient.update(
-            caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID),
-            caseUUID,
-            ObjectMapperConverterHelper.convertObjectToMap(objectMapper, correspondentCaseData));
+        openSearchClient.update(caseTypeMappingRepository.getCaseTypeByShortCode(caseUUID), caseUUID, script);
 
         log.info("Added correspondent {} to case {}", correspondentDetailsDto.getUuid(), caseUUID,
-            value(EVENT, SEARCH_CORRESPONDENT_CREATED));
+            value(EVENT, SEARCH_CORRESPONDENT_CREATED)
+                );
     }
 
     public void deleteCorrespondent(UUID caseUUID, CorrespondentDetailsDto correspondentDetailsDto) {

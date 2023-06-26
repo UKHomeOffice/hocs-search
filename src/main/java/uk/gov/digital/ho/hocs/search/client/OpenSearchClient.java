@@ -9,6 +9,7 @@ import org.opensearch.action.update.UpdateRequest;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.client.RestHighLevelClient;
 import org.opensearch.index.query.BoolQueryBuilder;
+import org.opensearch.script.Script;
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,6 +65,20 @@ public class OpenSearchClient {
         try {
             client.update(updateRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
+            throw new ApplicationExceptions.ResourceServerException(
+                String.format("Unable to update document: %s. %s", documentId, e), CASE_UPDATE_FAILED);
+        }
+    }
+
+    public void update(String indexType, UUID documentId, Script script) {
+        var updateRequest = new UpdateRequest(getWriteTypeAlias(indexType), documentId.toString())
+            .scriptedUpsert(true)
+            .upsert(Map.of())
+            .script(script);
+
+        try {
+            client.update(updateRequest, RequestOptions.DEFAULT);
+        } catch (Exception e) {
             throw new ApplicationExceptions.ResourceServerException(
                 String.format("Unable to update document: %s. %s", documentId, e), CASE_UPDATE_FAILED);
         }

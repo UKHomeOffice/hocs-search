@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.search.client.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.mockito.internal.matchers.Contains;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -18,8 +19,10 @@ import uk.gov.digital.ho.hocs.search.domain.model.SomuCaseData;
 import uk.gov.digital.ho.hocs.search.domain.model.TopicCaseData;
 import uk.gov.digital.ho.hocs.search.helpers.AllMapKeyMatcher;
 import uk.gov.digital.ho.hocs.search.helpers.CaseTypeUuidHelper;
+import uk.gov.digital.ho.hocs.search.helpers.ScriptMatcher;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -62,7 +65,11 @@ class PartialUpdateSearchTest {
         assertThat(correspondents.getCurrentCorrespondents()).hasSize(1);
 
         verify(openSearchClient).update(any(), any(),
-            argThat(new AllMapKeyMatcher("currentCorrespondents", "allCorrespondents")));
+            argThat(
+                new ScriptMatcher(
+                    List.of(new Contains("allCorrespondents"), new Contains("currentCorrespondents")),
+                    List.of(new AllMapKeyMatcher("correspondent"))
+                )));
     }
 
     @Test

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.internal.matchers.Contains;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.digital.ho.hocs.search.api.dto.CorrespondentDetailsDto;
 import uk.gov.digital.ho.hocs.search.api.dto.CreateCaseRequest;
@@ -15,6 +16,7 @@ import uk.gov.digital.ho.hocs.search.api.dto.DeleteTopicRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.search.api.dto.SomuItemDto;
 import uk.gov.digital.ho.hocs.search.api.dto.UpdateCaseRequest;
+import uk.gov.digital.ho.hocs.search.api.elastic.scripts.CorrespondentScriptService;
 import uk.gov.digital.ho.hocs.search.api.helpers.ObjectMapperConverterHelper;
 import uk.gov.digital.ho.hocs.search.client.CaseQueryFactory;
 import uk.gov.digital.ho.hocs.search.client.OpenSearchClient;
@@ -23,11 +25,13 @@ import uk.gov.digital.ho.hocs.search.domain.repositories.CaseTypeMappingReposito
 import uk.gov.digital.ho.hocs.search.domain.repositories.FieldQueryTypeMappingRepository;
 import uk.gov.digital.ho.hocs.search.helpers.AllMapKeyMatcher;
 import uk.gov.digital.ho.hocs.search.helpers.CaseTypeUuidHelper;
+import uk.gov.digital.ho.hocs.search.helpers.ScriptMatcher;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -73,10 +77,15 @@ class CaseDataServiceTest {
 
     @BeforeEach
     public void setup() {
-        objectMapper = new ObjectMapper().setDateFormat(new SimpleDateFormat("yyyy-MM-dd")).registerModule(
-            new JavaTimeModule());
+        objectMapper = new ObjectMapper()
+            .setDateFormat(new SimpleDateFormat("yyyy-MM-dd"))
+            .registerModule(new JavaTimeModule());
 
-        caseDataService = new CaseDataService(objectMapper, openSearchClient, caseTypeMappingRepository, new CaseQueryFactory(fieldQueryTypeMappingRepository));
+        CorrespondentScriptService correspondentScriptService = new CorrespondentScriptService(objectMapper);
+
+        caseDataService = new CaseDataService(objectMapper, openSearchClient, caseTypeMappingRepository,
+            new CaseQueryFactory(fieldQueryTypeMappingRepository), correspondentScriptService
+        );
     }
 
     @Test
@@ -130,8 +139,10 @@ class CaseDataServiceTest {
 
         caseDataService.createCorrespondent(caseUUID, validCorrespondentDetailsDto);
 
-        verify(openSearchClient).update(eq("MIN"), eq(caseUUID),
-            argThat(new AllMapKeyMatcher("allCorrespondents", "currentCorrespondents")));
+        verify(openSearchClient).update(eq("MIN"), eq(caseUUID), argThat(
+            new ScriptMatcher(List.of(new Contains("allCorrespondents"), new Contains("currentCorrespondents")),
+                List.of(new AllMapKeyMatcher("correspondent"))
+            )));
     }
 
     @Test
