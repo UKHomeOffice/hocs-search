@@ -38,8 +38,7 @@ steps:
     environment:
       KUBE_NAMESPACE: wcs-dev
     commands:
-      - commands:
-          - ./ci/helm/helm-chart-deploy.sh --values ./helm/hocs-search.yaml --values ./helm/wcs/hocs-search.yaml
+      - ./ci/helm/helm-chart-deploy.sh --values ./helm/hocs-search.yaml --values ./helm/wcs/hocs-search.yaml
     depends_on:
       - cs-dev
 
