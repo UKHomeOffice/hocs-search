@@ -26,7 +26,7 @@ dependencies {
 
     implementation "org.opensearch.client:opensearch-rest-high-level-client:1.3.11"
 
-    implementation 'software.amazon.awssdk:auth:2.20.0'
+    implementation 'software.amazon.awssdk:auth:2.22.11'
 
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
 
