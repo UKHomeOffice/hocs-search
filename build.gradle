@@ -28,7 +28,7 @@ dependencies {
 
     implementation 'software.amazon.awssdk:auth:2.20.69'
 
-    implementation 'org.springframework:spring-messaging:5.3.24'
+    implementation 'org.springframework:spring-messaging:6.1.6'
 
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
 
