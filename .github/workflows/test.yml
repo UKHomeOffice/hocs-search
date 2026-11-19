@@ -5,8 +5,9 @@ on:
 
 jobs:
   test:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/test-gradle.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/test-gradle.yml@v2
     with:
+      dockerComposeBinary: 'docker compose'
       dockerComposeComponents: 'localstack'
       dockerComposeCommand: './ci/docker-compose.yml -f ./ci/docker-compose.elastic.yml'
     secrets: inherit
