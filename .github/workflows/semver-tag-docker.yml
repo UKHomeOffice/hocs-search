@@ -27,7 +27,7 @@ jobs:
 
       - name: Calculate SemVer value
         id: calculate
-        uses: UKHomeOffice/sas-github-workflows/.github/actions/calculate-semver-value@v1
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/calculate-semver-value@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           default_to_highest: ${{ github.base_ref == 'main' }}
