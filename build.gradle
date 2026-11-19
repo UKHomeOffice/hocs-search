@@ -24,7 +24,7 @@ dependencies {
 
     implementation 'net.logstash.logback:logstash-logback-encoder:7.3'
 
-    implementation 'org.opensearch.client:opensearch-rest-high-level-client:2.6.0'
+    implementation 'org.opensearch.client:opensearch-rest-high-level-client:3.9.0'
 
     implementation 'software.amazon.awssdk:auth:2.20.69'
 
